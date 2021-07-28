@@ -1,0 +1,15 @@
+* {
+  .container {
+    button {
+      padding: 0.25em 1.5em;
+    }
+
+    .list {
+      list-style-position: inside;
+      overflow: hidden;
+      white-space: nowrap;
+      width: 500px;
+      text-overflow: ellipsis;
+    }
+  }
+}
