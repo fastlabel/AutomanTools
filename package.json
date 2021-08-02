@@ -21,14 +21,25 @@
     "lint:prettier": "prettier --write ."
   },
   "dependencies": {
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "^4.0.0-alpha.60",
+    "i18next": "^20.3.5",
+    "re-resizable": "^6.9.0",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "react-dropzone": "^11.3.4",
+    "react-i18next": "^11.11.4",
+    "react-router-dom": "^5.2.0",
+    "typeface-roboto": "^1.1.13",
+    "unstated-next": "^1.1.0"
   },
   "devDependencies": {
     "@types/mini-css-extract-plugin": "^2.0.1",
     "@types/node": "^16.4.0",
     "@types/react": "^17.0.14",
     "@types/react-dom": "^17.0.9",
+    "@types/react-router-dom": "^5.1.8",
     "cross-env": "^7.0.3",
     "css-loader": "^6.2.0",
     "electron": "^13.1.7",

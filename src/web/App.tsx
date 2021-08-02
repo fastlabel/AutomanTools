@@ -1,33 +1,37 @@
-import React, { useState } from 'react';
-
+import React from 'react';
+import {
+  BrowserRouter as Router, Route, Switch
+} from "react-router-dom";
+import 'typeface-roboto/index.css';
 import './App.scss';
+import workspaceStore from './stores/workspace-store';
+import AnnotationClassesPage from './views/pages/annotation-classes/index';
+import StartPage from './views/pages/start/index';
+import ThreeAnnotationPage from './views/pages/three-annotation/index';
+import WorkspacePage from './views/pages/workspace/index';
 
 const { myAPI } = window;
 
 export const App = (): JSX.Element => {
-  const [filelist, setFilelist] = useState<string[]>([]);
-
-  const onClick = async () => {
-    const getPath = await myAPI.openDialog();
-
-    if (getPath) setFilelist(getPath);
-  };
 
   return (
-    <div className="container">
-      <h1>Hello world.</h1>
-      <button onClick={onClick} className="open-button">
-        Open
-      </button>
-      <div>
-        <ul>
-          {filelist.map((item, index) => (
-            <li className="list" key={index}>
-              {item}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+    <workspaceStore.Provider>
+      <Router>
+        <Switch>
+          <Route path="/threeannotation">
+            <ThreeAnnotationPage />
+          </Route>
+          <Route path="/annotationclasses">
+            <AnnotationClassesPage />
+          </Route>
+          <Route path="/workspace">
+            <WorkspacePage />
+          </Route>
+          <Route path="/">
+            <StartPage />
+          </Route>
+        </Switch>
+      </Router>
+    </workspaceStore.Provider>
   );
 };

@@ -1,8 +1,8 @@
+
+import { app, BrowserWindow, dialog, ipcMain, session } from 'electron';
+import { searchDevtools } from 'electron-search-devtools';
 import fs from 'fs';
 import path from 'path';
-
-import { BrowserWindow, app, session, ipcMain, dialog } from 'electron';
-import { searchDevtools } from 'electron-search-devtools';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -22,16 +22,24 @@ if (isDev) {
 }
 /// #endif
 
+
+
 const createWindow = () => {
+
   const mainWindow = new BrowserWindow({
-    width: 600,
-    height: 400,
-    show: false,
+    width: 700,
+    height: 580,
     title: 'Electron',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true,
+      // contextIsolation: false,
+      enableWebSQL: false,
+      nativeWindowOpen: true
     },
   });
+
+  mainWindow.setMenuBarVisibility(false);
 
   ipcMain.handle('open-dialog', async () => {
     const dirPath = await dialog
@@ -56,6 +64,10 @@ const createWindow = () => {
   });
 
   if (isDev) mainWindow.webContents.openDevTools({ mode: 'detach' });
+
+  // bootstrap remote
+
+
 
   mainWindow.loadFile('dist/index.html');
   mainWindow.once('ready-to-show', () => mainWindow.show());
