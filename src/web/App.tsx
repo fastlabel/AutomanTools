@@ -5,7 +5,6 @@ import {
 import 'typeface-roboto/index.css';
 import './App.scss';
 import workspaceStore from './stores/workspace-store';
-import AnnotationClassesPage from './views/pages/annotation-classes/index';
 import StartPage from './views/pages/start/index';
 import ThreeAnnotationPage from './views/pages/three-annotation/index';
 import WorkspacePage from './views/pages/workspace/index';
@@ -20,9 +19,6 @@ export const App = (): JSX.Element => {
         <Switch>
           <Route path="/threeannotation">
             <ThreeAnnotationPage />
-          </Route>
-          <Route path="/annotationclasses">
-            <AnnotationClassesPage />
           </Route>
           <Route path="/workspace">
             <WorkspacePage />

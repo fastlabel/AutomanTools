@@ -1,6 +1,8 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import React, { FC } from "react";
+import { useHistory } from 'react-router-dom';
+import ClassListDialog from './class-list-dialog';
 import ThreeSidePanel from "./side-panel";
 import ThreeToolbar from './tool-bar';
 
@@ -22,29 +24,38 @@ const useStyles = makeStyles((theme: Theme) =>
             background: '#000'
         },
         sidePanel: {
-            minWidth: 380
         }
     }),
 );
 
 const ThreeAnnotationPage: FC = () => {
     const classes = useStyles();
-    return (
-        <Grid container className={classes.root}>
-            <Grid item className={classes.mainPanel} >
-                <Grid container direction="column" className={classes.mainContentPanel}>
-                    <Grid item>
-                        <ThreeToolbar />
-                    </Grid>
-                    <Grid item className={classes.mainContent}>
+    const history = useHistory();
+    const [openClassListDialog, setOpenClassListDialog] = React.useState(false);
 
+    const onConfigClassesClick = () => {
+        setOpenClassListDialog(true);
+    }
+
+    return (
+        <React.Fragment>
+            <Grid container className={classes.root}>
+                <Grid item className={classes.mainPanel} >
+                    <Grid container direction="column" className={classes.mainContentPanel}>
+                        <Grid item>
+                            <ThreeToolbar />
+                        </Grid>
+                        <Grid item className={classes.mainContent}>
+
+                        </Grid>
                     </Grid>
                 </Grid>
+                <Grid item className={classes.sidePanel}>
+                    <ThreeSidePanel onConfigClassesClick={onConfigClassesClick} />
+                </Grid>
             </Grid>
-            <Grid item className={classes.sidePanel}>
-                <ThreeSidePanel />
-            </Grid>
-        </Grid>
+            <ClassListDialog open={openClassListDialog} setOpen={setOpenClassListDialog} />
+        </React.Fragment>
     );
 };
 

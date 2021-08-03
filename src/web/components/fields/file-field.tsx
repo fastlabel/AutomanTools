@@ -35,6 +35,7 @@ const FileField: FC<Props> = ({ label, value, onFileSelect }) => {
             <Box>
                 <TextField
                     variant="outlined"
+                    margin="dense"
                     fullWidth
                     value={value}
                     InputProps={{

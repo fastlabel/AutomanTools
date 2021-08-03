@@ -20,7 +20,7 @@ const SelectField: FC<Props> = ({ label, items, value, onChange }) => {
                 </Typography>
             </Box>
             <Box>
-                <TextField variant="outlined" select fullWidth value={value} onChange={onChange}>
+                <TextField margin="dense" variant="outlined" select fullWidth value={value} onChange={onChange}>
                     {items.map((item) =>
                         <MenuItem key={item.key} value={item.value || item.key}>
                             {item.label}

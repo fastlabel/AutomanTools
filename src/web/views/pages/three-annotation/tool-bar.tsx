@@ -19,21 +19,10 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-export type ToolButtonProps = {
+type ToolButtonProps = {
     toolTip: string;
     icon: JSX.Element;
     active?: boolean;
-};
-
-const ToolButton: FC<ToolButtonProps> = ({ toolTip, icon }) => {
-    const classes = useStyles();
-    return (
-        <Tooltip title={toolTip} arrow>
-            <IconButton>
-                {icon}
-            </IconButton>
-        </Tooltip>
-    )
 };
 
 type Props = {
@@ -42,7 +31,8 @@ type Props = {
 
 const ThreeToolbar: FC<Props> = () => {
     const classes = useStyles();
-    const renderToolButton: FC<ToolButtonProps> = useCallback(({ toolTip, icon, active }) => {
+
+    const _ToolButton: FC<ToolButtonProps> = useCallback(({ toolTip, icon, active }) => {
         const classes = useStyles();
         return (
             <Tooltip title={toolTip} arrow>
@@ -57,12 +47,12 @@ const ThreeToolbar: FC<Props> = () => {
         <Paper>
             <List disablePadding>
                 <ListItem dense>
-                    {renderToolButton({ toolTip: '', icon: (<OpenWithOutlinedIcon />) })}
-                    {renderToolButton({ toolTip: '', icon: (<TouchAppOutlinedIcon />) })}
+                    <_ToolButton toolTip="" icon={(<OpenWithOutlinedIcon />)} />
+                    <_ToolButton toolTip="" icon={(<TouchAppOutlinedIcon />)} />
                     <Box mr={2} />
-                    {renderToolButton({ toolTip: '', icon: (<FormatShapesOutlinedIcon />) })}
+                    <_ToolButton toolTip="" icon={(<FormatShapesOutlinedIcon />)} />
                     <Box mr={2} />
-                    {renderToolButton({ toolTip: '', icon: (<SaveOutlinedIcon />) })}
+                    <_ToolButton toolTip="" icon={(<SaveOutlinedIcon />)} />
                 </ListItem>
             </List>
         </Paper>);
