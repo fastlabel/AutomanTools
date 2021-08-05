@@ -9,7 +9,7 @@ import ExpandMore from "@material-ui/icons/ExpandMore";
 import VisibilityOffOutlinedIcon from "@material-ui/icons/VisibilityOffOutlined";
 import VisibilityOutlinedIcon from "@material-ui/icons/VisibilityOutlined";
 import React, { FC } from "react";
-import { AnnotationType } from "../../application/const";
+import { AnnotationType } from "../../types/const";
 import { ClassItem } from "./class-list";
 
 export type InstanceItem = {

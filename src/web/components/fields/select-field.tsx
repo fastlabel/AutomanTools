@@ -8,10 +8,11 @@ type Props = {
     label: string;
     items: { key: string, label: string, value?: string }[];
     value?: string;
+    disabled?: boolean;
     onChange: (e: ChangeEvent<any>) => void;
 };
 
-const SelectField: FC<Props> = ({ label, items, value, onChange }) => {
+const SelectField: FC<Props> = ({ label, items, value, disabled, onChange }) => {
     return (
         <React.Fragment>
             <Box mb={1}>
@@ -20,7 +21,7 @@ const SelectField: FC<Props> = ({ label, items, value, onChange }) => {
                 </Typography>
             </Box>
             <Box>
-                <TextField margin="dense" variant="outlined" select fullWidth value={value} onChange={onChange}>
+                <TextField margin="dense" disabled={disabled} variant="outlined" select fullWidth value={value} onChange={onChange}>
                     {items.map((item) =>
                         <MenuItem key={item.key} value={item.value || item.key}>
                             {item.label}

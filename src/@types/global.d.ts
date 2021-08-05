@@ -1,9 +1,16 @@
 declare global {
   interface Window {
-    myAPI: Sandbox;
+    workspace: Workspace;
   }
-}
+};
 
-export interface Sandbox {
-  openDialog: () => Promise<void | string[]>;
-}
+export interface Workspace {
+  openFolderDialog: () => Promise<string>;
+  create: (param: CreateWorkspaceParam) => Promise<void>;
+};
+
+export type CreateWorkspaceParam = {
+  workspaceFolder: string;
+  type: ProjectType;
+  targets: { path: string, name: string }[]
+};

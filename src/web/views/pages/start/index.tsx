@@ -3,7 +3,7 @@ import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import React, { FC, useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import { ApplicationConst } from "../../../application/const";
-import WorkspaceStore from "../../../stores/workspace-store";
+import WorkspaceContext from "../../../context/workspace";
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -19,21 +19,20 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const myApi = window.myAPI;
+const workspace = window.workspace;
 
 const StartPage: FC = () => {
     const classes = useStyles();
     const history = useHistory();
-    const workspaceStore = WorkspaceStore.useContainer();
+    const workspaceStore = WorkspaceContext.useContainer();
 
     const onClickStartButton = useCallback(() => {
         // TODO check folder content and control moved page
-        const selectFolder = myApi.openDialog();
-        selectFolder.then((files) => {
-            if (Array.isArray(files)) {
-                workspaceStore.setWorkspaceFolder(files[0]);
-                history.push('/workspace');
-            }
+        const selectFolder = workspace.openFolderDialog();
+        selectFolder.then((wkFolder) => {
+            if (!wkFolder) return;
+            workspaceStore.setWorkspaceFolder(wkFolder);
+            history.push('/workspace');
         });
     }, []);
 

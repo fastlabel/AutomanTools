@@ -3,18 +3,15 @@ import {
   BrowserRouter as Router, Route, Switch
 } from "react-router-dom";
 import 'typeface-roboto/index.css';
-import './App.scss';
-import workspaceStore from './stores/workspace-store';
+import WorkspaceContext from './context/workspace';
 import StartPage from './views/pages/start/index';
 import ThreeAnnotationPage from './views/pages/three-annotation/index';
 import WorkspacePage from './views/pages/workspace/index';
 
-const { myAPI } = window;
-
 export const App = (): JSX.Element => {
 
   return (
-    <workspaceStore.Provider>
+    <WorkspaceContext.Provider>
       <Router>
         <Switch>
           <Route path="/threeannotation">
@@ -28,6 +25,6 @@ export const App = (): JSX.Element => {
           </Route>
         </Switch>
       </Router>
-    </workspaceStore.Provider>
+    </WorkspaceContext.Provider>
   );
 };

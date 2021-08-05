@@ -10,7 +10,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import { Resizable, ResizeCallback } from "re-resizable";
 import React, { FC, useCallback, useState } from "react";
 import { useHistory } from 'react-router-dom';
-import { AnnotationType } from '../../../application/const';
+import { AnnotationType } from '../../../types/const';
 import ClassList, { ClassItem } from '../../annotation-classes/class-list';
 import InstanceList, { InstanceItem } from '../../annotation-classes/instance-list';
 

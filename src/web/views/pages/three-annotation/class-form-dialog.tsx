@@ -30,10 +30,19 @@ const ClassFormDialog: FC<Props> = ({ open, setOpen }) => {
                     <Grid item xs={12}>
                         <FLColorField label="色"></FLColorField>
                     </Grid>
+                    <Grid item xs={4}>
+                        <FLTextField label="長さ（初期値）"></FLTextField>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <FLTextField label="幅（初期値）"></FLTextField>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <FLTextField label="高さ（初期値）"></FLTextField>
+                    </Grid>
                 </Grid>
             </FLDialogContent>
             <FLDialogActions>
-                <Button onClick={handleClose} color="primary">
+                <Button color="primary">
                     保存して新規作成
                 </Button>
                 <Button onClick={handleClose} variant="contained" color="primary" disableElevation>

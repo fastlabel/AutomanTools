@@ -7,10 +7,11 @@ import TextField from '@material-ui/core/TextField';
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import SearchIcon from '@material-ui/icons/Search';
 import React, { FC } from "react";
-import { AnnotationType } from '../../../application/const';
 import { FLDialogTitle } from '../../../components/dialogs/fl-dialog';
+import { AnnotationType } from '../../../types/const';
 import ClassList, { ClassItem } from '../../annotation-classes/class-list';
 import ClassFormDialog from './class-form-dialog';
+
 
 const MOCK_CLASSES: ClassItem[] = [
     {

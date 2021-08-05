@@ -4,21 +4,15 @@ import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined';
+import FilterDramaIcon from '@material-ui/icons/FilterDrama';
 import React, { FC } from "react";
 import { useDropzone } from "react-dropzone";
-
-type Props = {
-    label: string;
-    description?: string;
-    subDescription?: string;
-    btnDescription?: string;
-    value?: string;
-};
+import FLFileList from "../lists/fl-file-list";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         dragzone: {
-            minHeight: 230,
+            minHeight: 184,
             display: 'flex',
             alignContent: 'center',
             alignItems: 'center',
@@ -41,13 +35,75 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const FolderContentsField: FC<Props> = ({ label, value, description, subDescription, btnDescription }) => {
-    const { getRootProps, getInputProps } = useDropzone({
-        accept: '.pcd', onDrop: (acceptedFiles) => {
+const _DropContent: FC<{ icon: any, main: any, btnLabel?: string }> = ({ icon, main, btnLabel }) => {
+    return (
+        <Grid container direction="column" spacing={2}>
+            <Grid item >
+                <Grid container justifyContent="center">
+                    {icon}
+                </Grid>
+            </Grid>
+            <Grid item >
+                <Grid container justifyContent="center" >
+                    <Grid item >
+                        {main}
+                    </Grid>
+                </Grid>
+            </Grid>
+            <Grid item>
+                <Grid container justifyContent="center">
+                    <Button variant="outlined">{btnLabel}</Button>
+                </Grid>
+            </Grid>
+        </Grid>
+    );
+}
 
+type Props = {
+    label: string;
+    description?: {
+        main?: string;
+        sub?: string;
+        btn?: string;
+        btnUpdate?: string;
+    }
+    value?: File[];
+    maxFiles?: number;
+    onChange?: (value: File[]) => void;
+};
+
+
+const FolderContentsField: FC<Props> = ({ label, value, description, maxFiles, onChange }) => {
+    const { getRootProps, getInputProps } = useDropzone({
+        maxFiles,
+        accept: '.pcd',
+        onDrop: (acceptedFiles: File[]) => {
+            onChange && onChange(acceptedFiles);
         }
     });
     const classes = useStyles();
+
+    const selectCount = value?.length || 0;
+    const showFileList = selectCount > 1;
+    const fileList = showFileList && value ?
+        value.map((v, i) => ({ id: v.path, label: v.name, labelIcon: FilterDramaIcon })) : [];
+    const fileItem = selectCount === 1 && value ? value[0] : { name: '' };
+
+    const dropContentProps = selectCount === 0 ?
+        {
+            icon: (<FileCopyOutlinedIcon />),
+            main: (<React.Fragment>
+                <Typography>{description?.main}</Typography>
+                <Typography>{description?.sub}</Typography>
+            </React.Fragment>),
+            btnLabel: description?.btn
+        } :
+        // else case
+        {
+            icon: (<FilterDramaIcon />),
+            main: (<Typography>{`${fileItem.name} が選択されています`}</Typography>),
+            btnLabel: description?.btnUpdate
+        };
 
     return (
         <React.Fragment>
@@ -59,26 +115,11 @@ const FolderContentsField: FC<Props> = ({ label, value, description, subDescript
             <Box>
                 <div {...getRootProps({ className: classes.dragzone })}>
                     <input {...getInputProps()} />
-                    <Grid container direction="column" spacing={2}>
-                        <Grid item >
-                            <Grid container justifyContent="center">
-                                <FileCopyOutlinedIcon />
-                            </Grid>
-                        </Grid>
-                        <Grid item >
-                            <Grid container justifyContent="center" >
-                                <Grid item >
-                                    <Typography>{description}</Typography>
-                                    <Typography>{subDescription}</Typography>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                        <Grid item>
-                            <Grid container justifyContent="center">
-                                <Button variant="outlined">{btnDescription}</Button>
-                            </Grid>
-                        </Grid>
-                    </Grid>
+                    {showFileList ?
+                        <FLFileList items={fileList} /> :
+                        // else case
+                        <_DropContent {...dropContentProps} />
+                    }
                 </div>
             </Box>
         </React.Fragment>

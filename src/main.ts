@@ -1,8 +1,8 @@
 
 import { app, BrowserWindow, dialog, ipcMain, session } from 'electron';
 import { searchDevtools } from 'electron-search-devtools';
-import fs from 'fs';
 import path from 'path';
+import { WorkSpaceDriver } from './node/workspace';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -41,27 +41,19 @@ const createWindow = () => {
 
   mainWindow.setMenuBarVisibility(false);
 
-  ipcMain.handle('open-dialog', async () => {
-    const dirPath = await dialog
-      .showOpenDialog(mainWindow, {
-        properties: ['openDirectory'],
-      })
+  ipcMain.handle('workspace/openFolderDialog', async () => {
+    const dirPath = await dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] })
       .then((result) => {
         if (result.canceled) return;
         return result.filePaths[0];
-      })
-      .catch((err) => console.log(err));
-
-    if (!dirPath) return;
-
-    return fs.promises
-      .readdir(dirPath, { withFileTypes: true })
-      .then((dirents) =>
-        dirents
-          .filter((dirent) => dirent.isFile())
-          .map(({ name }) => path.join(dirPath, name))
-      );
+      }).catch((err) => console.log(err));
+    return dirPath;
   });
+
+  ipcMain.handle('workspace/create', async (event, param) => {
+    return WorkSpaceDriver.create(param).then().catch((err) => console.log(err))
+  });
+
 
   if (isDev) mainWindow.webContents.openDevTools({ mode: 'detach' });
 

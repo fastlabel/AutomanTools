@@ -8,7 +8,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import VisibilityOffOutlinedIcon from "@material-ui/icons/VisibilityOffOutlined";
 import VisibilityOutlinedIcon from "@material-ui/icons/VisibilityOutlined";
 import React, { FC } from "react";
-import { AnnotationType } from "../../application/const";
+import { AnnotationType } from "../../types/const";
 
 export type ClassItem = {
     id: string;

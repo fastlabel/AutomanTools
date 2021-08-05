@@ -2,7 +2,7 @@ import { createStyles, InputAdornment, makeStyles, TextField, Theme } from "@mat
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import FolderIcon from '@material-ui/icons/Folder';
-import React, { FC, useCallback } from "react";
+import React, { FC } from "react";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -16,15 +16,11 @@ const useStyles = makeStyles((theme: Theme) =>
 type Props = {
     label: string;
     value?: string;
-    onFileSelect: () => void;
+    onChange: React.ChangeEventHandler<HTMLInputElement>;
 };
 
-const FileField: FC<Props> = ({ label, value, onFileSelect }) => {
+const FileField: FC<Props> = ({ label, value, onChange }) => {
     const classes = useStyles();
-    const onClick = useCallback((e: any) => {
-        e.preventDefault();
-        onFileSelect();
-    }, [onFileSelect])
     return (
         <React.Fragment>
             <Box mb={1}>
@@ -45,7 +41,7 @@ const FileField: FC<Props> = ({ label, value, onFileSelect }) => {
                             </InputAdornment>
                         ),
                     }}
-                    onClick={onClick}
+                    onChange={onChange}
                 />
             </Box>
         </React.Fragment>

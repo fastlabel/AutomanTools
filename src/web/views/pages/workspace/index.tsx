@@ -2,10 +2,11 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { useHistory } from "react-router-dom";
-import WorkspaceStore from "../../../stores/workspace-store";
-import WorkspaceForm from "./form";
+import WorkspaceContext from "../../../context/workspace";
+import { ProjectType } from "../../../types/const";
+import WorkspaceForm, { WorkspaceFormState } from "./form";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -28,14 +29,24 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
+type WorkspaceState = {
+
+};
 
 const WorkspacePage: FC = () => {
     const classes = useStyles();
     const history = useHistory();
-    const workspaceStore = WorkspaceStore.useContainer();
+    const workspace = WorkspaceContext.useContainer();
 
-    const handleNext = () => {
-        history.push('/threeannotation');
+    const [form, setForm] = useState<WorkspaceFormState>({
+        workspaceFolder: workspace.workspaceFolder,
+        type: ProjectType.pcd_only
+    });
+
+    const handleCreate = () => {
+        workspace.create(form as any).then(() =>
+            history.push('/threeannotation')
+        );
     };
 
     const handleBack = () => {
@@ -51,7 +62,7 @@ const WorkspacePage: FC = () => {
                         <Typography color='textSecondary' variant="h4">ワークスペースを作成</Typography>
                     </Grid>
                     <Grid item className={classes.itemGlow}>
-                        <WorkspaceForm workspaceFolder={workspaceStore.workspaceFolder} />
+                        <WorkspaceForm form={form} onUpdateForm={setForm} />
                     </Grid>
                     <Grid item className={classes.item}>
                         <Grid container justifyContent="space-between">
@@ -59,7 +70,7 @@ const WorkspacePage: FC = () => {
                                 <Button onClick={handleBack}>戻る</Button>
                             </Grid>
                             <Grid item>
-                                <Button variant="contained" color="primary" onClick={handleNext}>
+                                <Button variant="contained" disabled={form.validState !== 'valid'} color="primary" onClick={handleCreate}>
                                     ワークスペースを作成
                                 </Button>
                             </Grid>

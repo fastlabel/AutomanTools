@@ -1,6 +1,6 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import { useHistory } from 'react-router-dom';
 import ClassListDialog from './class-list-dialog';
 import ThreeSidePanel from "./side-panel";
@@ -36,6 +36,10 @@ const ThreeAnnotationPage: FC = () => {
     const onConfigClassesClick = () => {
         setOpenClassListDialog(true);
     }
+
+    useEffect(() => {
+        // initialize
+    }, [])
 
     return (
         <React.Fragment>
