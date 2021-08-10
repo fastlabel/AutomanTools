@@ -29,7 +29,7 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     width: 700,
     height: 580,
-    title: 'Electron',
+    title: 'FastLabel 3D Annotation',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
@@ -50,10 +50,20 @@ const createWindow = () => {
     return dirPath;
   });
 
-  ipcMain.handle('workspace/create', async (event, param) => {
-    return WorkSpaceDriver.create(param).then().catch((err) => console.log(err))
+  ipcMain.handle('workspace/save', async (event, param) => {
+    const result = await WorkSpaceDriver.saveQuery(param).then().catch((err) => console.log(err));
+    return result;
   });
 
+  ipcMain.handle('workspace/load', async (event, param) => {
+    const result = await WorkSpaceDriver.loadQuery(param).then(r => r).catch(error => console.log(error));
+    return result;
+  });
+
+  ipcMain.handle('workspace/exist', async (event, param) => {
+    const result = await WorkSpaceDriver.exist(param).then(r => r).catch(error => console.log(error));
+    return result;
+  });
 
   if (isDev) mainWindow.webContents.openDevTools({ mode: 'detach' });
 

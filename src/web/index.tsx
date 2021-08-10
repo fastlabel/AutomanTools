@@ -3,6 +3,7 @@ import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { initReactI18next } from 'react-i18next';
 import { App } from './App';
+import WorkspaceContext from './context/workspace';
 import './index.scss';
 import enJson from './locales/en.json';
 import jaJson from './locales/ja.json';
@@ -21,5 +22,7 @@ i18n.use(initReactI18next).init({
 
 ReactDOM.render(
     <Suspense fallback={null}>
-        <App />
+        <WorkspaceContext.Provider>
+            <App />
+        </WorkspaceContext.Provider>
     </Suspense>, document.getElementById('root'));

@@ -56,20 +56,36 @@ export const FileDriver = {
         }));
     },
     copyFile: <T>(pathStr: string, srcPath: string): Promise<string> => {
+        console.debug('copyFile :' + pathStr)
         return resolveParent(pathStr, () => new Promise((resolver, reject) => {
             fs.copyFile(srcPath, pathStr, () => resolver());
         }));
     },
     saveJson: <T>(pathStr: string, data: T): Promise<string> => {
+        console.debug('saveJson :' + pathStr);
         return resolveParent(pathStr, () => new Promise((resolver, reject) => {
             fs.writeFile(pathStr, JSON.stringify(data), 'utf8', () => resolver());
         }));
     },
-    loadImage: (pathStr: string): Promise<Buffer> => {
+    exist: (pathStr: string): Promise<boolean> => {
         return new Promise((resolver, reject) => {
             fs.readFile(pathStr, (err, data) => {
                 if (err) reject(err);
-                resolver(data);
+                resolver(!!data);
+            });
+        });
+    },
+    load: (pathStr: string): Promise<ArrayBuffer> => {
+        console.debug('load :' + pathStr);
+        return new Promise((resolver, reject) => {
+            fs.readFile(pathStr, (err, data) => {
+                if (err) reject(err);
+                const ab = new ArrayBuffer(data.length);
+                const view = new Uint8Array(ab);
+                for (var i = 0; i < data.length; ++i) {
+                    view[i] = data[i];
+                }
+                resolver(ab);
             });
         });
     },
@@ -82,6 +98,7 @@ export const FileDriver = {
         });
     },
     loadJson: <T>(pathStr: string): Promise<T> => {
+        console.debug('loadJson :' + pathStr);
         return new Promise((resolver, reject) => {
             fs.readFile(pathStr, 'utf8', (err, data) => {
                 if (err) reject(err);

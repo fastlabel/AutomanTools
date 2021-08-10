@@ -6,37 +6,15 @@ import ListItem from '@material-ui/core/ListItem';
 import TextField from '@material-ui/core/TextField';
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import SearchIcon from '@material-ui/icons/Search';
-import React, { FC } from "react";
+import React, { FC, useCallback, useEffect } from "react";
 import { FLDialogTitle } from '../../../components/dialogs/fl-dialog';
-import { AnnotationType } from '../../../types/const';
-import ClassList, { ClassItem } from '../../annotation-classes/class-list';
+import AnnotationClassStore from '../../../stores/annotation-class-store';
+import { AnnotationClassVO } from '../../../types/vo';
+import ClassList from '../../annotation-classes/class-list';
 import ClassFormDialog from './class-form-dialog';
-
-
-const MOCK_CLASSES: ClassItem[] = [
-    {
-        id: 'car',
-        title: '普通車',
-        type: AnnotationType.cuboid,
-        color: '#ffd700'
-    },
-    {
-        id: 'bike',
-        title: '二輪車',
-        type: AnnotationType.cuboid,
-        color: '#adff2f'
-    },
-    {
-        id: 'track',
-        title: '普通貨物車',
-        type: AnnotationType.cuboid,
-        color: '#1e90ff'
-    }
-];
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
-
     }));
 
 const OwnDialogContent = withStyles((theme: Theme) => ({
@@ -46,45 +24,63 @@ const OwnDialogContent = withStyles((theme: Theme) => ({
 }))(MuiDialogContent);
 
 type Props = {
-    open: boolean;
-    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const ClassListDialog: FC<Props> = ({ open, setOpen }) => {
-    const [openFormDialog, setOpenFormDialog] = React.useState(false);
-    const handleClose = () => {
-        setOpen(false);
+const ClassListDialog: FC<Props> = () => {
+    const [open, setOpen] = React.useState(false);
+    const [formDialog, setFormDialog] = React.useState<{ open: boolean, classVo?: AnnotationClassVO }>({ open: false });
+
+    const { annotationClass, dispatchAnnotationClass } = AnnotationClassStore.useContainer();
+
+    useEffect(() => {
+        setOpen(annotationClass.status === 'ready');
+    }, [annotationClass])
+
+    const handleClose = useCallback(() => {
+        dispatchAnnotationClass({ type: 'save' });
+    }, []);
+
+    const handleFormSubmit = (vo: AnnotationClassVO) => {
+        return new Promise<void>((resolve) => {
+            dispatchAnnotationClass({ type: 'add', vo });
+            resolve();
+        });
     };
+
+
     const componentCode = 'class-list-dialog-title';
     return (
         <React.Fragment>
-            <Dialog fullWidth={true} open={open} onClose={handleClose} aria-labelledby={componentCode}>
+            <Dialog fullWidth open={open} onClose={handleClose} aria-labelledby={componentCode}>
                 <FLDialogTitle id={componentCode} onClose={handleClose}>アノテーションクラス</FLDialogTitle>
-                <OwnDialogContent>
-                    <List disablePadding>
-                        <ListItem dense>
-                            <TextField
-                                margin="dense"
-                                variant="outlined"
-                                fullWidth
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <SearchIcon />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </ListItem>
-                        <ListItem button dense onClick={() => setOpenFormDialog(true)}>
-                            <AddBoxIcon />
-                            <ListItemText>アノテーションクラスを追加する</ListItemText>
-                        </ListItem>
-                    </List>
-                    <ClassList classes={MOCK_CLASSES} />
-                </OwnDialogContent>
+                {annotationClass.status === 'ready' ? (
+                    <OwnDialogContent>
+                        <List disablePadding>
+                            <ListItem dense>
+                                <TextField
+                                    margin="dense"
+                                    variant="outlined"
+                                    fullWidth
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <SearchIcon />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </ListItem>
+                            <ListItem button dense onClick={() => setFormDialog({ open: true })}>
+                                <AddBoxIcon />
+                                <ListItemText>アノテーションクラスを追加する</ListItemText>
+                            </ListItem>
+                        </List>
+                        <ClassList classes={annotationClass.data} />
+                    </OwnDialogContent>) : undefined}
             </Dialog>
-            <ClassFormDialog open={openFormDialog} setOpen={setOpenFormDialog} />
+            <ClassFormDialog
+                open={formDialog.open} onClose={() => setFormDialog({ open: false })}
+                classVo={formDialog.classVo} onSubmit={handleFormSubmit} />
         </React.Fragment>
     );
 };

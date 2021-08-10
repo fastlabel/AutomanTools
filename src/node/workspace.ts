@@ -1,36 +1,114 @@
-import { CreateWorkspaceParam } from "../@types/global";
+import { WKLoadParam, WKSaveCommand, WKSaveParam, WKSkeleton } from "../@types/global";
 import { FileDriver } from "./file-driver";
 
+const reduceQuery = async <T>(
+    target: any,
+    reducer: (path: string, value: T) => Promise<any>,
+    targetCond?: (value: T) => boolean,
+) => {
+    const resultObj: any = {};
+    const promiseList: Promise<any>[] = [];
 
-const FILE_PATH: { [key: string]: string } = {
-    projectJson: '/meta/project.json',
-    annotationClassesJson: '/meta/annotation_classes.json',
-    target: '/target',
-    calibration: '/target/calibration',
-    targetInfoJson: '/target/target_info.json',
-    annotationDataJson: '/output/annotation_data.json'
+    const _targetCond = targetCond || ((val: T) => typeof val === 'object' && val !== null);
+
+    Object.keys(target).forEach(key => {
+        const keys = [key];
+        const pathStr = keys.join('/');
+        const val = target[key];
+        if (_targetCond(val)) {
+            const current = {};
+            resultObj[key] = current;
+            _reduceQuery(val as any, reducer, _targetCond, current, keys, promiseList);
+        } else if (val) {
+            const promise = reducer(pathStr, val);
+            promiseList.push(promise);
+            promise.then(resolved => {
+                resultObj[key] = resolved;
+            });
+        };
+    });
+    try {
+        await Promise.all(promiseList);
+    } catch (err) {
+        return err;
+    }
+    return resultObj;
+};
+
+const _reduceQuery = <T>(
+    target: any,
+    reducer: (path: string, value: T) => Promise<any>,
+    targetCond: (value: T) => boolean,
+    resultObj: any,
+    parentKeys: string[],
+    promiseList: Promise<any>[],
+) => {
+    Object.keys(target).forEach(key => {
+        const keys = parentKeys.concat([key]);
+        const pathStr = keys.join('/');
+        const val = target[key];
+        if (targetCond(val)) {
+            const current = {};
+            resultObj[key] = current;
+            _reduceQuery(val as any, reducer, targetCond, current, keys, promiseList);
+        } else if (val) {
+            const promise = reducer(pathStr, val);
+            promiseList.push(promise);
+            promise.then(resolved => {
+                resultObj[key] = resolved;
+            });
+        };
+    });
 };
 
 export const WorkSpaceDriver = {
-    create: (param: CreateWorkspaceParam): Promise<void> => {
+    saveQuery: (param: WKSaveParam): Promise<void> => {
         return new Promise((resolve, reject) => {
-            FileDriver.makeDir(param.workspaceFolder).then(() => {
-                const promises = Object.values(FILE_PATH).map(path => {
-                    if (path.endsWith('.json')) {
-                        return FileDriver.saveJson(param.workspaceFolder + path, {});
-                    }
-                    return FileDriver.makeDir(param.workspaceFolder + path);
-                });
-
-                Promise.all(
-                    // TODO support frame
-                    promises.concat(['001'].flatMap(frameNo => param.targets.map(t => {
-                        return FileDriver.copyFile(param.workspaceFolder + FILE_PATH.target + '/' + frameNo + '/' + t.name, t.path);
-                    })))
-                )
-                    .then(() => resolve())
-                    .catch(err => reject(err));
-            }).catch(err => reject(err));
+            reduceQuery<WKSaveCommand>(param.query, (path, value) => {
+                const targetPath = `${param.wkDir}/${path}`;
+                if (value.method === 'json') {
+                    return FileDriver.saveJson(targetPath + '.json', value.resource);
+                } else if (value.method === 'copy') {
+                    return FileDriver.copyFile(targetPath + '.' + value.extension, value.fromPath);
+                }
+                throw new Error(`not supported method type !! arg:${JSON.stringify(value)}`);
+            }, (val) => !val.method).then(() => {
+                resolve();
+            });
+        });
+    },
+    loadQuery: (param: WKLoadParam): Promise<WKSkeleton<any, ArrayBuffer>> => {
+        return new Promise((resolve, reject) => {
+            reduceQuery<true | string>(param.query, (path, value) => {
+                const targetPath = `${param.wkDir}/${path}`;
+                if (value === true) {
+                    // load Json
+                    return FileDriver.loadJson(targetPath + '.json');
+                }
+                // load resource
+                return FileDriver.load(targetPath + '.' + value);
+            }).then((result) => {
+                resolve(result);
+            }).catch(err => {
+                reject(err);
+            });
+        });
+    },
+    exist: (param: WKLoadParam): Promise<WKSkeleton<boolean, boolean>> => {
+        return new Promise((resolve, reject) => {
+            reduceQuery<true | string>(param.query, (path, value) => {
+                const targetPath = `${param.wkDir}/${path}`;
+                if (value === true) {
+                    // load Json
+                    return FileDriver.exist(targetPath + '.json');
+                }
+                // load resource
+                return FileDriver.exist(targetPath + '.' + value);
+            }).then((result) => {
+                resolve(result);
+            }).catch(err => {
+                reject(err);
+            });
         });
     }
 }

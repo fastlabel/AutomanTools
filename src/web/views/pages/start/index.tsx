@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const workspace = window.workspace;
+const workspaceApi = window.workspace;
 
 const StartPage: FC = () => {
     const classes = useStyles();
@@ -28,11 +28,20 @@ const StartPage: FC = () => {
 
     const onClickStartButton = useCallback(() => {
         // TODO check folder content and control moved page
-        const selectFolder = workspace.openFolderDialog();
-        selectFolder.then((wkFolder) => {
-            if (!wkFolder) return;
-            workspaceStore.setWorkspaceFolder(wkFolder);
-            history.push('/workspace');
+        const selectFolder = workspaceApi.openFolderDialog();
+        selectFolder.then((wkDir) => {
+            if (!wkDir) return;
+            workspaceStore.setWorkspaceFolder(wkDir);
+            workspaceApi.exist({ wkDir, query: { meta: { project: true } } }).then((res) => {
+                if (res.meta?.project) {
+                    history.push('/threeannotation');
+                    return;
+                }
+                history.push('/workspace');
+            }).catch(err => {
+                // not exist meta/project.json
+                history.push('/workspace');
+            });
         });
     }, []);
 

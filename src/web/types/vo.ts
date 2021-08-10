@@ -1,5 +1,10 @@
 import { AnnotationType, ContentResourceType, ProjectType } from "./const";
 
+export type ThreeSize = {
+    x: number;
+    y: number;
+    z: number;
+}
 
 export type ProjectVO = {
     id: string;
@@ -8,12 +13,30 @@ export type ProjectVO = {
     updatedAt: string;
 };
 
+export type ProjectAnnotationClassVO = {
+    projectId: string;
+    annotationClasses: AnnotationClassVO[];
+    createdAt: string;
+    updatedAt: string;
+};
+
 export type TaskVO = {
+    // [ref] scope=task
     id: string;
-    name: string;
-    status: string;
-    content: ContentRootVO;
-    annotations: TaskAnnotationVO[];
+    frames: string[];
+    pcdTopicId: string;
+    imageTopics: TaskImageTopicVO[];
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type TaskImageTopicVO = {
+    topicId: string,
+    extension: string
+};
+
+export type TaskAnnotationsDataVO = {
+    data: TaskAnnotationVO[];
     createdAt: string;
     updatedAt: string;
 };
@@ -37,6 +60,7 @@ export type AnnotationClassVO = {
     title: string;
     value: string;
     color: string;
+    defaultSize: ThreeSize;
     createdAt: string;
     updatedAt: string;
 };
@@ -65,4 +89,23 @@ export type ValidResult = {
     key: string;
     errorMessage: string;
     items?: ValidResult[];
+};
+
+// ---- task store VO
+export type TaskROMVO = {
+    // [ref] ProjectAnnotationClassVO
+    projectId: string;
+    annotationClasses: AnnotationClassVO[];
+
+    // [ref] TaskVO
+    taskId: string;
+    frames: string[];
+    pcdTopicId: string;
+    imageTopics: TaskImageTopicVO[];
+};
+
+export type TaskFrameVO = {
+    currentFrame: string;
+    pcdResource: any;
+    imageResources: { [key: string]: any };
 };

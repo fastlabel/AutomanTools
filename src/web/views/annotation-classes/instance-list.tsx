@@ -10,12 +10,7 @@ import VisibilityOffOutlinedIcon from "@material-ui/icons/VisibilityOffOutlined"
 import VisibilityOutlinedIcon from "@material-ui/icons/VisibilityOutlined";
 import React, { FC } from "react";
 import { AnnotationType } from "../../types/const";
-import { ClassItem } from "./class-list";
-
-export type InstanceItem = {
-    id: string;
-    classItem: ClassItem;
-};
+import { TaskAnnotationVO } from "../../types/vo";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -35,11 +30,11 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type Props = {
-    instances: InstanceItem[],
+    instances: TaskAnnotationVO[],
     invisibleClasses?: Set<string>;
     selectedItems?: Set<string>;
-    onClickItem?: (item: InstanceItem) => void;
-    onClickToggleInvisible?: (item: InstanceItem, visible: boolean) => void;
+    onClickItem?: (item: TaskAnnotationVO) => void;
+    onClickToggleInvisible?: (item: TaskAnnotationVO, visible: boolean) => void;
 };
 
 const InstanceList: FC<Props> = ({ instances, invisibleClasses, selectedItems, onClickItem, onClickToggleInvisible }) => {
@@ -53,11 +48,10 @@ const InstanceList: FC<Props> = ({ instances, invisibleClasses, selectedItems, o
             {instances.map((item, index) => {
                 const hidden = invisibleClasses?.has(item.id);
                 const selected = selectedItems?.has(item.id);
-                const classItem = item.classItem;
                 return (
                     <ListItem key={index} button dense selected={selected} onClick={() => onClickItem && onClickItem(item)}>
-                        <span style={{ backgroundColor: classItem.color }} className={getClassTagStyle(classItem.type)} />
-                        <ListItemText primary={classItem.title} className={styleClasses.flexGrow} />
+                        <span style={{ backgroundColor: item.color }} className={getClassTagStyle(item.type)} />
+                        <ListItemText primary={item.title} className={styleClasses.flexGrow} />
                         {selected ? <ExpandLess color="action" /> : <ExpandMore color="action" />}
                         {onClickToggleInvisible ?
                             <ListItemSecondaryAction>

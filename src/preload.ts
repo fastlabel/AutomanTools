@@ -1,9 +1,10 @@
 
 import { contextBridge, ipcRenderer } from 'electron';
-import { CreateWorkspaceParam } from './@types/global';
+import { WKLoadParam, WKSaveParam } from './@types/global';
 
-// 'myAPI' が API キー
 contextBridge.exposeInMainWorld('workspace', {
   openFolderDialog: async (): Promise<string> => await ipcRenderer.invoke('workspace/openFolderDialog'),
-  create: async (param: CreateWorkspaceParam): Promise<void> => await ipcRenderer.invoke('workspace/create', param),
+  save: async (param: WKSaveParam) => ipcRenderer.invoke('workspace/save', param),
+  load: async (param: WKLoadParam) => ipcRenderer.invoke('workspace/load', param),
+  exist: async (param: WKLoadParam) => ipcRenderer.invoke('workspace/exist', param),
 });

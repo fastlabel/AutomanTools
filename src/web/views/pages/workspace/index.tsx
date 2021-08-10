@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import React, { FC, useState } from "react";
 import { useHistory } from "react-router-dom";
 import WorkspaceContext from "../../../context/workspace";
+import { ProjectRepositoryContext } from "../../../repositories/project-repository";
 import { ProjectType } from "../../../types/const";
 import WorkspaceForm, { WorkspaceFormState } from "./form";
 
@@ -37,6 +38,7 @@ const WorkspacePage: FC = () => {
     const classes = useStyles();
     const history = useHistory();
     const workspace = WorkspaceContext.useContainer();
+    const projectRepository = React.useContext(ProjectRepositoryContext);
 
     const [form, setForm] = useState<WorkspaceFormState>({
         workspaceFolder: workspace.workspaceFolder,
@@ -44,7 +46,8 @@ const WorkspacePage: FC = () => {
     });
 
     const handleCreate = () => {
-        workspace.create(form as any).then(() =>
+        // TODO should updated workspace folder
+        projectRepository.create(form as any).then(() =>
             history.push('/threeannotation')
         );
     };

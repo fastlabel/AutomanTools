@@ -4,18 +4,27 @@ import {
 } from "react-router-dom";
 import 'typeface-roboto/index.css';
 import WorkspaceContext from './context/workspace';
+import { useProjectFsRepository } from './repositories/project-fs-repository';
+import { ProjectRepositoryContext } from './repositories/project-repository';
+import AnnotationClassStore from './stores/annotation-class-store';
+import TaskStore from './stores/task-store';
 import StartPage from './views/pages/start/index';
 import ThreeAnnotationPage from './views/pages/three-annotation/index';
 import WorkspacePage from './views/pages/workspace/index';
 
 export const App = (): JSX.Element => {
-
+  const workspace = WorkspaceContext.useContainer();
+  const projectFsRepository = useProjectFsRepository(workspace);
   return (
-    <WorkspaceContext.Provider>
+    <ProjectRepositoryContext.Provider value={projectFsRepository}>
       <Router>
         <Switch>
           <Route path="/threeannotation">
-            <ThreeAnnotationPage />
+            <TaskStore.Provider>
+              <AnnotationClassStore.Provider>
+                <ThreeAnnotationPage />
+              </AnnotationClassStore.Provider>
+            </TaskStore.Provider>
           </Route>
           <Route path="/workspace">
             <WorkspacePage />
@@ -25,6 +34,6 @@ export const App = (): JSX.Element => {
           </Route>
         </Switch>
       </Router>
-    </WorkspaceContext.Provider>
+    </ProjectRepositoryContext.Provider>
   );
 };

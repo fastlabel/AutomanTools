@@ -10,46 +10,15 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import { Resizable, ResizeCallback } from "re-resizable";
 import React, { FC, useCallback, useState } from "react";
 import { useHistory } from 'react-router-dom';
-import { AnnotationType } from '../../../types/const';
-import ClassList, { ClassItem } from '../../annotation-classes/class-list';
-import InstanceList, { InstanceItem } from '../../annotation-classes/instance-list';
+import TaskStore from '../../../stores/task-store';
+import ClassList from '../../annotation-classes/class-list';
+import InstanceList from '../../annotation-classes/instance-list';
 
 type PanelTitleProps = {
     title: string;
     titleItem?: JSX.Element;
 };
 
-const MOCK_CLASSES: ClassItem[] = [
-    {
-        id: 'car',
-        title: '普通車',
-        type: AnnotationType.cuboid,
-        color: '#ffd700'
-    },
-    {
-        id: 'bike',
-        title: '二輪車',
-        type: AnnotationType.cuboid,
-        color: '#adff2f'
-    },
-    {
-        id: 'track',
-        title: '普通貨物車',
-        type: AnnotationType.cuboid,
-        color: '#1e90ff'
-    }
-];
-
-const MOCK_INSTANCE: InstanceItem[] = [
-    { id: "1", classItem: MOCK_CLASSES[0] },
-    { id: "2", classItem: MOCK_CLASSES[0] },
-    { id: "3", classItem: MOCK_CLASSES[1] },
-    { id: "4", classItem: MOCK_CLASSES[2] },
-    { id: "5", classItem: MOCK_CLASSES[2] },
-    { id: "6", classItem: MOCK_CLASSES[0] },
-    { id: "7", classItem: MOCK_CLASSES[0] },
-    { id: "8", classItem: MOCK_CLASSES[0] },
-];
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -74,6 +43,8 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
 
     // TODO should move in index.
     const history = useHistory();
+
+    const store = TaskStore.useContainer();
 
     const [width, setWidth] = useState<number>(360);
     const [height, setHeight] = useState<number>(180);
@@ -115,14 +86,14 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
                         <_PanelTitle
                             title="アノテーションクラス"
                             titleItem={(<Box marginRight={0.5}><IconButton size="small" onClick={onConfigClassesClick}><SettingsIcon /></IconButton></Box>)}>
-                            <ClassList classes={MOCK_CLASSES} />
+                            {store.taskRom.status === 'loaded' ? <ClassList classes={store.taskRom.annotationClasses} /> : <div />}
                         </_PanelTitle>
                     </Resizable>
                 </Grid>
                 <Divider />
                 <Grid item className={classes.flexGrow}>
-                    <_PanelTitle title="アノテーション" titleItem={(<Typography variant="body2" color="textSecondary">{`件数: ${MOCK_INSTANCE.length}`}</Typography>)}>
-                        <InstanceList instances={MOCK_INSTANCE} />
+                    <_PanelTitle title="アノテーション" titleItem={(<Typography variant="body2" color="textSecondary">{`件数: ${store.taskAnnotations.length}`}</Typography>)}>
+                        <InstanceList instances={store.taskAnnotations} />
                     </_PanelTitle>
                 </Grid>
                 <Divider />

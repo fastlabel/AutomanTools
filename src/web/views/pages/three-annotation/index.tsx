@@ -1,7 +1,9 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
-import React, { FC, useEffect } from "react";
+import React, { FC, useCallback, useEffect } from "react";
 import { useHistory } from 'react-router-dom';
+import AnnotationClassStore from '../../../stores/annotation-class-store';
+import TaskStore from '../../../stores/task-store';
 import ClassListDialog from './class-list-dialog';
 import ThreeSidePanel from "./side-panel";
 import ThreeToolbar from './tool-bar';
@@ -31,15 +33,41 @@ const useStyles = makeStyles((theme: Theme) =>
 const ThreeAnnotationPage: FC = () => {
     const classes = useStyles();
     const history = useHistory();
-    const [openClassListDialog, setOpenClassListDialog] = React.useState(false);
 
-    const onConfigClassesClick = () => {
-        setOpenClassListDialog(true);
-    }
+    const store = TaskStore.useContainer();
+    const { annotationClass, dispatchAnnotationClass } = AnnotationClassStore.useContainer();
+
+    const openClassListDialog = useCallback(() => {
+        if (store.taskRom.status === 'loaded') {
+            const { status, projectId, annotationClasses } = store.taskRom;
+            dispatchAnnotationClass({ type: 'init', projectId, data: annotationClasses });
+        }
+    }, [store.taskRom]);
+
+    // initialize Editor
+    useEffect(() => {
+        const projectId = '';
+        const taskId = '';
+        store.open(projectId, taskId);
+    }, []);
 
     useEffect(() => {
-        // initialize
-    }, [])
+        if (store.taskRom.status === 'loaded') {
+            const { status, projectId, annotationClasses } = store.taskRom;
+            if (annotationClasses.length === 0) {
+                dispatchAnnotationClass({ type: 'init', projectId, data: annotationClasses });
+            }
+        }
+    }, [store.taskRom]);
+
+    useEffect(() => {
+        if (store.taskRom.status === 'loaded' && annotationClass.status === 'saved') {
+            dispatchAnnotationClass({ type: 'end' });
+            store.fetchAnnotationClasses(store.taskRom.projectId);
+        }
+    }, [store.taskRom, annotationClass]);
+
+
 
     return (
         <React.Fragment>
@@ -50,15 +78,15 @@ const ThreeAnnotationPage: FC = () => {
                             <ThreeToolbar />
                         </Grid>
                         <Grid item className={classes.mainContent}>
-
+                            {store.pageStatus}
                         </Grid>
                     </Grid>
                 </Grid>
                 <Grid item className={classes.sidePanel}>
-                    <ThreeSidePanel onConfigClassesClick={onConfigClassesClick} />
+                    <ThreeSidePanel onConfigClassesClick={openClassListDialog} />
                 </Grid>
             </Grid>
-            <ClassListDialog open={openClassListDialog} setOpen={setOpenClassListDialog} />
+            <ClassListDialog />
         </React.Fragment>
     );
 };
