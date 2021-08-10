@@ -4,6 +4,7 @@ import React, { FC, useCallback, useEffect } from "react";
 import { useHistory } from 'react-router-dom';
 import AnnotationClassStore from '../../../stores/annotation-class-store';
 import TaskStore from '../../../stores/task-store';
+import Canvas3d from '../../three/canvas-3d';
 import ClassListDialog from './class-list-dialog';
 import ThreeSidePanel from "./side-panel";
 import ThreeToolbar from './tool-bar';
@@ -78,7 +79,9 @@ const ThreeAnnotationPage: FC = () => {
                             <ThreeToolbar />
                         </Grid>
                         <Grid item className={classes.mainContent}>
-                            {store.pageStatus}
+                            {(store.pageStatus === 'ready' || store.pageStatus === 'saving') && store.taskFrame.status === 'loaded' ?
+                                <Canvas3d pcd={store.taskFrame.pcdResource} />
+                                : <div />}
                         </Grid>
                     </Grid>
                 </Grid>

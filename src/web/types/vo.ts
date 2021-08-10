@@ -1,4 +1,4 @@
-import { AnnotationType, ContentResourceType, ProjectType } from "./const";
+import { AnnotationType, ProjectType } from "./const";
 
 export type ThreeSize = {
     x: number;
@@ -35,23 +35,19 @@ export type TaskImageTopicVO = {
     extension: string
 };
 
-export type TaskAnnotationsDataVO = {
-    data: TaskAnnotationVO[];
-    createdAt: string;
-    updatedAt: string;
-};
-
 export type TaskAnnotationVO = {
     id: string;
     annotationClassId: string;
-    contentRootId: string;
     type: AnnotationType;
     title: string;
     value: string;
     color: string;
     attributes: {
         code: string;
-    }
+    },
+    points: { [frameNo: string]: number[] };
+    createdAt: string;
+    updatedAt: string;
 };
 
 export type AnnotationClassVO = {
@@ -63,32 +59,6 @@ export type AnnotationClassVO = {
     defaultSize: ThreeSize;
     createdAt: string;
     updatedAt: string;
-};
-
-export type ContentRootVO = {
-    id: string;
-    frames: string[];
-};
-
-export type ContentFrameVO = {
-    frameNo: string;
-    resources: { [key: string]: ContentResourceVO };
-};
-
-export type ContentResourceVO = {
-    id: string;
-    type: ContentResourceType;
-    resource: any;
-};
-
-export type ValidResultRoot = {
-    [key: string]: ValidResult;
-}
-
-export type ValidResult = {
-    key: string;
-    errorMessage: string;
-    items?: ValidResult[];
 };
 
 // ---- task store VO

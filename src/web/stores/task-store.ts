@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { createContainer } from "unstated-next";
 import { ProjectRepositoryContext } from "../repositories/project-repository";
-import { TaskAnnotationVO, TaskFrameVO, TaskROMVO } from "../types/vo";
+import { AnnotationClassVO, TaskAnnotationVO, TaskFrameVO, TaskROMVO } from "../types/vo";
 
 
 export type TaskROMState = {
@@ -39,8 +39,11 @@ export type TaskEditorState = {
     editorState: {
         mode: 'neutral';
     } | {
-        mode: 'selecting';
-        selectingTaskAnnotationIds: TaskAnnotationVO[];
+        mode: 'selecting_annotationClass';
+        selectingAnnotationClass: AnnotationClassVO;
+    } | {
+        mode: 'selecting_taskAnnotation';
+        selectingTaskAnnotations: TaskAnnotationVO[];
     }
 
     clipboard?: {
@@ -134,7 +137,7 @@ const useTask = () => {
     };
 
     const addTaskAnnotations = (vos: TaskAnnotationVO[]) => {
-
+        _updateTaskAnnotations(prev => prev.concat(vos));
     };
 
     const removeTaskAnnotations = (taskAnnotationIds: string[]) => {
@@ -148,6 +151,18 @@ const useTask = () => {
 
     // ${changeVisibleLabel}
     // ${changePointerMode}
+
+    const selectAnnotationClass = (vo: AnnotationClassVO) => {
+        _updateTaskEditor((prev) => {
+            console.log(prev);
+            return ({
+                ...prev, editorState: {
+                    mode: 'selecting_annotationClass',
+                    selectingAnnotationClass: vo
+                }
+            });
+        });
+    };
 
     return {
         pageStatus,
@@ -169,7 +184,9 @@ const useTask = () => {
         // # TaskAnnotations
         addTaskAnnotations,
         updateTaskAnnotations,
-        removeTaskAnnotations
+        removeTaskAnnotations,
+
+        selectAnnotationClass
     };
 }
 

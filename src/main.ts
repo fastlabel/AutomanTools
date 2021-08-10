@@ -75,6 +75,8 @@ const createWindow = () => {
   mainWindow.once('ready-to-show', () => mainWindow.show());
 };
 
+app.disableHardwareAcceleration();
+
 app.whenReady().then(async () => {
   if (isDev) {
     const devtools = await searchDevtools('REACT');

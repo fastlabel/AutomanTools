@@ -55,6 +55,10 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
         setHeight((height) => height + d.height);
     }, []);
 
+    const onClickItem = useCallback((vo) => {
+        store.selectAnnotationClass(vo);
+    }, []);
+
     const _PanelTitle: FC<PanelTitleProps> = ({ title, titleItem, children }) => {
         return (
             <Box>
@@ -86,7 +90,7 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
                         <_PanelTitle
                             title="アノテーションクラス"
                             titleItem={(<Box marginRight={0.5}><IconButton size="small" onClick={onConfigClassesClick}><SettingsIcon /></IconButton></Box>)}>
-                            {store.taskRom.status === 'loaded' ? <ClassList classes={store.taskRom.annotationClasses} /> : <div />}
+                            {store.taskRom.status === 'loaded' ? <ClassList classes={store.taskRom.annotationClasses} onClickItem={onClickItem} /> : <div />}
                         </_PanelTitle>
                     </Resizable>
                 </Grid>

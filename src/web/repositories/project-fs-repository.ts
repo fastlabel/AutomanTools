@@ -1,6 +1,8 @@
 
+import { LoaderUtils } from "three";
 import { ProjectType } from "../types/const";
 import { AnnotationClassVO, TaskAnnotationVO, TaskFrameVO, TaskROMVO } from '../types/vo';
+import PcdUtil from "../utils/pcd-util";
 import { ProjectRepository } from "./project-repository";
 
 const workspaceApi = window.workspace;
@@ -121,7 +123,9 @@ export const useProjectFsRepository = (workspaceContext: any): ProjectRepository
                 }).then((res) => {
                     if (!res.target) return;
                     const frameDir = res.target[frameNo];
-                    const pcdResource = frameDir[pcdTopicId];
+                    const data = frameDir[pcdTopicId];
+                    const textData = LoaderUtils.decodeText(new Uint8Array(data));
+                    const pcdResource = PcdUtil.parse(data, textData, pcdTopicId);
                     const imageResources = Object.keys(_imageTopics).reduce<any>((r, k) => {
                         r[k] = frameDir[k];
                         return r;
