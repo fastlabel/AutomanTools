@@ -33,11 +33,18 @@ type Props = {
     instances: TaskAnnotationVO[],
     invisibleClasses?: Set<string>;
     selectedItems?: Set<string>;
-    onClickItem?: (item: TaskAnnotationVO) => void;
+    onClickItem?: (item: TaskAnnotationVO, mode?: 'add' | 'remove' | 'single') => void;
     onClickToggleInvisible?: (item: TaskAnnotationVO, visible: boolean) => void;
 };
 
-const InstanceList: FC<Props> = ({ instances, invisibleClasses, selectedItems, onClickItem, onClickToggleInvisible }) => {
+const resolveMode = (selected: boolean, event: any) => {
+    if (event.ctrlKey) {
+        return selected ? 'remove' : 'add';
+    }
+    return 'single';
+};
+
+const InstanceList: FC<Props> = ({ instances, invisibleClasses, selectedItems, onClickItem = f => f, onClickToggleInvisible }) => {
     const styleClasses = useStyles();
     const getClassTagStyle = (type: AnnotationType): any => {
         return styleClasses.markCuboid;
@@ -47,9 +54,9 @@ const InstanceList: FC<Props> = ({ instances, invisibleClasses, selectedItems, o
         <List component="div" disablePadding>
             {instances.map((item, index) => {
                 const hidden = invisibleClasses?.has(item.id);
-                const selected = selectedItems?.has(item.id);
+                const selected = !!selectedItems?.has(item.id);
                 return (
-                    <ListItem key={index} button dense selected={selected} onClick={() => onClickItem && onClickItem(item)}>
+                    <ListItem key={index} button dense selected={selected} onClick={(event) => onClickItem(item, resolveMode(selected, event))}>
                         <span style={{ backgroundColor: item.color }} className={getClassTagStyle(item.type)} />
                         <ListItemText primary={item.title} className={styleClasses.flexGrow} />
                         {selected ? <ExpandLess color="action" /> : <ExpandMore color="action" />}

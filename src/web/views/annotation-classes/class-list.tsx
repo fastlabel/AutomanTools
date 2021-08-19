@@ -9,13 +9,8 @@ import VisibilityOffOutlinedIcon from "@material-ui/icons/VisibilityOffOutlined"
 import VisibilityOutlinedIcon from "@material-ui/icons/VisibilityOutlined";
 import React, { FC } from "react";
 import { AnnotationType } from "../../types/const";
+import { AnnotationClassVO } from "../../types/vo";
 
-export type ClassItem = {
-    id: string;
-    type: AnnotationType;
-    title: string;
-    color: string;
-};
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -41,11 +36,11 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type Props = {
-    classes: ClassItem[];
+    classes: AnnotationClassVO[];
     invisibleClasses?: Set<string>;
     selectedId?: string;
-    onClickItem?: (item: ClassItem) => void;
-    onClickToggleInvisible?: (item: ClassItem, visible: boolean) => void;
+    onClickItem?: (item: AnnotationClassVO) => void;
+    onClickToggleInvisible?: (item: AnnotationClassVO, visible: boolean) => void;
 };
 
 const ClassList: FC<Props> = ({ classes, invisibleClasses, selectedId, onClickItem, onClickToggleInvisible }) => {

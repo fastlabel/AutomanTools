@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { createContainer } from "unstated-next";
 import { ProjectRepositoryContext } from "../repositories/project-repository";
 import { AnnotationClassVO, TaskAnnotationVO, TaskFrameVO, TaskROMVO } from "../types/vo";
@@ -38,11 +38,15 @@ export type TaskEditorState = {
 
     editorState: {
         mode: 'neutral';
+        selectingAnnotationClass?: null;
+        selectingTaskAnnotations: [];
     } | {
         mode: 'selecting_annotationClass';
         selectingAnnotationClass: AnnotationClassVO;
+        selectingTaskAnnotations: [];
     } | {
         mode: 'selecting_taskAnnotation';
+        selectingAnnotationClass?: null;
         selectingTaskAnnotations: TaskAnnotationVO[];
     }
 
@@ -64,7 +68,7 @@ const useTask = () => {
 
     const [topicImageDialog, _updateTopicImageDialog] = useState<TopicImageDialogState>({ open: false });
 
-    const [taskEditor, _updateTaskEditor] = useState<TaskEditorState>({ pageMode: 'threeEdit', editorState: { mode: 'neutral' } });
+    const [taskEditor, _updateTaskEditor] = useState<TaskEditorState>({ pageMode: 'threeEdit', editorState: { mode: 'neutral', selectingTaskAnnotations: [] } });
 
     //TODO think type
     const [changedHistories, _updateChangedHistories] = useState<any[]>([]);
@@ -96,7 +100,7 @@ const useTask = () => {
     }, [taskFrame])
 
     // Task Store Event
-    const open = (projectId: string, taskId: string, frameNo?: string) => {
+    const open = useCallback((projectId: string, taskId: string, frameNo?: string) => {
         _updateTaskRom({ status: 'loading', projectId, taskId });
         projectRepository.load(projectId, taskId).then(vo => {
             _updateTaskRom({ ...vo.taskROM, status: 'loaded' });
@@ -106,9 +110,9 @@ const useTask = () => {
                 _updateTaskFrame({ status: 'loading', currentFrame: _frameNo });
             }
         });
-    };
+    }, [projectRepository, _updateTaskRom, _updateTaskAnnotations, _updateTaskFrame]);
 
-    const fetchAnnotationClasses = (projectId: string) => {
+    const fetchAnnotationClasses = useCallback((projectId: string) => {
         // this way will be removed when support project.
         _updatePageStatus('loading');
         projectRepository.loadAnnotationClasses(projectId).then(vo => {
@@ -116,19 +120,19 @@ const useTask = () => {
             // TODO update taskAnnotation
             _updatePageStatus('ready');
         });
-    };
+    }, [projectRepository, _updateTaskRom, _updatePageStatus]);
 
-    const changeFrame = (frameNo: string) => {
+    const changeFrame = useCallback((frameNo: string) => {
         if (taskRom.status !== 'loaded') return;
         _updateTaskFrame({ status: 'loading', currentFrame: frameNo });
-    };
+    }, [taskRom, _updateTaskFrame]);
 
-    const saveFrameTaskAnnotations = () => {
+    const saveFrameTaskAnnotations = useCallback(() => {
         _updatePageStatus('saving');
         projectRepository.saveFrameTaskAnnotations(taskAnnotations).then(() => {
             _updatePageStatus('ready');
         });
-    };
+    }, [projectRepository, taskAnnotations, _updatePageStatus]);
 
     const updateTaskAnnotations = () => {
         // ${updateTaskAnnotations}$ commands:[{command:'move'|'updateAttr', params for command}]
@@ -136,9 +140,9 @@ const useTask = () => {
         //   setAttr[code only]
     };
 
-    const addTaskAnnotations = (vos: TaskAnnotationVO[]) => {
+    const addTaskAnnotations = useCallback((vos: TaskAnnotationVO[]) => {
         _updateTaskAnnotations(prev => prev.concat(vos));
-    };
+    }, [_updateTaskAnnotations]);
 
     const removeTaskAnnotations = (taskAnnotationIds: string[]) => {
 
@@ -152,17 +156,38 @@ const useTask = () => {
     // ${changeVisibleLabel}
     // ${changePointerMode}
 
-    const selectAnnotationClass = (vo: AnnotationClassVO) => {
+    const selectAnnotationClass = useCallback((vo: AnnotationClassVO) => {
         _updateTaskEditor((prev) => {
-            console.log(prev);
             return ({
                 ...prev, editorState: {
                     mode: 'selecting_annotationClass',
-                    selectingAnnotationClass: vo
+                    selectingAnnotationClass: vo,
+                    selectingTaskAnnotations: []
                 }
             });
         });
-    };
+    }, [_updateTaskEditor]);
+
+    const selectTaskAnnotations = useCallback((vo: TaskAnnotationVO[], mode?: 'add' | 'remove' | 'single') => {
+        _updateTaskEditor((prev) => {
+            let annotations = prev.editorState.selectingTaskAnnotations as TaskAnnotationVO[];
+            if (mode === 'add') {
+                annotations = annotations.concat(vo);
+            } else if (mode === 'remove') {
+                const removeTarget = new Set(vo.map(a => a.id));
+                annotations = annotations.filter(a => !removeTarget.has(a.id));
+            } else if (mode === 'single') {
+                annotations = vo;
+            }
+            return ({
+                ...prev, editorState: {
+                    mode: 'selecting_taskAnnotation',
+                    selectingAnnotationClass: undefined,
+                    selectingTaskAnnotations: annotations
+                }
+            });
+        });
+    }, [_updateTaskEditor]);
 
     return {
         pageStatus,
@@ -186,7 +211,8 @@ const useTask = () => {
         updateTaskAnnotations,
         removeTaskAnnotations,
 
-        selectAnnotationClass
+        selectAnnotationClass,
+        selectTaskAnnotations
     };
 }
 

@@ -20,7 +20,7 @@ const config: Configuration = {
     path: path.resolve(__dirname, 'dist'),
     publicPath: './',
     filename: '[name].js',
-    assetModuleFilename: 'images/[name][ext]',
+    assetModuleFilename: 'assets/[name][ext]',
   },
   module: {
     rules: [

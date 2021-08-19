@@ -75,7 +75,7 @@ const ClassListDialog: FC<Props> = () => {
                                 <ListItemText>アノテーションクラスを追加する</ListItemText>
                             </ListItem>
                         </List>
-                        <ClassList classes={annotationClass.data} />
+                        <ClassList classes={annotationClass.data} onClickItem={(item) => setFormDialog({ open: true, classVo: item })} />
                     </OwnDialogContent>) : undefined}
             </Dialog>
             <ClassFormDialog

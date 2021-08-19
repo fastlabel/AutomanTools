@@ -8,6 +8,8 @@ import FilterDramaIcon from '@material-ui/icons/FilterDrama';
 import React, { FC } from "react";
 import { useDropzone } from "react-dropzone";
 import FLFileList from "../lists/fl-file-list";
+import { FormUtil } from "./form-util";
+import { FormAction, FormState } from "./type";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -67,27 +69,29 @@ type Props = {
         btn?: string;
         btnUpdate?: string;
     }
-    value?: File[];
     maxFiles?: number;
-    onChange?: (value: File[]) => void;
+    form: [name: string, obj: FormState<any>, dispatch: React.Dispatch<FormAction>];
 };
 
 
-const FolderContentsField: FC<Props> = ({ label, value, description, maxFiles, onChange }) => {
+const FLFolderContentsField: FC<Props> = ({ label, description, maxFiles, form }) => {
+    const [name, obj, dispatch] = form;
+    const formValue = FormUtil.resolve(name, obj.data) as File[];
+
     const { getRootProps, getInputProps } = useDropzone({
         maxFiles,
         accept: '.pcd',
         onDrop: (acceptedFiles: File[]) => {
-            onChange && onChange(acceptedFiles);
+            dispatch({ type: 'change', name, value: acceptedFiles });
         }
     });
     const classes = useStyles();
 
-    const selectCount = value?.length || 0;
+    const selectCount = formValue?.length || 0;
     const showFileList = selectCount > 1;
-    const fileList = showFileList && value ?
-        value.map((v, i) => ({ id: v.path, label: v.name, labelIcon: FilterDramaIcon })) : [];
-    const fileItem = selectCount === 1 && value ? value[0] : { name: '' };
+    const fileList = showFileList && formValue ?
+        formValue.map((v, i) => ({ id: v.path, label: v.name, labelIcon: FilterDramaIcon })) : [];
+    const fileItem = selectCount === 1 && formValue ? formValue[0] : { name: '' };
 
     const dropContentProps = selectCount === 0 ?
         {
@@ -126,4 +130,4 @@ const FolderContentsField: FC<Props> = ({ label, value, description, maxFiles, o
     );
 };
 
-export default FolderContentsField;
+export default FLFolderContentsField;

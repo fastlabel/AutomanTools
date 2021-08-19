@@ -1,9 +1,10 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
-import React, { ChangeEvent, FC, useCallback } from "react";
-import FileField from '../../../components/fields/file-field';
-import FolderContentsField from '../../../components/fields/folder-contents-field';
-import SelectField from '../../../components/fields/select-field';
+import React, { FC } from "react";
+import FLFileField from '../../../components/fields/fl-file-field';
+import FLFolderContentsField from '../../../components/fields/fl-folder-contents-field';
+import FLSelectField from '../../../components/fields/fl-select-field';
+import { FormAction, FormState } from '../../../components/fields/type';
 import { ProjectType } from '../../../types/const';
 
 
@@ -18,60 +19,29 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type Props = {
-    form: WorkspaceFormState;
-    onUpdateForm: React.Dispatch<React.SetStateAction<WorkspaceFormState>>;
+    form: FormState<WorkspaceFormState>;
+    dispatchForm: React.Dispatch<FormAction>;
 };
 
 export type WorkspaceFormState = {
     workspaceFolder?: string;
     type?: ProjectType;
     targets?: File[];
-    validState?: 'error' | 'valid';
 };
 
-const WorkspaceForm: FC<Props> = ({ form, onUpdateForm }) => {
-    const update = (prev: WorkspaceFormState, update: (newState: WorkspaceFormState) => void) => {
-        const newState = Object.assign({}, prev);
-        update(newState);
-        // temp valid
-        // TODO impl useCase for valid
-        if (newState.workspaceFolder &&
-            newState.type &&
-            newState.targets &&
-            newState.targets.length > 0) {
-            newState.validState = 'valid';
-        } else {
-            newState.validState = 'error';
-        }
-        return newState;
-    };
-
-    const onChangeWorkspaceFolder = useCallback((e: ChangeEvent<any>) => {
-        const newWorkspaceFolder = e.target.value;
-        onUpdateForm((prevState) => update(prevState, (s => s.workspaceFolder = newWorkspaceFolder)));
-    }, []);
-
-    const onChangeType = useCallback((e: ChangeEvent<any>) => {
-        const newType = e.target.value;
-        onUpdateForm((prevState) => update(prevState, (s => s.type = newType)));
-    }, []);
-
-    const onChangeTargets = useCallback((newTargets: File[]) => {
-        onUpdateForm((prevState) => update(prevState, (s => s.targets = newTargets)));
-    }, []);
-
+const WorkspaceForm: FC<Props> = ({ form, dispatchForm }) => {
     const classes = useStyles();
 
     return (
         <Grid container direction="column" spacing={2}>
             <Grid item>
-                <FileField label="ワークスペースフォルダ" value={form.workspaceFolder} onChange={onChangeWorkspaceFolder} />
+                <FLFileField label="ワークスペースフォルダ" form={['workspaceFolder', form, dispatchForm]} />
             </Grid>
             <Grid item>
-                <SelectField label="タイプ" disabled value={form.type} items={TargetItemTypes} onChange={onChangeType} />
+                <FLSelectField label="タイプ" disabled items={TargetItemTypes} form={['type', form, dispatchForm]} />
             </Grid>
             <Grid item >
-                <FolderContentsField label="対象"
+                <FLFolderContentsField label="対象"
                     description={({
                         main: "PCDをドラッグ&ドロップしてください",
                         sub: "PCDのみをサポートしています",
@@ -79,8 +49,7 @@ const WorkspaceForm: FC<Props> = ({ form, onUpdateForm }) => {
                         btnUpdate: "ファイルを変更"
                     })}
                     maxFiles={1}
-                    value={form.targets}
-                    onChange={onChangeTargets} />
+                    form={['targets', form, dispatchForm]} />
             </Grid>
         </Grid>
     );

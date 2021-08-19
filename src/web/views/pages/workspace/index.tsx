@@ -2,8 +2,10 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import React, { FC, useState } from "react";
+import React, { FC, Reducer, useReducer } from "react";
 import { useHistory } from "react-router-dom";
+import { FormUtil } from "../../../components/fields/form-util";
+import { FormAction, FormState } from "../../../components/fields/type";
 import WorkspaceContext from "../../../context/workspace";
 import { ProjectRepositoryContext } from "../../../repositories/project-repository";
 import { ProjectType } from "../../../types/const";
@@ -30,8 +32,25 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-type WorkspaceState = {
 
+const formReducer: Reducer<FormState<WorkspaceFormState>, FormAction> = (state, action) => {
+    switch (action.type) {
+        case 'change':
+            const newState = FormUtil.update(action.name, action.value, state.data);
+            const helper = { validState: 'valid' };
+
+            if (newState.workspaceFolder &&
+                newState.type &&
+                newState.targets &&
+                newState.targets.length > 0) {
+                helper.validState = 'valid';
+            } else {
+                helper.validState = 'error';
+            }
+            return { data: newState, helper };
+        case 'init':
+            return { data: action.data, helper: {} };
+    }
 };
 
 const WorkspacePage: FC = () => {
@@ -40,14 +59,19 @@ const WorkspacePage: FC = () => {
     const workspace = WorkspaceContext.useContainer();
     const projectRepository = React.useContext(ProjectRepositoryContext);
 
-    const [form, setForm] = useState<WorkspaceFormState>({
-        workspaceFolder: workspace.workspaceFolder,
-        type: ProjectType.pcd_only
-    });
+    const initialForm = {
+        data: {
+            workspaceFolder: workspace.workspaceFolder,
+            type: ProjectType.pcd_only
+        },
+        helper: {}
+    };
+
+    const [form, dispatchForm] = useReducer(formReducer, initialForm);
 
     const handleCreate = () => {
         // TODO should updated workspace folder
-        projectRepository.create(form as any).then(() =>
+        projectRepository.create(form.data as any).then(() =>
             history.push('/threeannotation')
         );
     };
@@ -65,7 +89,7 @@ const WorkspacePage: FC = () => {
                         <Typography color='textSecondary' variant="h4">ワークスペースを作成</Typography>
                     </Grid>
                     <Grid item className={classes.itemGlow}>
-                        <WorkspaceForm form={form} onUpdateForm={setForm} />
+                        <WorkspaceForm form={form} dispatchForm={dispatchForm} />
                     </Grid>
                     <Grid item className={classes.item}>
                         <Grid container justifyContent="space-between">
@@ -73,7 +97,7 @@ const WorkspacePage: FC = () => {
                                 <Button onClick={handleBack}>戻る</Button>
                             </Grid>
                             <Grid item>
-                                <Button variant="contained" disabled={form.validState !== 'valid'} color="primary" onClick={handleCreate}>
+                                <Button variant="contained" disabled={form.helper.validState !== 'valid'} color="primary" onClick={handleCreate}>
                                     ワークスペースを作成
                                 </Button>
                             </Grid>

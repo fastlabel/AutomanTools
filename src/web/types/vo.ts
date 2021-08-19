@@ -45,7 +45,7 @@ export type TaskAnnotationVO = {
     attributes: {
         code: string;
     },
-    points: { [frameNo: string]: number[] };
+    points: { [frameNo: string]: [px: number, py: number, pz: number, w: number, h: number, d: number, ax: number, ay: number, az: number] };
     createdAt: string;
     updatedAt: string;
 };

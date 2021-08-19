@@ -1,7 +1,7 @@
-import path from 'path';
-import { Configuration } from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import path from 'path';
+import { Configuration } from 'webpack';
 
 const base: Configuration = {
   mode: 'production',
@@ -16,7 +16,7 @@ const base: Configuration = {
     path: path.resolve(__dirname, 'dist'),
     publicPath: './',
     filename: '[name].js',
-    assetModuleFilename: 'images/[name][ext]',
+    assetModuleFilename: 'asset/[name][ext]',
   },
   module: {
     rules: [

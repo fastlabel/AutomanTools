@@ -1,10 +1,14 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
-import React, { FC, useCallback, useEffect } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useHistory } from 'react-router-dom';
+import { BoxGeometry, Mesh, Vector3 } from 'three';
 import AnnotationClassStore from '../../../stores/annotation-class-store';
 import TaskStore from '../../../stores/task-store';
-import Canvas3d from '../../three/canvas-3d';
+import PcdUtil from '../../../utils/pcd-util';
+import FLPcd from '../../task-three/fl-pcd';
+import { TaskAnnotationUtil } from './../../../use-case/task-annotation-util';
+import FLThreeEditor from './../../task-three/fl-three-editor';
 import ClassListDialog from './class-list-dialog';
 import ThreeSidePanel from "./side-panel";
 import ThreeToolbar from './tool-bar';
@@ -17,14 +21,14 @@ const useStyles = makeStyles((theme: Theme) =>
             width: '100vw',
         },
         mainPanel: {
-            flexGrow: 1
+            flexGrow: 1,
+            maxWidth: 'calc(100vw - 360px)'
         },
         mainContentPanel: {
             height: '100vh'
         },
         mainContent: {
             flexGrow: 1,
-            background: '#000'
         },
         sidePanel: {
         }
@@ -35,40 +39,90 @@ const ThreeAnnotationPage: FC = () => {
     const classes = useStyles();
     const history = useHistory();
 
-    const store = TaskStore.useContainer();
+    const { taskRom, taskEditor, taskFrame, taskAnnotations,
+        open, fetchAnnotationClasses,
+        addTaskAnnotations, selectTaskAnnotations
+    } = TaskStore.useContainer();
+
     const { annotationClass, dispatchAnnotationClass } = AnnotationClassStore.useContainer();
 
+    const [cubeRef, setCubeRef] = useState<any>();
+
     const openClassListDialog = useCallback(() => {
-        if (store.taskRom.status === 'loaded') {
-            const { status, projectId, annotationClasses } = store.taskRom;
+        if (taskRom.status === 'loaded') {
+            const { status, projectId, annotationClasses } = taskRom;
             dispatchAnnotationClass({ type: 'init', projectId, data: annotationClasses });
         }
-    }, [store.taskRom]);
+    }, [taskRom]);
+
+    const [selectingAnnotationClass, selectingTaskAnnotations] = useMemo(() => {
+        if (taskEditor.editorState.mode === 'selecting_annotationClass') {
+            return [taskEditor.editorState.selectingAnnotationClass, undefined];
+        } else if (taskEditor.editorState.mode === 'selecting_taskAnnotation') {
+            return [undefined, taskEditor.editorState.selectingTaskAnnotations];
+        }
+        return [undefined, undefined];
+    }, [taskEditor]);
+
+    const [pcdObj, position0] = useMemo(() => {
+        if (taskFrame.status === 'loaded') {
+            const pcd = taskFrame.pcdResource;
+            const x = PcdUtil.getMaxMin(pcd.position, 'x');
+            const y = PcdUtil.getMaxMin(pcd.position, 'y');
+            const z = PcdUtil.getMaxMin(pcd.position, 'z');
+            return [(<FLPcd pcd={taskFrame.pcdResource} />), new Vector3((x.min + x.max) / 2, (z.min + z.max) / 2, -(y.min + y.max) / 2)];
+        }
+        return [undefined, undefined];
+    }, [taskFrame]);
+
+    const editor = useMemo(() => {
+        if (taskFrame.status === 'loaded' && pcdObj) {
+            return (<FLThreeEditor
+                frameNo={taskFrame.currentFrame}
+                annotations={taskAnnotations}
+                backgroundObj={pcdObj}
+                targets={selectingTaskAnnotations}
+                position0={position0}
+                preObject={selectingAnnotationClass}
+                onClickObj={(e) => { setCubeRef(e.eventObject) }}
+                onPutObject={(e, annotationClass) => {
+                    const vo = TaskAnnotationUtil.create(annotationClass, taskFrame.currentFrame);
+                    const cubeMesh = e.eventObject as Mesh<BoxGeometry>;
+                    const p = cubeMesh.position;
+                    const r = cubeMesh.rotation;
+                    const { defaultSize } = annotationClass;
+                    const { x, y, z } = defaultSize;
+                    vo.points[taskFrame.currentFrame] = [p.x, p.y, p.z, x, y, z, r.x, r.y, r.z];
+                    addTaskAnnotations([vo]);
+                    selectTaskAnnotations([vo], "single");
+                }}
+            />);
+        }
+        return (<div />);
+    }, [taskFrame, taskAnnotations, pcdObj, cubeRef, position0, selectingAnnotationClass, selectingTaskAnnotations])
 
     // initialize Editor
     useEffect(() => {
         const projectId = '';
         const taskId = '';
-        store.open(projectId, taskId);
+        open(projectId, taskId);
     }, []);
 
     useEffect(() => {
-        if (store.taskRom.status === 'loaded') {
-            const { status, projectId, annotationClasses } = store.taskRom;
+        if (taskRom.status === 'loaded') {
+            const { status, projectId, annotationClasses } = taskRom;
             if (annotationClasses.length === 0) {
                 dispatchAnnotationClass({ type: 'init', projectId, data: annotationClasses });
             }
         }
-    }, [store.taskRom]);
+    }, [taskRom]);
 
     useEffect(() => {
-        if (store.taskRom.status === 'loaded' && annotationClass.status === 'saved') {
+        if (taskRom.status === 'loaded' && annotationClass.status === 'saved') {
             dispatchAnnotationClass({ type: 'end' });
-            store.fetchAnnotationClasses(store.taskRom.projectId);
+            fetchAnnotationClasses(taskRom.projectId);
         }
-    }, [store.taskRom, annotationClass]);
-
-
+    }, [taskRom, annotationClass]);
 
     return (
         <React.Fragment>
@@ -79,9 +133,7 @@ const ThreeAnnotationPage: FC = () => {
                             <ThreeToolbar />
                         </Grid>
                         <Grid item className={classes.mainContent}>
-                            {(store.pageStatus === 'ready' || store.pageStatus === 'saving') && store.taskFrame.status === 'loaded' ?
-                                <Canvas3d pcd={store.taskFrame.pcdResource} />
-                                : <div />}
+                            {editor}
                         </Grid>
                     </Grid>
                 </Grid>

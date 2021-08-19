@@ -3,6 +3,8 @@ import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import FolderIcon from '@material-ui/icons/Folder';
 import React, { FC } from "react";
+import { FormUtil } from "./form-util";
+import { FormAction, FormState } from "./type";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -15,12 +17,13 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type Props = {
     label: string;
-    value?: string;
-    onChange: React.ChangeEventHandler<HTMLInputElement>;
+    form: [name: string, obj: FormState<any>, dispatch: React.Dispatch<FormAction>];
 };
 
-const FileField: FC<Props> = ({ label, value, onChange }) => {
+const FLFileField: FC<Props> = ({ label, form }) => {
     const classes = useStyles();
+    const [name, obj, dispatch] = form;
+    const formValue = FormUtil.resolve(name, obj.data);
     return (
         <React.Fragment>
             <Box mb={1}>
@@ -33,7 +36,7 @@ const FileField: FC<Props> = ({ label, value, onChange }) => {
                     variant="outlined"
                     margin="dense"
                     fullWidth
-                    value={value}
+                    value={formValue}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
@@ -41,11 +44,14 @@ const FileField: FC<Props> = ({ label, value, onChange }) => {
                             </InputAdornment>
                         ),
                     }}
-                    onChange={onChange}
+                    onChange={(e) => {
+                        const newValue = e.target.value;
+                        dispatch({ type: 'change', name, value: newValue });
+                    }}
                 />
             </Box>
         </React.Fragment>
     );
 };
 
-export default FileField;
+export default FLFileField;

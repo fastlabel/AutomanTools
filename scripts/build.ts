@@ -27,30 +27,14 @@ build({
     },
     mac: {
       category: 'public.app-category.photography',
-      target: ['dmg'],
-      icon: 'assets/icon.icns',
-      extendInfo: {
-        CFBundleName: 'LeafView',
-        CFBundleDisplayName: 'LeafView',
-        CFBundleExecutable: 'LeafView',
-        CFBundlePackageType: 'APPL',
-        CFBundleDocumentTypes: [
-          {
-            CFBundleTypeName: 'ImageFile',
-            CFBundleTypeRole: 'Viewer',
-            LSItemContentTypes: [
-              'com.google.webp',
-              'com.microsoft.bmp',
-              'com.microsoft.ico',
-              'com.compuserve.gif',
-              'public.jpeg',
-              'public.png',
-            ],
-            LSHandlerRank: 'Default',
-          },
-        ],
-        NSRequiresAquaSystemAppearance: false,
+      target: {
+        target: 'default',
+        arch: ['x64', 'arm64'],
       },
+      icon: 'assets/icon.icns',
+      // dmg should not use below it make error
+      // extendInfo: {
+      // },
       identity: null,
     },
     linux: {
