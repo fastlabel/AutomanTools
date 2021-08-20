@@ -2,7 +2,7 @@ import { ReactThreeFiber, ThreeEvent, useFrame, useThree } from '@react-three/fi
 import * as React from 'react';
 import { useMemo } from 'react';
 import { Camera, EventDispatcher, Object3D, Vector3 } from 'three';
-import { AnnotationClassVO } from '../../types/vo';
+import { AnnotationClassVO, TaskAnnotationVOPoints } from '../../types/vo';
 import FLCube from './fl-cube';
 
 
@@ -37,12 +37,10 @@ const FLAnnotationControls = React.forwardRef<FLAnnotationControlsImpl, Prop>(
         const points = useMemo(() => {
             if (preObject) {
                 const { x, y, z } = preObject.defaultSize;
-                return [0, 0, 0, x, y, z, 0, 0, 0];
+                return [0, 0, 0, 0, 0, 0, x, y, z];
             }
             return undefined;
-        }, [preObject]) as [px: number, py: number, pz: number,
-                w: number, h: number, d: number,
-                ax: number, ay: number, az: number];
+        }, [preObject]) as TaskAnnotationVOPoints;
 
         React.useEffect(() => {
             controls.connect(explDomElement)

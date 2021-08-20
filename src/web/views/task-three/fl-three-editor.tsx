@@ -1,7 +1,7 @@
 import { Box, createStyles, Grid, makeStyles, Theme } from '@material-ui/core';
 import { Canvas, ThreeEvent } from '@react-three/fiber';
 import React, { createRef, FC, useEffect, useMemo, useState } from 'react';
-import { Group, Object3D, Vector3 } from 'three';
+import { Event, Group, Object3D, Vector3 } from 'three';
 import { AnnotationClassVO, TaskAnnotationVO } from '../../types/vo';
 import FLCube from './fl-cube';
 import FLMainControls from './fl-main-controls';
@@ -27,9 +27,10 @@ type Props = {
     preObject?: AnnotationClassVO;
     onClickObj?: (evt: ThreeEvent<MouseEvent>) => void;
     onPutObject?: (evt: ThreeEvent<MouseEvent>, preObject: AnnotationClassVO) => void;
+    onObjectChange?: (event: Event) => void;
 };
 
-const FLThreeEditor: FC<Props> = ({ frameNo, annotations, backgroundObj, position0, targets, preObject, onClickObj = f => f, onPutObject = f => f }) => {
+const FLThreeEditor: FC<Props> = ({ frameNo, annotations, backgroundObj, position0, targets, preObject, onClickObj = f => f, onPutObject = f => f, onObjectChange = f => f }) => {
     const styles = useStyles();
     const cubeGroupRef = createRef<Group>();
     const [near, far, zoom] = useMemo(() => [0.01, 500, 10], []);
@@ -43,6 +44,7 @@ const FLThreeEditor: FC<Props> = ({ frameNo, annotations, backgroundObj, positio
             setTarget(undefined);
         }
     }, [cubeGroupRef, targets]);
+
 
     return (
         <Box display="flex" flexDirection="column" height="100%">
@@ -63,19 +65,19 @@ const FLThreeEditor: FC<Props> = ({ frameNo, annotations, backgroundObj, positio
                     <Grid item xs={4}>
                         <Canvas orthographic camera={{ near, far, zoom }} style={{ backgroundColor: 'black' }}>
                             {backgroundObj}
-                            <FLObjectControls control='z' target={target} />
+                            <FLObjectControls control='z' target={target} onObjectChange={onObjectChange} />
                         </Canvas>
                     </Grid>
                     <Grid item xs={4}>
                         <Canvas orthographic camera={{ near, far, zoom }} style={{ backgroundColor: 'black' }}>
                             {backgroundObj}
-                            <FLObjectControls control='y' target={target} />
+                            <FLObjectControls control='y' target={target} onObjectChange={onObjectChange} />
                         </Canvas>
                     </Grid>
                     <Grid item xs={4}>
                         <Canvas orthographic camera={{ near, far, zoom }} style={{ backgroundColor: 'black' }}>
                             {backgroundObj}
-                            <FLObjectControls control='x' target={target} />
+                            <FLObjectControls control='x' target={target} onObjectChange={onObjectChange} />
                         </Canvas>
                     </Grid>
                 </Grid>

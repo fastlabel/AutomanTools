@@ -5,7 +5,7 @@ import {
     Object3D, OrthographicCamera, PlaneGeometry, Quaternion, Vector3
 } from 'three';
 
-type _BaseGizItemSet = [base: any, position?: number[] | null, rotation?: number[] | null, scale?: number[] | null, tag?: string];
+type _BaseGizItemSet = [base: any, position?: number[] | null, rotation?: number[] | null];
 
 type _Item = { gizmo: Object3D; picker: Object3D; };
 
@@ -119,7 +119,6 @@ export class FLTransformControlsGizmo extends Object3D {
 
         // TODO move util
         const cube = object.children[1] as Mesh<BoxGeometry, MeshBasicMaterial>;
-        const g = cube.geometry as BoxGeometry;
 
         const gizmoMaterial = new MeshBasicMaterial({
             depthTest: false,
@@ -152,29 +151,29 @@ export class FLTransformControlsGizmo extends Object3D {
         matWhiteTransparent.opacity = 0.25
 
         // Gizmo definitions - custom hierarchy definitions for setupGizmo() function
-        const _PlaneMeth = (control: ControlType, p: { width: number, height: number, depth: number }, material: MeshBasicMaterial): _BaseGizItemSet => {
+        const _PlaneMeth = (control: ControlType, material: MeshBasicMaterial): _BaseGizItemSet => {
             let mesh = null;
             switch (control) {
                 case 'x':
-                    mesh = new Mesh(new PlaneGeometry(p.width, p.height), material);
+                    // p.x, p.y
+                    mesh = new Mesh(new PlaneGeometry(1, 1), material);
                     return [mesh, [0, 0, 0], [0, 0, 0]];
                 case 'y':
-                    mesh = new Mesh(new PlaneGeometry(p.height, p.depth), material);
+                    // p.y, p.z
+                    mesh = new Mesh(new PlaneGeometry(1, 1), material);
                     return [mesh, [0, 0, 0], [0, HALF_ANGLE, 0]];
                 case 'z':
-                    mesh = new Mesh(new PlaneGeometry(p.width, p.depth), material);
+                    // p.x, p.z
+                    mesh = new Mesh(new PlaneGeometry(1, 1), material);
                     return [mesh, [0, 0, 0], [HALF_ANGLE, 0, 0]];
 
             }
         };
 
-        const _boxPoints = (box: Object3D) => {
-            const boxMesh = box.children[1] as Mesh<BoxGeometry, MeshBasicMaterial>;
-            const p = boxMesh.geometry.parameters;
-
-            const w = p.width / 2;
-            const h = p.height / 2;
-            const d = p.depth / 2;
+        const _boxPoints = () => {
+            const w = 0.5;
+            const h = 0.5;
+            const d = 0.5;
 
             /*
               5____4
@@ -195,8 +194,8 @@ export class FLTransformControlsGizmo extends Object3D {
                 new Vector3(-w, h, d),
                 new Vector3(-w, -h, d),
                 new Vector3(w, -h, d),
-                new Vector3(0, -h, d + 5),
-                new Vector3(-w, h + 5, 0),
+                new Vector3(0, -h, d + 0.3),
+                new Vector3(-w, h + 0.3, 0),
             ];
         };
 
@@ -217,17 +216,14 @@ export class FLTransformControlsGizmo extends Object3D {
             }
         }
 
-        const [points, rotation] = _renderPoints(this.control, _boxPoints(object));
-        const boxMesh = object.children[1] as Mesh<BoxGeometry, MeshBasicMaterial>;
-        const p = boxMesh.geometry.parameters;
-        const minSize = Math.min(p.width, p.height, p.depth);
-        const circleGeometry = new CircleGeometry(Math.min(minSize / 5, 10) / 2, 32);
+        const [points, rotation] = _renderPoints(this.control, _boxPoints());
+        const circleGeometry = new CircleGeometry(0.1, 32);
         const _PointMesh = (points: Vector3, rotation: Euler | undefined, material: MeshBasicMaterial): _BaseGizItemSet => {
             return [new Mesh(circleGeometry, material), points.toArray(), rotation ? rotation.toArray() : undefined];
         };
 
         const _gizom: { [name: string]: _BaseGizItemSet[] } = {
-            T_BOX: [_PlaneMeth(this.control, g.parameters, matWhiteTransparent.clone())],
+            T_BOX: [_PlaneMeth(this.control, matWhiteTransparent.clone())],
             S_TL: [_PointMesh(points[0], rotation, matWhiteTransparent.clone())],
             S_TR: [_PointMesh(points[1], rotation, matWhiteTransparent.clone())],
             S_BL: [_PointMesh(points[2], rotation, matWhiteTransparent.clone())],
@@ -236,7 +232,7 @@ export class FLTransformControlsGizmo extends Object3D {
         };
 
         const _picker: { [name: string]: _BaseGizItemSet[] } = {
-            T_BOX: [_PlaneMeth(this.control, g.parameters, matInvisible)],
+            T_BOX: [_PlaneMeth(this.control, matInvisible)],
             S_TL: [_PointMesh(points[0], rotation, matInvisible)],
             S_TR: [_PointMesh(points[1], rotation, matInvisible)],
             S_BL: [_PointMesh(points[2], rotation, matInvisible)],
@@ -245,8 +241,8 @@ export class FLTransformControlsGizmo extends Object3D {
         };
 
         this.item = {
-            gizmo: this._setupGizmo(_gizom),
-            picker: this._setupGizmo(_picker)
+            gizmo: this._setupGizmo(_gizom, object.scale),
+            picker: this._setupGizmo(_picker, object.scale)
         };
         this.add(this.item.gizmo);
         this.add(this.item.picker);
@@ -254,17 +250,15 @@ export class FLTransformControlsGizmo extends Object3D {
 
     // Creates an Object3D with gizmos described in custom hierarchy definition.
     // this is nearly impossible to Type so i'm leaving it
-    private _setupGizmo = (gizmoMap: { [name: string]: _BaseGizItemSet[] }): Object3D => {
+    private _setupGizmo = (gizmoMap: { [name: string]: _BaseGizItemSet[] }, scale: Vector3): Object3D => {
         const gizmo = new Object3D();
 
         Object.keys(gizmoMap).forEach(name => {
             gizmoMap[name].forEach(item => {
-                const [base, position, rotation, scale, tag] = item;
+                const [base, position, rotation] = item;
                 const object = base.clone();
                 // name and tag properties are essential for picking and updating logic.
                 object.name = name
-                // @ts-ignore
-                object.tag = tag
 
                 if (position) {
                     object.position.set(position[0], position[1], position[2])
@@ -272,10 +266,6 @@ export class FLTransformControlsGizmo extends Object3D {
                 if (rotation) {
                     object.rotation.set(rotation[0], rotation[1], rotation[2])
                 }
-                if (scale) {
-                    object.scale.set(scale[0], scale[1], scale[2])
-                }
-
                 object.updateMatrix();
                 const tempGeometry = object.geometry.clone();
                 tempGeometry.applyMatrix4(object.matrix);
@@ -283,7 +273,6 @@ export class FLTransformControlsGizmo extends Object3D {
                 object.renderOrder = Infinity;
                 object.position.set(0, 0, 0);
                 object.rotation.set(0, 0, 0);
-                object.scale.set(1, 1, 1);
                 gizmo.add(object);
             });
         });

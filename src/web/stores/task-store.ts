@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { createContainer } from "unstated-next";
 import { ProjectRepositoryContext } from "../repositories/project-repository";
-import { AnnotationClassVO, TaskAnnotationVO, TaskFrameVO, TaskROMVO } from "../types/vo";
+import { AnnotationClassVO, TaskAnnotationVO, TaskAnnotationVOPoints, TaskFrameVO, TaskROMVO } from "../types/vo";
 
 
 export type TaskROMState = {
@@ -54,6 +54,18 @@ export type TaskEditorState = {
         type: 'taskAnnotations';
         items: TaskAnnotationVO[];
     }
+};
+
+export type UpdateTaskAnnotationsCommand = {
+    type: 'objectTransForm';
+    frameNo: string;
+    changes: {
+        [id: string]: {
+            points: TaskAnnotationVOPoints;
+        }
+    };
+} | {
+    type: 'updateAttr';
 };
 
 const useTask = () => {
@@ -134,11 +146,21 @@ const useTask = () => {
         });
     }, [projectRepository, taskAnnotations, _updatePageStatus]);
 
-    const updateTaskAnnotations = () => {
+    const updateTaskAnnotations = useCallback((param: UpdateTaskAnnotationsCommand) => {
         // ${updateTaskAnnotations}$ commands:[{command:'move'|'updateAttr', params for command}]
         //   move points
         //   setAttr[code only]
-    };
+        if (param.type === 'objectTransForm') {
+            _updateTaskAnnotations(prev => {
+                prev.forEach(taskVo => {
+                    const c = param.changes[taskVo.id];
+                    if (!c) return;
+                    taskVo.points[param.frameNo] = c.points;
+                });
+                return prev;
+            });
+        }
+    }, [_updateTaskAnnotations]);
 
     const addTaskAnnotations = useCallback((vos: TaskAnnotationVO[]) => {
         _updateTaskAnnotations(prev => prev.concat(vos));

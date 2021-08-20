@@ -2,9 +2,10 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useHistory } from 'react-router-dom';
-import { BoxGeometry, Mesh, Vector3 } from 'three';
+import { Group, Vector3 } from 'three';
 import AnnotationClassStore from '../../../stores/annotation-class-store';
 import TaskStore from '../../../stores/task-store';
+import { TaskAnnotationVOPoints } from '../../../types/vo';
 import PcdUtil from '../../../utils/pcd-util';
 import FLPcd from '../../task-three/fl-pcd';
 import { TaskAnnotationUtil } from './../../../use-case/task-annotation-util';
@@ -41,7 +42,9 @@ const ThreeAnnotationPage: FC = () => {
 
     const { taskRom, taskEditor, taskFrame, taskAnnotations,
         open, fetchAnnotationClasses,
-        addTaskAnnotations, selectTaskAnnotations
+        addTaskAnnotations,
+        updateTaskAnnotations,
+        selectTaskAnnotations
     } = TaskStore.useContainer();
 
     const { annotationClass, dispatchAnnotationClass } = AnnotationClassStore.useContainer();
@@ -87,14 +90,29 @@ const ThreeAnnotationPage: FC = () => {
                 onClickObj={(e) => { setCubeRef(e.eventObject) }}
                 onPutObject={(e, annotationClass) => {
                     const vo = TaskAnnotationUtil.create(annotationClass, taskFrame.currentFrame);
-                    const cubeMesh = e.eventObject as Mesh<BoxGeometry>;
+                    const cubeMesh = e.eventObject as Group;
                     const p = cubeMesh.position;
                     const r = cubeMesh.rotation;
                     const { defaultSize } = annotationClass;
                     const { x, y, z } = defaultSize;
-                    vo.points[taskFrame.currentFrame] = [p.x, p.y, p.z, x, y, z, r.x, r.y, r.z];
+                    vo.points[taskFrame.currentFrame] = [p.x, p.y, p.z, r.x, r.y, r.z, x, y, z];
                     addTaskAnnotations([vo]);
                     selectTaskAnnotations([vo], "single");
+                }}
+                onObjectChange={(e) => {
+                    const boxMesh = e.target.object as Group;
+                    const points: TaskAnnotationVOPoints = [
+                        boxMesh.position.x,
+                        boxMesh.position.y,
+                        boxMesh.position.z,
+                        boxMesh.rotation.x,
+                        boxMesh.rotation.y,
+                        boxMesh.rotation.z,
+                        boxMesh.scale.x,
+                        boxMesh.scale.y,
+                        boxMesh.scale.z
+                    ];
+                    updateTaskAnnotations({ type: 'objectTransForm', frameNo: taskFrame.currentFrame, changes: { [boxMesh.name]: { points } } })
                 }}
             />);
         }

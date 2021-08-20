@@ -27,8 +27,8 @@ if (isDev) {
 const createWindow = () => {
 
   const mainWindow = new BrowserWindow({
-    width: 700,
-    height: 580,
+    width: 1024,
+    height: 680,
     title: 'FastLabel 3D Annotation',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),

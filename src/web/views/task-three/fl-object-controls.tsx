@@ -1,18 +1,25 @@
 import { useThree } from "@react-three/fiber";
-import React, { FC, useEffect, useState } from "react";
-import { Object3D } from "three";
+import React, { FC, useEffect, useMemo } from "react";
+import { Event, Object3D } from "three";
 import { FLTransformControls } from "./fl-transform-controls";
 import { ControlType } from "./fl-transform-controls-gizmo";
 
-const FLObjectControls: FC<{ control: ControlType, target?: Object3D }> = ({ control, target }) => {
+const FLObjectControls: FC<{ control: ControlType, target?: Object3D, onObjectChange?: (event: Event) => void }> = ({ control, target, onObjectChange = f => f }) => {
     const { gl, camera } = useThree();
-    const [controls] = useState(() => new FLTransformControls(camera, gl.domElement, control));
+    const controls = useMemo(() => new FLTransformControls(camera, gl.domElement, control), [control]);
 
     useEffect(() => {
         if (target) {
             controls.attach(target);
         }
     }, [controls, target]);
+
+    useEffect(() => {
+        controls && controls.addEventListener('objectChange', onObjectChange);
+        return () => {
+            controls && controls.removeEventListener('objectChange', onObjectChange);
+        }
+    }, [controls, onObjectChange]);
 
     return controls ? (
         <>

@@ -35,6 +35,11 @@ export type TaskImageTopicVO = {
     extension: string
 };
 
+export type TaskAnnotationVOPoints =
+    [px: number, py: number, pz: number,
+        ax: number, ay: number, az: number,
+        sx: number, sy: number, sz: number];
+
 export type TaskAnnotationVO = {
     id: string;
     annotationClassId: string;
@@ -45,7 +50,7 @@ export type TaskAnnotationVO = {
     attributes: {
         code: string;
     },
-    points: { [frameNo: string]: [px: number, py: number, pz: number, w: number, h: number, d: number, ax: number, ay: number, az: number] };
+    points: { [frameNo: string]: TaskAnnotationVOPoints };
     createdAt: string;
     updatedAt: string;
 };
