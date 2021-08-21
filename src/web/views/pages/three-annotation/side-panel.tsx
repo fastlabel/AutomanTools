@@ -25,8 +25,10 @@ const useStyles = makeStyles((theme: Theme) =>
         root: {
             height: '100vh'
         },
-        flexGrow: {
+        taskAnnotation: {
             flexGrow: 1,
+            overflowY: 'auto',
+            overflowX: 'hidden'
         },
         footer: {
             height: 60
@@ -44,7 +46,7 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
     // TODO should move in index.
     const history = useHistory();
 
-    const { taskRom, taskEditor, taskAnnotations, selectAnnotationClass, selectTaskAnnotations, saveFrameTaskAnnotations } = TaskStore.useContainer();
+    const { taskRom, taskFrame, taskEditor, taskAnnotations, editingTaskAnnotation, selectAnnotationClass, selectTaskAnnotations, saveFrameTaskAnnotations } = TaskStore.useContainer();
 
     const [width, setWidth] = useState<number>(360);
     const [height, setHeight] = useState<number>(180);
@@ -61,7 +63,18 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
             return taskEditor.editorState.selectingAnnotationClass.id;
         }
         return "";
-    }, [taskEditor.editorState])
+    }, [taskEditor.editorState]);
+
+    const frameNo = useMemo<string>(() => {
+        if (taskFrame.status === 'loaded') {
+            return taskFrame.currentFrame;
+        }
+        return "";
+    }, [taskFrame]);
+
+    const taskAnnotationHeight = useMemo(() => {
+        return height + 62;
+    }, [height]);
 
     const onLeftResizeStop = useCallback<ResizeCallback>((e, direction, ref, d) => {
         setWidth((width) => width + d.width);
@@ -114,9 +127,9 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
                     </Resizable>
                 </Grid>
                 <Divider />
-                <Grid item className={classes.flexGrow}>
+                <Grid item className={classes.taskAnnotation} style={({ maxHeight: `calc(100vh - ${taskAnnotationHeight}px)` })}>
                     <_PanelTitle title="アノテーション" titleItem={(<Typography variant="body2" color="textSecondary">{`件数: ${taskAnnotations.length}`}</Typography>)}>
-                        <InstanceList instances={taskAnnotations} selectedItems={selectedTaskAnnotationIdSet} onClickItem={onClickTaskAnnotation} />
+                        <InstanceList editingTaskAnnotation={editingTaskAnnotation} frameNo={frameNo} instances={taskAnnotations} selectedItems={selectedTaskAnnotationIdSet} onClickItem={onClickTaskAnnotation} />
                     </_PanelTitle>
                 </Grid>
                 <Divider />
@@ -124,7 +137,7 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
                     <List>
                         <ListItem dense>
                             <Grid container spacing={2}>
-                                <Grid item xs={6}><Button fullWidth variant="contained">取り消す</Button></Grid>
+                                <Grid item xs={6}><Button fullWidth variant="contained" onClick={() => history.push('/')}>取り消す</Button></Grid>
                                 <Grid item xs={6}><Button fullWidth variant="contained" color="primary" onClick={() => saveFrameTaskAnnotations()}>保存</Button></Grid>
                             </Grid>
                         </ListItem>

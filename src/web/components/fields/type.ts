@@ -11,5 +11,5 @@ export type FormAction = {
 
 export type FormState<T extends { [key: string]: any }> = {
     data: T;
-    helper: any;
+    helper?: any;
 };

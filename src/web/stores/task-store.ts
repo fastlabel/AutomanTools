@@ -1,3 +1,4 @@
+import { throttle } from "lodash";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { createContainer } from "unstated-next";
 import { ProjectRepositoryContext } from "../repositories/project-repository";
@@ -82,6 +83,12 @@ const useTask = () => {
 
     const [taskEditor, _updateTaskEditor] = useState<TaskEditorState>({ pageMode: 'threeEdit', editorState: { mode: 'neutral', selectingTaskAnnotations: [] } });
 
+    const [editingTaskAnnotation, _setEditingTaskAnnotation] = useState<TaskAnnotationVO>();
+
+    const _updateEditingTaskAnnotation = throttle((newVo: TaskAnnotationVO | undefined) => {
+        _setEditingTaskAnnotation(newVo);
+    }, 500);
+
     //TODO think type
     const [changedHistories, _updateChangedHistories] = useState<any[]>([]);
 
@@ -152,11 +159,15 @@ const useTask = () => {
         //   setAttr[code only]
         if (param.type === 'objectTransForm') {
             _updateTaskAnnotations(prev => {
-                prev.forEach(taskVo => {
+                for (let i = 0, len = prev.length; i < len; i++) {
+                    const taskVo = prev[i];
                     const c = param.changes[taskVo.id];
-                    if (!c) return;
-                    taskVo.points[param.frameNo] = c.points;
-                });
+                    if (!c) continue;
+                    const newTaskVo = Object.assign({}, taskVo);
+                    newTaskVo.points[param.frameNo] = c.points;
+                    prev[i] = newTaskVo;
+                    _updateEditingTaskAnnotation(newTaskVo);
+                }
                 return prev;
             });
         }
@@ -190,7 +201,7 @@ const useTask = () => {
         });
     }, [_updateTaskEditor]);
 
-    const selectTaskAnnotations = useCallback((vo: TaskAnnotationVO[], mode?: 'add' | 'remove' | 'single') => {
+    const selectTaskAnnotations = useCallback((vo: TaskAnnotationVO[], mode?: 'add' | 'remove' | 'single' | 'clear') => {
         _updateTaskEditor((prev) => {
             let annotations = prev.editorState.selectingTaskAnnotations as TaskAnnotationVO[];
             if (mode === 'add') {
@@ -198,8 +209,15 @@ const useTask = () => {
             } else if (mode === 'remove') {
                 const removeTarget = new Set(vo.map(a => a.id));
                 annotations = annotations.filter(a => !removeTarget.has(a.id));
+                if (annotations.length === 1) {
+                    _updateEditingTaskAnnotation(vo[0]);
+                }
             } else if (mode === 'single') {
                 annotations = vo;
+                _updateEditingTaskAnnotation(vo[0]);
+            } else if (mode === 'clear') {
+                annotations = [];
+                _updateEditingTaskAnnotation(undefined);
             }
             return ({
                 ...prev, editorState: {
@@ -219,6 +237,8 @@ const useTask = () => {
         taskFrame,
         topicImageDialog,
         taskEditor,
+
+        editingTaskAnnotation,
         // control
         // # Project/Task
         open,
