@@ -7,9 +7,10 @@ import Paper from "@material-ui/core/Paper";
 import Tooltip from "@material-ui/core/Tooltip";
 import FormatShapesOutlinedIcon from '@material-ui/icons/FormatShapesOutlined';
 import OpenWithOutlinedIcon from '@material-ui/icons/OpenWithOutlined';
+import PhotoLibraryOutlinedIcon from '@material-ui/icons/PhotoLibraryOutlined';
 import SaveOutlinedIcon from '@material-ui/icons/SaveOutlined';
 import TouchAppOutlinedIcon from '@material-ui/icons/TouchAppOutlined';
-import React, { FC, useCallback } from "react";
+import React, { FC, useCallback, useMemo } from "react";
 import TaskStore from '../../../stores/task-store';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -23,6 +24,7 @@ const useStyles = makeStyles((theme: Theme) =>
 type ToolButtonProps = {
     toolTip: string;
     icon: JSX.Element;
+    disabled?: boolean;
     active?: boolean;
     onClick?: () => void
 };
@@ -33,13 +35,20 @@ type Props = {
 
 const ThreeToolbar: FC<Props> = () => {
     const classes = useStyles();
-    const { saveFrameTaskAnnotations } = TaskStore.useContainer();
+    const { taskRom, topicImageDialog, openImageDialog, saveFrameTaskAnnotations } = TaskStore.useContainer();
 
-    const _ToolButton: FC<ToolButtonProps> = useCallback(({ toolTip, icon, active, onClick }) => {
+    const [disabledBase, disabledShowTopicImageDialog] = useMemo(() => {
+        if (taskRom.status === 'loaded') {
+            return [false, taskRom.imageTopics.length === 0];
+        }
+        return [true, true];
+    }, [taskRom])
+
+    const _ToolButton: FC<ToolButtonProps> = useCallback(({ toolTip, icon, disabled, active, onClick }) => {
         const classes = useStyles();
         return (
             <Tooltip title={toolTip} arrow>
-                <IconButton className={classes.icon} size="small" color={active ? "primary" : "default"} onClick={onClick}>
+                <IconButton className={classes.icon} size="small" disabled={disabled} color={active ? "primary" : "default"} onClick={onClick}>
                     {icon}
                 </IconButton>
             </Tooltip>
@@ -50,10 +59,11 @@ const ThreeToolbar: FC<Props> = () => {
         <Paper>
             <List disablePadding>
                 <ListItem dense>
-                    <_ToolButton toolTip="" icon={(<OpenWithOutlinedIcon />)} />
+                    <_ToolButton toolTip="" active={true} icon={(<OpenWithOutlinedIcon />)} />
                     <_ToolButton toolTip="" icon={(<TouchAppOutlinedIcon />)} />
                     <Box mr={2} />
                     <_ToolButton toolTip="" icon={(<FormatShapesOutlinedIcon />)} />
+                    <_ToolButton toolTip="" disabled={disabledShowTopicImageDialog} active={topicImageDialog.open} icon={(<PhotoLibraryOutlinedIcon />)} onClick={() => openImageDialog(!topicImageDialog.open)} />
                     <Box mr={2} />
                     <_ToolButton toolTip="" icon={(<SaveOutlinedIcon />)} onClick={() => saveFrameTaskAnnotations()} />
                 </ListItem>

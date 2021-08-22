@@ -36,7 +36,10 @@ const useStyles = makeStyles((theme: Theme) =>
 const formReducer: Reducer<FormState<WorkspaceFormState>, FormAction> = (state, action) => {
     switch (action.type) {
         case 'change':
-            const newState = FormUtil.update(action.name, action.value, state.data);
+            let newState = FormUtil.update(action.name, action.value, state.data);
+            if (action.name === 'type') {
+                newState = FormUtil.update('targets', [], newState);
+            }
             const helper = { validState: 'valid' };
 
             if (newState.workspaceFolder &&

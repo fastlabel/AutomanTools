@@ -1,11 +1,24 @@
 
 import { LoaderUtils } from "three";
 import { ProjectType } from "../types/const";
-import { AnnotationClassVO, TaskAnnotationVO, TaskFrameVO, TaskROMVO } from '../types/vo';
+import { AnnotationClassVO, TaskAnnotationVO, TaskFrameVO, TaskImageTopicVO, TaskROMVO } from '../types/vo';
 import PcdUtil from "../utils/pcd-util";
 import { ProjectRepository } from "./project-repository";
 
 const workspaceApi = window.workspace;
+
+const IMAGE_EXTENSION = ['jpg', 'jpeg', 'JPG', 'JPEG', 'jpe', 'jfif', 'pjpeg', 'pjp', 'png', 'PNG'];
+
+const arrayBufferToDataUrl = (extension: string, buffer: ArrayBuffer) => {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    const dataUrl = `data:image/${extension.toLowerCase()};base64,${window.btoa(binary)}`;
+    return dataUrl;
+}
 
 export const useProjectFsRepository = (workspaceContext: any): ProjectRepository => {
     return ({
@@ -14,16 +27,20 @@ export const useProjectFsRepository = (workspaceContext: any): ProjectRepository
             const targetQuery = vo.targets.reduce<any>((res, f) => {
                 const [topicId, extension] = f.name.split('.');
                 const targetInfo = res.target_info.resource;
+
+                // TODO workaround
+                if (!res['0001']) {
+                    res['0001'] = {};
+                    targetInfo.frames.push('0001');
+                }
                 if (extension === 'pcd') {
-                    if (!res['0001']) {
-                        res['0001'] = {};
-                        targetInfo.frames.push('0001');
-                    }
                     res['0001'][topicId] = { method: 'copy', fromPath: f.path, extension };
                     targetInfo.pcdTopicId = topicId;
                     return res;
-                } else {
-                    // TODO for image
+                } else if (IMAGE_EXTENSION.includes(extension)) {
+                    res['0001'][topicId] = { method: 'copy', fromPath: f.path, extension };
+                    targetInfo.imageTopics.push({ topicId, extension } as TaskImageTopicVO);
+                    return res;
                 }
                 throw new Error('Non supported file !');
             }, {
@@ -32,7 +49,7 @@ export const useProjectFsRepository = (workspaceContext: any): ProjectRepository
                     resource: {
                         frames: [],
                         pcdTopicId: '',
-                        imageTopics: {}
+                        imageTopics: []
                     }
                 }
             });
@@ -118,7 +135,7 @@ export const useProjectFsRepository = (workspaceContext: any): ProjectRepository
                 workspaceApi.load({
                     wkDir,
                     query: {
-                        target: { [frameNo]: { [pcdTopicId]: 'pcd' } }
+                        target: { [frameNo]: Object.assign({ [pcdTopicId]: 'pcd' }, _imageTopics) }
                     }
                 }).then((res) => {
                     if (!res.target) return;
@@ -127,7 +144,7 @@ export const useProjectFsRepository = (workspaceContext: any): ProjectRepository
                     const textData = LoaderUtils.decodeText(new Uint8Array(data));
                     const pcdResource = PcdUtil.parse(data, textData, pcdTopicId);
                     const imageResources = Object.keys(_imageTopics).reduce<any>((r, k) => {
-                        r[k] = frameDir[k];
+                        r[k] = arrayBufferToDataUrl(_imageTopics[k], frameDir[k]);
                         return r;
                     }, {});
                     resolve({ currentFrame: frameNo, pcdResource, imageResources });

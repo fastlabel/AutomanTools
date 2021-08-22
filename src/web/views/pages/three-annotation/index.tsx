@@ -11,6 +11,7 @@ import FLPcd from '../../task-three/fl-pcd';
 import { TaskAnnotationUtil } from './../../../use-case/task-annotation-util';
 import FLThreeEditor from './../../task-three/fl-three-editor';
 import ClassListDialog from './class-list-dialog';
+import ImageDialog from './image-dialog';
 import ThreeSidePanel from "./side-panel";
 import ThreeToolbar from './tool-bar';
 
@@ -160,6 +161,7 @@ const ThreeAnnotationPage: FC = () => {
                 </Grid>
             </Grid>
             <ClassListDialog />
+            <ImageDialog />
         </React.Fragment>
     );
 };

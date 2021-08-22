@@ -68,19 +68,20 @@ type Props = {
         sub?: string;
         btn?: string;
         btnUpdate?: string;
-    }
+    };
+    accept?: string;
     maxFiles?: number;
     form: [name: string, obj: FormState<any>, dispatch: React.Dispatch<FormAction>];
 };
 
 
-const FLFolderContentsField: FC<Props> = ({ label, description, maxFiles, form }) => {
+const FLFolderContentsField: FC<Props> = ({ label, description, accept, maxFiles, form }) => {
     const [name, obj, dispatch] = form;
     const formValue = FormUtil.resolve(name, obj.data) as File[];
 
     const { getRootProps, getInputProps } = useDropzone({
         maxFiles,
-        accept: '.pcd',
+        accept,
         onDrop: (acceptedFiles: File[]) => {
             dispatch({ type: 'change', name, value: acceptedFiles });
         }
@@ -88,7 +89,7 @@ const FLFolderContentsField: FC<Props> = ({ label, description, maxFiles, form }
     const classes = useStyles();
 
     const selectCount = formValue?.length || 0;
-    const showFileList = selectCount > 1;
+    const showFileList = selectCount > 0 && maxFiles !== 1;
     const fileList = showFileList && formValue ?
         formValue.map((v, i) => ({ id: v.path, label: v.name, labelIcon: FilterDramaIcon })) : [];
     const fileItem = selectCount === 1 && formValue ? formValue[0] : { name: '' };

@@ -27,11 +27,13 @@ export type TaskFrameState = {
 } & TaskFrameVO);
 
 export type TopicImageDialogState = {
-    open: false
-} | {
-    open: true;
-    position: { x: number, y: number };
-    topicId: string
+    open: boolean;
+    topicIds: string[];
+    currentIndex: number;
+    currentTopicId?: string;
+    currentImageData?: any;
+    hasNext?: boolean;
+    hasPrev?: boolean;
 };
 
 export type TaskEditorState = {
@@ -79,7 +81,7 @@ const useTask = () => {
 
     const [taskFrame, _updateTaskFrame] = useState<TaskFrameState>({ status: 'none' });
 
-    const [topicImageDialog, _updateTopicImageDialog] = useState<TopicImageDialogState>({ open: false });
+    const [topicImageDialog, _updateTopicImageDialog] = useState<TopicImageDialogState>({ open: false, topicIds: [], currentIndex: -1 });
 
     const [taskEditor, _updateTaskEditor] = useState<TaskEditorState>({ pageMode: 'threeEdit', editorState: { mode: 'neutral', selectingTaskAnnotations: [] } });
 
@@ -111,7 +113,11 @@ const useTask = () => {
         if (taskFrame.status === 'loading' && taskRom.status === 'loaded') {
             const { projectId, taskId, pcdTopicId, imageTopics } = taskRom;
             const frameNo = taskFrame.currentFrame;
-            projectRepository.loadFrameResource(projectId, taskId, frameNo, pcdTopicId).then(vo => {
+            const _imageTopics = imageTopics.reduce((r, t) => {
+                r[t.topicId] = t.extension;
+                return r;
+            }, {} as any);
+            projectRepository.loadFrameResource(projectId, taskId, frameNo, pcdTopicId, _imageTopics).then(vo => {
                 _updateTaskFrame({ ...vo, status: 'loaded' });
             });
             return;
@@ -140,6 +146,27 @@ const useTask = () => {
             _updatePageStatus('ready');
         });
     }, [projectRepository, _updateTaskRom, _updatePageStatus]);
+
+    const openImageDialog = useCallback((open: boolean) => {
+        _updateTopicImageDialog((prev) => {
+            if (taskFrame.status !== 'loaded' || taskRom.status !== 'loaded') return prev;
+
+            const newState = { ...prev, open };
+            if (newState.currentIndex === -1 && taskRom.imageTopics.length > 0) {
+                newState.topicIds = taskRom.imageTopics.map(t => t.topicId);
+                newState.currentIndex = 0;
+                newState.currentTopicId = newState.topicIds[newState.currentIndex];
+            }
+            if (newState.currentTopicId && (prev.currentTopicId !== newState.currentTopicId || !newState.currentImageData)) {
+                newState.currentImageData = taskFrame.imageResources[newState.currentTopicId];
+            }
+            if (prev.currentIndex !== newState.currentIndex) {
+                newState.hasNext = newState.currentIndex < (newState.topicIds.length - 1);
+                newState.hasPrev = newState.currentIndex > 0;
+            }
+            return newState;
+        });
+    }, [taskRom, taskFrame]);
 
     const changeFrame = useCallback((frameNo: string) => {
         if (taskRom.status !== 'loaded') return;
@@ -240,6 +267,8 @@ const useTask = () => {
 
         editingTaskAnnotation,
         // control
+        // # ImageDialog
+        openImageDialog,
         // # Project/Task
         open,
         fetchAnnotationClasses,
