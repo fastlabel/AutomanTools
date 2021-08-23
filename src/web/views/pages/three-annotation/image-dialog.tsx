@@ -51,7 +51,7 @@ const ImagePopover: FC<Props> = () => {
     const styles = useStyles();
     const popoverRef = useRef<any>(undefined);
 
-    const { topicImageDialog } = TaskStore.useContainer();
+    const { topicImageDialog, moveTopicImage } = TaskStore.useContainer();
 
     useEffect(() => {
         if (popoverRef.current) {
@@ -88,7 +88,7 @@ const ImagePopover: FC<Props> = () => {
                 <Box className={styles.content}>
                     {topicImageDialog.hasPrev && <Box className={styles.prevButton} m={0}>
                         <Box height={48}>
-                            <IconButton aria-label="image-popover-prev" >
+                            <IconButton aria-label="image-popover-prev" onClick={() => moveTopicImage('prev')}>
                                 <ArrowBackIosOutlinedIcon />
                             </IconButton>
                         </Box>
@@ -98,7 +98,7 @@ const ImagePopover: FC<Props> = () => {
                     </Box>
                     {topicImageDialog.hasNext && <Box className={styles.nextButton} m={0}>
                         <Box height={48}>
-                            <IconButton aria-label="image-popover-next" >
+                            <IconButton aria-label="image-popover-next" onClick={() => moveTopicImage('next')} >
                                 <ArrowForwardIosOutlinedIcon />
                             </IconButton>
                         </Box>

@@ -168,6 +168,28 @@ const useTask = () => {
         });
     }, [taskRom, taskFrame]);
 
+    const moveTopicImage = useCallback((command: 'next' | 'prev') => {
+        _updateTopicImageDialog((prev) => {
+            if (taskFrame.status !== 'loaded') return prev;
+
+            const newState = { ...prev };
+            if (command === 'next') {
+                newState.currentIndex++
+            } else {
+                newState.currentIndex--;
+            }
+            newState.currentTopicId = newState.topicIds[newState.currentIndex];
+            if (newState.currentTopicId && (prev.currentTopicId !== newState.currentTopicId || !newState.currentImageData)) {
+                newState.currentImageData = taskFrame.imageResources[newState.currentTopicId];
+            }
+            if (prev.currentIndex !== newState.currentIndex) {
+                newState.hasNext = newState.currentIndex < (newState.topicIds.length - 1);
+                newState.hasPrev = newState.currentIndex > 0;
+            }
+            return newState;
+        });
+    }, [taskFrame]);
+
     const changeFrame = useCallback((frameNo: string) => {
         if (taskRom.status !== 'loaded') return;
         _updateTaskFrame({ status: 'loading', currentFrame: frameNo });
@@ -269,6 +291,7 @@ const useTask = () => {
         // control
         // # ImageDialog
         openImageDialog,
+        moveTopicImage,
         // # Project/Task
         open,
         fetchAnnotationClasses,
