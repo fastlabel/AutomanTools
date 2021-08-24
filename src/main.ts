@@ -1,4 +1,3 @@
-
 import { app, BrowserWindow, dialog, ipcMain, session } from 'electron';
 import { searchDevtools } from 'electron-search-devtools';
 import path from 'path';
@@ -22,10 +21,7 @@ if (isDev) {
 }
 /// #endif
 
-
-
 const createWindow = () => {
-
   const mainWindow = new BrowserWindow({
     width: 1024,
     height: 680,
@@ -35,41 +31,47 @@ const createWindow = () => {
       nodeIntegration: true,
       // contextIsolation: false,
       enableWebSQL: false,
-      nativeWindowOpen: true
+      nativeWindowOpen: true,
     },
   });
 
   mainWindow.setMenuBarVisibility(false);
 
   ipcMain.handle('workspace/openFolderDialog', async () => {
-    const dirPath = await dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] })
+    const dirPath = await dialog
+      .showOpenDialog(mainWindow, { properties: ['openDirectory'] })
       .then((result) => {
         if (result.canceled) return;
         return result.filePaths[0];
-      }).catch((err) => console.log(err));
+      })
+      .catch((err) => console.log(err));
     return dirPath;
   });
 
   ipcMain.handle('workspace/save', async (event, param) => {
-    const result = await WorkSpaceDriver.saveQuery(param).then().catch((err) => console.log(err));
+    const result = await WorkSpaceDriver.saveQuery(param)
+      .then()
+      .catch((err) => console.log(err));
     return result;
   });
 
   ipcMain.handle('workspace/load', async (event, param) => {
-    const result = await WorkSpaceDriver.loadQuery(param).then(r => r).catch(error => console.log(error));
+    const result = await WorkSpaceDriver.loadQuery(param)
+      .then((r) => r)
+      .catch((error) => console.log(error));
     return result;
   });
 
   ipcMain.handle('workspace/exist', async (event, param) => {
-    const result = await WorkSpaceDriver.exist(param).then(r => r).catch(error => console.log(error));
+    const result = await WorkSpaceDriver.exist(param)
+      .then((r) => r)
+      .catch((error) => console.log(error));
     return result;
   });
 
   if (isDev) mainWindow.webContents.openDevTools({ mode: 'detach' });
 
   // bootstrap remote
-
-
 
   mainWindow.loadFile('dist/index.html');
   mainWindow.once('ready-to-show', () => mainWindow.show());

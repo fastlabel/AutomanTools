@@ -2,12 +2,15 @@ import MuiDialogActions from '@material-ui/core/DialogActions';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
-import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
+import {
+  createStyles,
+  Theme,
+  withStyles,
+  WithStyles,
+} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
-
-
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -28,15 +31,19 @@ export interface DialogTitleProps extends WithStyles<typeof styles> {
   children: React.ReactNode;
   style?: React.CSSProperties;
   onClose?: () => void;
-};
+}
 
 export const FLDialogTitle = withStyles(styles)((props: DialogTitleProps) => {
   const { children, classes, onClose, ...other } = props;
   return (
-    <MuiDialogTitle disableTypography className={classes.root}  {...other}>
+    <MuiDialogTitle disableTypography className={classes.root} {...other}>
       <Typography variant="h6">{children}</Typography>
       {onClose ? (
-        <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
+        <IconButton
+          size="small"
+          aria-label="close"
+          className={classes.closeButton}
+          onClick={onClose}>
           <CloseIcon />
         </IconButton>
       ) : null}

@@ -1,7 +1,7 @@
-import React, { FC } from "react";
+import React, { FC } from 'react';
 
 const CreateForm: FC = () => {
-    return (<div>CreateForm</div>);
+  return <div>CreateForm</div>;
 };
 
 export default CreateForm;
