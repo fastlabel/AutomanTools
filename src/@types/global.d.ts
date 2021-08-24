@@ -29,11 +29,10 @@ export type WKSkeleton<J, R> = {
     project?: J;
     annotation_classes?: J;
   };
-  target?: {
-    [frameNo: string]: { [topicId: string]: R | J; } | J,
-  } &
-  { target_info?: J } &
-  { calibration?: { [topicId: string]: J; } };
+  target?: any;
+  //  [frameNo: string]: { [topicId: string]: R | J; } | J
+  //  target_info?: J;
+  //  calibration?: { [topicId: string]: J; } | 'folder'
   output?: {
     annotation_data: J;
   }

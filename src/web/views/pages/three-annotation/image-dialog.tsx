@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme: Theme) =>
             position: 'relative'
         },
         contentImage: {
-            width: 200,
+            width: 560,
             height: 'auto'
         },
         popoverPaper: {

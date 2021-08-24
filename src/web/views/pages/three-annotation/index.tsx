@@ -45,6 +45,7 @@ const ThreeAnnotationPage: FC = () => {
     taskEditor,
     taskFrame,
     taskAnnotations,
+    topicImageDialog,
     open,
     fetchAnnotationClasses,
     addTaskAnnotations,
@@ -96,7 +97,7 @@ const ThreeAnnotationPage: FC = () => {
   }, [taskFrame]);
 
   const editor = useMemo(() => {
-    if (taskFrame.status === 'loaded' && pcdObj) {
+    if (taskRom.status === 'loaded' && taskFrame.status === 'loaded' && pcdObj) {
       return (
         <FLThreeEditor
           frameNo={taskFrame.currentFrame}
@@ -105,6 +106,8 @@ const ThreeAnnotationPage: FC = () => {
           targets={selectingTaskAnnotations}
           position0={position0}
           preObject={selectingAnnotationClass}
+          imageTopicId={topicImageDialog.currentTopicId}
+          calibrations={taskRom.calibrations}
           onClickObj={(e) => {
             setCubeRef(e.eventObject);
           }}
@@ -156,9 +159,11 @@ const ThreeAnnotationPage: FC = () => {
     }
     return <div />;
   }, [
+    taskRom,
     taskFrame,
     taskAnnotations,
     pcdObj,
+    topicImageDialog,
     cubeRef,
     position0,
     selectingAnnotationClass,

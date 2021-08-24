@@ -1,3 +1,4 @@
+import fs from 'fs';
 import { WKLoadParam, WKSaveCommand, WKSaveParam, WKSkeleton } from "../@types/global";
 import { FileDriver } from "./file-driver";
 
@@ -84,6 +85,22 @@ export const WorkSpaceDriver = {
                 if (value === true) {
                     // load Json
                     return FileDriver.loadJson(targetPath + '.json');
+                } else if (value === 'folder') {
+                    const folderFiles = fs.readdirSync(targetPath).reduce<any>((r, p) => {
+                        const [fileName, extension] = p.split('.');
+                        console.debug({ path, fileName, extension });
+                        r[fileName] = extension;
+                        return r;
+                    }, {});
+                    return reduceQuery(folderFiles, (path, value) => {
+                        const folderFilePath = `${targetPath}/${path}`;
+                        if (value === 'yaml' || value === 'yml') {
+                            return FileDriver.loadYaml(folderFilePath + '.' + value);
+                        }
+                        throw new Error('not supported extension:' + value);
+                    })
+                } else if (value === 'yaml' || value === 'yml') {
+                    return FileDriver.loadYaml(targetPath + '.' + value);
                 }
                 // load resource
                 return FileDriver.load(targetPath + '.' + value);

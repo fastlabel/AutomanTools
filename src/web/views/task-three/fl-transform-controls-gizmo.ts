@@ -11,7 +11,7 @@ type _Item = { gizmo: Object3D; picker: Object3D; };
 
 export type ControlKey = 'T_BOX' | 'S_TL' | 'S_TR' | 'S_BL' | 'S_BR' | 'R_POINT';
 
-export type ControlType = 'x' | 'y' | 'z';
+export type ControlType = 'top' | 'side' | 'front';
 
 const HALF_ANGLE = Math.PI / 2;
 
@@ -154,26 +154,26 @@ export class FLTransformControlsGizmo extends Object3D {
         const _PlaneMeth = (control: ControlType, material: MeshBasicMaterial): _BaseGizItemSet => {
             let mesh = null;
             switch (control) {
-                case 'x':
+                case 'top':
                     // p.x, p.y
                     mesh = new Mesh(new PlaneGeometry(1, 1), material);
                     return [mesh, [0, 0, 0], [0, 0, 0]];
-                case 'y':
+                case 'side':
                     // p.y, p.z
                     mesh = new Mesh(new PlaneGeometry(1, 1), material);
-                    return [mesh, [0, 0, 0], [0, HALF_ANGLE, 0]];
-                case 'z':
+                    return [mesh, [0, 0, 0], [HALF_ANGLE, 0, 0]];
+                case 'front':
                     // p.x, p.z
                     mesh = new Mesh(new PlaneGeometry(1, 1), material);
-                    return [mesh, [0, 0, 0], [HALF_ANGLE, 0, 0]];
+                    return [mesh, [0, 0, 0], [0, HALF_ANGLE, 0]];
 
             }
         };
 
         const _boxPoints = () => {
-            const w = 0.5;
-            const h = 0.5;
-            const d = 0.5;
+            const x = 0.5;
+            const y = 0.5;
+            const z = 0.5;
 
             /*
               5____4
@@ -186,16 +186,16 @@ export class FLTransformControlsGizmo extends Object3D {
             10 FRONT rotation point [unused now]
             */
             return [
-                new Vector3(w, h, -d),
-                new Vector3(-w, h, -d),
-                new Vector3(-w, -h, -d),
-                new Vector3(w, -h, -d),
-                new Vector3(w, h, d),
-                new Vector3(-w, h, d),
-                new Vector3(-w, -h, d),
-                new Vector3(w, -h, d),
-                new Vector3(0, -h, d + 0.3),
-                new Vector3(-w, h + 0.3, 0),
+                new Vector3(-x, y, z),
+                new Vector3(-x, -y, z),
+                new Vector3(-x, -y, -z),
+                new Vector3(-x, y, -z),
+                new Vector3(x, y, z),
+                new Vector3(x, -y, z),
+                new Vector3(x, -y, -z),
+                new Vector3(x, y, -z),
+                new Vector3(x + 0.3, 0, 0),
+                new Vector3(0, 0, z + 0.3),
             ];
         };
 
@@ -205,14 +205,14 @@ export class FLTransformControlsGizmo extends Object3D {
         ] => {
             switch (control) {
                 // FRONT
-                case 'x':
-                    return [[boxVertex[0].setZ(0), boxVertex[1].setZ(0), boxVertex[2].setZ(0), boxVertex[3].setZ(0), undefined], undefined];
+                case 'top':
+                    return [[boxVertex[0].setZ(0), boxVertex[1].setZ(0), boxVertex[5].setZ(0), boxVertex[4].setZ(0), boxVertex[8].setZ(0)], undefined];
                 // SIDE
-                case 'y':
-                    return [[boxVertex[1].setX(0), boxVertex[2].setX(0), boxVertex[5].setX(0), boxVertex[6].setX(0), boxVertex[9].setX(0)], new Euler(0, -HALF_ANGLE, 0)];
+                case 'side':
+                    return [[boxVertex[1].setY(0), boxVertex[2].setY(0), boxVertex[5].setY(0), boxVertex[6].setY(0), boxVertex[9].setY(0)], new Euler(HALF_ANGLE, 0, 0)];
                 // TOP
-                case 'z':
-                    return [[boxVertex[2].setY(0), boxVertex[3].setY(0), boxVertex[6].setY(0), boxVertex[7].setY(0), boxVertex[8].setY(0)], new Euler(HALF_ANGLE, 0, 0)];
+                case 'front':
+                    return [[boxVertex[0].setX(0), boxVertex[1].setX(0), boxVertex[2].setX(0), boxVertex[3].setX(0), undefined], new Euler(0, HALF_ANGLE, 0)];
             }
         }
 

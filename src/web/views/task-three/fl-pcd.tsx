@@ -23,8 +23,8 @@ const FLPcd: FC<Props> = ({ pcd }) => {
     const material = new PointsMaterial({ size: baseSize * 8 });
     material.vertexColors = true;
 
-    const halfAngle = Math.PI / 2;
-    geometry.rotateX(-halfAngle);
+    // const halfAngle = Math.PI / 2;
+    // geometry.rotateX(-halfAngle);
     return <points geometry={geometry} material={material} />;
 };
 export default FLPcd;

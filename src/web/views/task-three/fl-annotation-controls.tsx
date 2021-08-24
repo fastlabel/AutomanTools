@@ -101,10 +101,10 @@ export class FLAnnotationControlsImpl extends EventDispatcher {
                 pMouse.unproject(camera);
 
                 const cam = camera.position;
-                const m = pMouse.y / (pMouse.y - cam.y);
+                const m = pMouse.z / (pMouse.z - cam.z);
 
                 pos.x = pMouse.x + (cam.x - pMouse.x) * m;
-                pos.z = pMouse.z + (cam.z - pMouse.z) * m;
+                pos.y = pMouse.y + (cam.y - pMouse.y) * m;
                 this.object.position.copy(pos);
             }
         }

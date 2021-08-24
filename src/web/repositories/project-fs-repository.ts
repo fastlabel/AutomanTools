@@ -3,6 +3,7 @@ import { LoaderUtils } from "three";
 import { ProjectType } from "../types/const";
 import { AnnotationClassVO, TaskAnnotationVO, TaskFrameVO, TaskImageTopicVO, TaskROMVO } from '../types/vo';
 import PcdUtil from "../utils/pcd-util";
+import { CalibrationUtil } from './../utils/calibration-util';
 import { ProjectRepository } from "./project-repository";
 
 const workspaceApi = window.workspace;
@@ -24,6 +25,7 @@ export const useProjectFsRepository = (workspaceContext: any): ProjectRepository
     return ({
         create(vo: { projectId: string; type: ProjectType; targets: File[] }): Promise<void> {
 
+            const calibration = new Set();
             const targetQuery = vo.targets.reduce<any>((res, f) => {
                 const [topicId, extension] = f.name.split('.');
                 const targetInfo = res.target_info.resource;
@@ -33,6 +35,9 @@ export const useProjectFsRepository = (workspaceContext: any): ProjectRepository
                     res['0001'] = {};
                     targetInfo.frames.push('0001');
                 }
+                if (!res['calibration']) {
+                    res['calibration'] = {};
+                }
                 if (extension === 'pcd') {
                     res['0001'][topicId] = { method: 'copy', fromPath: f.path, extension };
                     targetInfo.pcdTopicId = topicId;
@@ -40,6 +45,10 @@ export const useProjectFsRepository = (workspaceContext: any): ProjectRepository
                 } else if (IMAGE_EXTENSION.includes(extension)) {
                     res['0001'][topicId] = { method: 'copy', fromPath: f.path, extension };
                     targetInfo.imageTopics.push({ topicId, extension } as TaskImageTopicVO);
+                    return res;
+                } else if (extension === 'yaml' || extension === 'yml') {
+                    res['calibration'][topicId] = { method: 'copy', fromPath: f.path, extension };
+                    calibration.add(topicId);
                     return res;
                 }
                 throw new Error('Non supported file !');
@@ -52,6 +61,10 @@ export const useProjectFsRepository = (workspaceContext: any): ProjectRepository
                         imageTopics: []
                     }
                 }
+            });
+
+            targetQuery.target_info.resource.imageTopics.forEach((t: TaskImageTopicVO) => {
+                t.calibration = calibration.has(t.topicId);
             });
 
             return new Promise((resolve, reject) => {
@@ -83,7 +96,8 @@ export const useProjectFsRepository = (workspaceContext: any): ProjectRepository
                             annotation_classes: true
                         },
                         target: {
-                            target_info: true
+                            target_info: true,
+                            calibration: 'folder',
                         },
                         output: {
                             annotation_data: true
@@ -95,6 +109,15 @@ export const useProjectFsRepository = (workspaceContext: any): ProjectRepository
                     const targetInfo = res.target?.target_info;
                     const taskROM = { ...project, ...targetInfo, annotationClasses };
                     const taskAnnotations = res.output?.annotation_data;
+                    const calibrationYamlObjs = res.target?.calibration;
+                    if (calibrationYamlObjs) {
+                        const calibrations = Object.keys(calibrationYamlObjs).reduce<any>((r, key) => {
+                            const obj = calibrationYamlObjs[key];
+                            r[key] = CalibrationUtil.convertYamlToVo(obj);
+                            return r;
+                        }, {});
+                        taskROM.calibrations = calibrations;
+                    }
                     resolve({ taskROM, taskAnnotations });
                 }).catch(err => reject(err));
             });

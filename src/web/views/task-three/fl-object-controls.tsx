@@ -5,8 +5,10 @@ import { FLTransformControls } from "./fl-transform-controls";
 import { ControlType } from "./fl-transform-controls-gizmo";
 
 const FLObjectControls: FC<{ control: ControlType, target?: Object3D, onObjectChange?: (event: Event) => void }> = ({ control, target, onObjectChange = f => f }) => {
-    const { gl, camera } = useThree();
-    const controls = useMemo(() => new FLTransformControls(camera, gl.domElement, control), [control]);
+    const { gl, camera } = useThree(({ gl, camera }) => ({ gl, camera }));
+    const controls = useMemo(() => {
+        return new FLTransformControls(camera, gl.domElement, control);
+    }, [control]);
 
     useEffect(() => {
         if (target) {

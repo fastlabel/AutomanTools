@@ -1,5 +1,5 @@
 import { OrbitControls as DreiOrbitControls } from "@react-three/drei";
-import { ThreeEvent } from "@react-three/fiber";
+import { ThreeEvent, useThree } from "@react-three/fiber";
 import React, { createRef, FC, useEffect } from "react";
 import { Vector3 } from "three";
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
@@ -13,6 +13,7 @@ type Props = {
 };
 
 const FLMainControls: FC<Props> = ({ position0, preObject, onPutObject = f => f }) => {
+    const camera = useThree(({ camera }) => camera);
     const orbit = createRef<OrbitControlsImpl>();
     const annotation = createRef<FLAnnotationControlsImpl>();
 
@@ -30,16 +31,15 @@ const FLMainControls: FC<Props> = ({ position0, preObject, onPutObject = f => f 
     useEffect(() => {
         if (position0 && orbit.current && orbit.current.enabled) {
             const control = orbit.current;
-            control.object.position.copy(position0.clone().setY(position0.y + 15));
+            control.object.position.copy(position0.clone().setZ(position0.z + 50));
             control.target.copy(position0);
             control.saveState();
         }
     }, []);
-
     return (
         <>
-            <FLAnnotationControls ref={annotation} preObject={preObject} onPutObject={onPutObject} />
-            <DreiOrbitControls ref={orbit} enableDamping={false} />
+            <FLAnnotationControls ref={annotation} camera={camera} preObject={preObject} onPutObject={onPutObject} />
+            <DreiOrbitControls ref={orbit} camera={camera} enableDamping={false} />
         </>
     );
 };

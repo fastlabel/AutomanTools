@@ -33,7 +33,7 @@ const CONST_FILE_PROPS: any = {
             btn: "PCD/画像をアップロード",
             btnUpdate: "ファイルを変更"
         },
-        accept: ['.pcd', 'image/jpeg', 'image/png']
+        accept: ['.pcd', 'image/jpeg', 'image/png', '.yaml']
     },
 };
 

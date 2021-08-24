@@ -19,7 +19,7 @@ const FLCube = React.forwardRef<Object3D, Props>(({ id, points, color, onClick =
     const [boxRef, setBoxRef] = useState<Mesh<BoxGeometry, MeshBasicMaterial>>();
 
     const [dAssistanceSize, dAssistancePosition] = useMemo<[[width: number, height: number, depth: number], Vector3]>(() => {
-        return [[0.1, 0.1, 0.5], new Vector3(0, 0, (1 / 4 * 3))];
+        return [[0.5, 0.1, 0.1], new Vector3((1 / 4 * 3), 0, 0)];
     }, []);
 
     const material = useMemo(() => {

@@ -31,8 +31,9 @@ export type TaskVO = {
 };
 
 export type TaskImageTopicVO = {
-    topicId: string,
-    extension: string
+    topicId: string;
+    extension: string;
+    calibration?: boolean;
 };
 
 export type TaskAnnotationVOPoints =
@@ -77,10 +78,18 @@ export type TaskROMVO = {
     frames: string[];
     pcdTopicId: string;
     imageTopics: TaskImageTopicVO[];
+    calibrations: { [topicID: string]: TaskCalibrationVO };
 };
 
 export type TaskFrameVO = {
     currentFrame: string;
     pcdResource: any;
     imageResources: { [key: string]: any };
+};
+
+export type TaskCalibrationVO = {
+    cameraExtrinsicMat: [x: number, y: number, z: number, w: number][];
+    cameraMat: [x: number, y: number, z: number][];
+    distCoeff: number[][];
+    imageSize: [width: number, height: number];
 };

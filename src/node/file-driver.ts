@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import YAML from 'yaml';
 
 const resolveParent = <T>(pathStr: string, fileFunc: () => Promise<void>): Promise<string> => {
     const dirPath = path.dirname(pathStr);
@@ -103,6 +104,15 @@ export const FileDriver = {
             fs.readFile(pathStr, 'utf8', (err, data) => {
                 if (err) reject(err);
                 resolver(JSON.parse(data));
+            });
+        });
+    },
+    loadYaml: <T>(pathStr: string): Promise<T> => {
+        console.debug('loadYaml :' + pathStr);
+        return new Promise((resolver, reject) => {
+            fs.readFile(pathStr, 'utf8', (err, data) => {
+                if (err) reject(err);
+                resolver(YAML.parse(data));
             });
         });
     }

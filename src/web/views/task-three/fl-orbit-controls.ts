@@ -1,7 +1,6 @@
 /* eslint-disable */
 import {
-  Camera,
-  EventDispatcher,
+  Camera, EventDispatcher,
   Matrix4,
   MOUSE,
   Object3D,
@@ -336,18 +335,17 @@ class FLOrbitControls extends EventDispatcher {
       scope.target0.copy(position);
       let copy = position.clone();
       switch (this.controlType) {
-        case 'x':
-          copy.setZ(position.z - 100);
+        case 'top':
+          copy.setZ(position.z + 100);
           break;
-        case 'y':
-          copy.setX(position.x - 100);
-          break;
-        case 'z':
+        case 'side':
           copy.setY(position.y - 100);
+          break;
+        case 'front':
+          copy.setX(position.x - 100);
           break;
       }
       scope.position0.copy(copy.applyEuler(object.rotation));
-      // scope.object.rotation.copy(object.rotation);
       this.reset();
     }
     //
@@ -377,6 +375,7 @@ class FLOrbitControls extends EventDispatcher {
 
     // current position in spherical coordinates
     const spherical = new Spherical()
+
     const sphericalDelta = new Spherical()
 
     let scale = 1

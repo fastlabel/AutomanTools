@@ -100,8 +100,12 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
         this.add(this.plane);
 
         this.orbit = new FLOrbitControls(this.camera, this.control);
+        if (!(window as any).control) {
+            (window as any).control = {};
+        }
+        (window as any).control[control] = this.orbit;
         this.orbit.enableRotate = false;
-        this.orbit.enableDamping = true;
+        this.orbit.enableDamping = false;
         this.orbit.connect(this.domElement);
 
         // Defined getter, setter and store for a property
@@ -302,24 +306,24 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
 
             this.tempVector2.divide(this.tempVector);
 
-            if (this.control === 'x') {
+            if (this.control === 'top') {
                 this.tempVector2.z = 1;
-            } else if (this.control === 'y') {
-                this.tempVector2.x = 1;
-            } else if (this.control === 'z') {
+            } else if (this.control === 'side') {
                 this.tempVector2.y = 1;
+            } else if (this.control === 'front') {
+                this.tempVector2.x = 1;
             }
             // Apply scale
             object.scale.copy(this.scaleStart).multiply(this.tempVector2);
             if (this.scaleSnap && this.object) {
-                if (this.control === 'x') {
-                    object.scale.x = Math.round(object.scale.y / this.scaleSnap) * this.scaleSnap || this.scaleSnap;
-                    object.scale.y = Math.round(object.scale.z / this.scaleSnap) * this.scaleSnap || this.scaleSnap;
-                } else if (this.control === 'y') {
-                    object.scale.z = Math.round(object.scale.x / this.scaleSnap) * this.scaleSnap || this.scaleSnap;
-                    object.scale.y = Math.round(object.scale.z / this.scaleSnap) * this.scaleSnap || this.scaleSnap;
-                } else if (this.control === 'z') {
+                if (this.control === 'top') {
                     object.scale.x = Math.round(object.scale.x / this.scaleSnap) * this.scaleSnap || this.scaleSnap;
+                    object.scale.y = Math.round(object.scale.y / this.scaleSnap) * this.scaleSnap || this.scaleSnap;
+                } else if (this.control === 'side') {
+                    object.scale.x = Math.round(object.scale.x / this.scaleSnap) * this.scaleSnap || this.scaleSnap;
+                    object.scale.z = Math.round(object.scale.z / this.scaleSnap) * this.scaleSnap || this.scaleSnap;
+                } else if (this.control === 'front') {
+                    object.scale.y = Math.round(object.scale.y / this.scaleSnap) * this.scaleSnap || this.scaleSnap;
                     object.scale.z = Math.round(object.scale.z / this.scaleSnap) * this.scaleSnap || this.scaleSnap;
                 }
             }
