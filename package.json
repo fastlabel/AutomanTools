@@ -1,7 +1,8 @@
 {
   "name": "fastlabel-3d-annotation",
-  "description": "",
+  "description": "Automobile 3D annotation tool.",
   "version": "0.0.1",
+  "author": "FastLabel & Human Dataware Lab.",
   "license": "Apache License 2.0",
   "main": "dist/main.js",
   "scripts": {
