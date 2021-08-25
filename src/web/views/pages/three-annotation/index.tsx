@@ -1,8 +1,8 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { createRef, FC, useCallback, useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Group, Vector3 } from 'three';
+import { Group, Matrix4, PerspectiveCamera, Vector3 } from 'three';
 import AnnotationClassStore from '../../../stores/annotation-class-store';
 import TaskStore from '../../../stores/task-store';
 import { TaskAnnotationVOPoints } from '../../../types/vo';
@@ -56,7 +56,7 @@ const ThreeAnnotationPage: FC = () => {
   const { annotationClass, dispatchAnnotationClass } =
     AnnotationClassStore.useContainer();
 
-  const [cubeRef, setCubeRef] = useState<any>();
+  const cubeGroupRef = createRef<Group>();
 
   const openClassListDialog = useCallback(() => {
     if (taskRom.status === 'loaded') {
@@ -78,7 +78,7 @@ const ThreeAnnotationPage: FC = () => {
     return [undefined, undefined];
   }, [taskEditor]);
 
-  const [pcdObj, position0] = useMemo(() => {
+  const [pcdObj, pcdEditorObj, position0] = useMemo(() => {
     if (taskFrame.status === 'loaded') {
       const pcd = taskFrame.pcdResource;
       const x = PcdUtil.getMaxMin(pcd.position, 'x');
@@ -86,6 +86,7 @@ const ThreeAnnotationPage: FC = () => {
       const z = PcdUtil.getMaxMin(pcd.position, 'z');
       return [
         <FLPcd pcd={taskFrame.pcdResource} />,
+        <FLPcd pcd={taskFrame.pcdResource} baseSize={0.08} />,
         new Vector3(
           (x.min + x.max) / 2,
           (z.min + z.max) / 2,
@@ -93,23 +94,64 @@ const ThreeAnnotationPage: FC = () => {
         ),
       ];
     }
-    return [undefined, undefined];
+    return [undefined, undefined, undefined];
   }, [taskFrame]);
 
+  const calibrationCamera = useMemo(() => {
+    const imageTopicId = topicImageDialog.currentTopicId;
+    if (taskRom.status === 'loaded' && imageTopicId && taskRom.calibrations[imageTopicId]) {
+      const calibration = taskRom.calibrations[imageTopicId];
+      const cameraMatrix = new Matrix4();
+      const mat = calibration.cameraMat;
+      cameraMatrix.set(...mat[0], 0, ...mat[1], 0, ...mat[2], 0, 0, 0, 0, 1);
+      const cameraMatrixT = cameraMatrix.clone().transpose();
+
+      const cameraExtrinsicMatrix = new Matrix4();
+      const extrinsic = calibration.cameraExtrinsicMat;
+      cameraExtrinsicMatrix.set(...extrinsic[0], ...extrinsic[1], ...extrinsic[2], ...extrinsic[3]);
+      // const cameraExtrinsicMatrixT = cameraExtrinsicMatrix.clone().transpose();
+
+      // Flip the calibration information along with all axes.
+      const flipMatrix = new Matrix4();
+      flipMatrix.set(-1, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1);
+
+      // NOTE: THREE.Matrix4.elements contains matrices in column-major order, but not row-major one.
+      //       So, we need the transposed matrix to get the elements in row-major order.
+      const cameraExtrinsicMatrixFlipped = flipMatrix.premultiply(cameraExtrinsicMatrix);
+      const cameraExtrinsicMatrixFlippedT = cameraExtrinsicMatrixFlipped.clone().transpose();
+
+
+      const distance = 30;
+
+      const [width, height] = calibration.imageSize;
+      const imageFx = cameraMatrixT.elements[0];
+      const imageFov = 2 * Math.atan(width / (2 * imageFx)) / Math.PI * 180;
+
+      const imageCamera = new PerspectiveCamera(imageFov, width / height, 1, distance);
+      const [n11, n12, n13, n14, n21, n22, n23, n24, n31, n32, n33, n34, n41, n42, n43, n44] = cameraExtrinsicMatrixFlippedT.elements;
+      imageCamera.matrix.set(n11, n12, n13, n14, n21, n22, n23, n24, n31, n32, n33, n34, n41, n42, n43, n44);
+      imageCamera.matrixWorld.copy(imageCamera.matrix);
+      imageCamera.matrixAutoUpdate = false;
+      return imageCamera;
+    }
+    return undefined;
+  }, [taskRom, topicImageDialog]);
+
   const editor = useMemo(() => {
-    if (taskRom.status === 'loaded' && taskFrame.status === 'loaded' && pcdObj) {
+    if (taskFrame.status === 'loaded' && pcdObj) {
       return (
         <FLThreeEditor
           frameNo={taskFrame.currentFrame}
           annotations={taskAnnotations}
-          backgroundObj={pcdObj}
+          cubeGroupRef={cubeGroupRef}
+          bgMain={pcdObj}
+          bgSub={pcdEditorObj}
           targets={selectingTaskAnnotations}
           position0={position0}
           preObject={selectingAnnotationClass}
-          imageTopicId={topicImageDialog.currentTopicId}
-          calibrations={taskRom.calibrations}
+          calibrationCamera={calibrationCamera}
           onClickObj={(e) => {
-            setCubeRef(e.eventObject);
+
           }}
           onPutObject={(e, annotationClass) => {
             const vo = TaskAnnotationUtil.create(
@@ -159,15 +201,14 @@ const ThreeAnnotationPage: FC = () => {
     }
     return <div />;
   }, [
-    taskRom,
     taskFrame,
     taskAnnotations,
+    calibrationCamera,
     pcdObj,
-    topicImageDialog,
-    cubeRef,
     position0,
     selectingAnnotationClass,
     selectingTaskAnnotations,
+    cubeGroupRef
   ]);
 
   // initialize Editor
@@ -218,7 +259,7 @@ const ThreeAnnotationPage: FC = () => {
         </Grid>
       </Grid>
       <ClassListDialog />
-      <ImageDialog />
+      <ImageDialog cubeGroup={cubeGroupRef} calibrationCamera={calibrationCamera} />
     </React.Fragment>
   );
 };

@@ -99,10 +99,7 @@ export class FLTransformControlsGizmo extends Object3D {
                 material.opacity *= 0.5
                 material.color.lerp(new Color(1, 1, 1), 0.5)
             } else if (this.axis) {
-                if (handle.name === this.axis) {
-                    material.opacity = 1.0
-                    material.color.lerp(new Color(1, 1, 1), 0.5)
-                } else if (this.axis.split('').some((a) => handle.name === a)) {
+                if (handle.name === this.axis && this.axis !== 'T_BOX') {
                     material.opacity = 1.0
                     material.color.lerp(new Color(1, 1, 1), 0.5)
                 } else {

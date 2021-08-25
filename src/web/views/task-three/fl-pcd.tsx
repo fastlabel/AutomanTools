@@ -5,9 +5,10 @@ import ColorUtil from '../../utils/color-util';
 
 type Props = {
     pcd: PCDResult;
+    baseSize?: number;
 };
 
-const FLPcd: FC<Props> = ({ pcd }) => {
+const FLPcd: FC<Props> = ({ pcd, baseSize = 0.005 }) => {
     const geometry = new BufferGeometry();
     if (pcd.position.length > 0) geometry.setAttribute('position', new Float32BufferAttribute(pcd.position, 3));
     if (pcd.normal.length > 0) geometry.setAttribute('normal', new Float32BufferAttribute(pcd.normal, 3));
@@ -19,12 +20,8 @@ const FLPcd: FC<Props> = ({ pcd }) => {
     geometry.computeBoundingSphere();
 
     // build material
-    const baseSize = 0.005;
     const material = new PointsMaterial({ size: baseSize * 8 });
     material.vertexColors = true;
-
-    // const halfAngle = Math.PI / 2;
-    // geometry.rotateX(-halfAngle);
     return <points geometry={geometry} material={material} />;
 };
 export default FLPcd;

@@ -87,11 +87,11 @@ const WorkspacePage: FC = () => {
     return (
         <Grid container justifyContent="center" alignItems="center" direction="column" className={classes.root} >
             <Grid item>
-                <Grid container direction="column" spacing={2} className={classes.main}>
+                <Grid container justifyContent="center" direction="column" spacing={2} className={classes.main}>
                     <Grid item className={classes.item}>
                         <Typography color='textSecondary' variant="h4">ワークスペースを作成</Typography>
                     </Grid>
-                    <Grid item className={classes.itemGlow}>
+                    <Grid item className={classes.item}>
                         <WorkspaceForm form={form} dispatchForm={dispatchForm} />
                     </Grid>
                     <Grid item className={classes.item}>

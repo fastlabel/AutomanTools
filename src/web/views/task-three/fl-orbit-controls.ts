@@ -1,6 +1,6 @@
 /* eslint-disable */
 import {
-  Camera, EventDispatcher,
+  Box3, Camera, EventDispatcher,
   Matrix4,
   MOUSE,
   Object3D,
@@ -11,8 +11,8 @@ import {
   TOUCH,
   Vector2,
   Vector3
-} from 'three'
-import { ControlType } from './fl-transform-controls-gizmo'
+} from 'three';
+import { ControlType } from './fl-transform-controls-gizmo';
 
 // This set of controls performs orbiting, dollying (zooming), and panning.
 // Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
@@ -22,6 +22,8 @@ import { ControlType } from './fl-transform-controls-gizmo'
 //    Pan - right mouse, or left mouse + ctrl/meta/shiftKey, or arrow keys / touch: two-finger move
 
 const moduloWrapAround = (offset: number, capacity: number) => ((offset % capacity) + capacity) % capacity
+
+const _box = /*@__PURE__*/ new Box3();
 
 class FLOrbitControls extends EventDispatcher {
   object: Camera
@@ -336,14 +338,21 @@ class FLOrbitControls extends EventDispatcher {
       let copy = position.clone();
       switch (this.controlType) {
         case 'top':
-          copy.setZ(position.z + 100);
+          copy.setZ(position.z + 1);
           break;
         case 'side':
-          copy.setY(position.y - 100);
+          copy.setY(position.y - 1);
           break;
         case 'front':
-          copy.setX(position.x - 100);
+          copy.setX(position.x - 1);
           break;
+      }
+      // _box.setFromObject(object);
+      // TODO hot fix target size now[adjust 1 - 5]
+      const camera = scope.object as OrthographicCamera;
+      if (camera.zoom !== 60) {
+        camera.zoom = 60;
+        camera.updateProjectionMatrix();
       }
       scope.position0.copy(copy.applyEuler(object.rotation));
       this.reset();
@@ -995,4 +1004,5 @@ class FLOrbitControls extends EventDispatcher {
     this.update()
   }
 }
-export { FLOrbitControls }
+export { FLOrbitControls };
+

@@ -100,6 +100,7 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
         this.add(this.plane);
 
         this.orbit = new FLOrbitControls(this.camera, this.control);
+
         if (!(window as any).control) {
             (window as any).control = {};
         }

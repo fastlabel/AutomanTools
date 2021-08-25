@@ -1,9 +1,7 @@
 import { ThreeEvent } from '@react-three/fiber';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { BoxGeometry, Mesh, MeshBasicMaterial, Object3D, Vector3 } from 'three';
 import { TaskAnnotationVOPoints } from '../../types/vo';
-
-const D_ASSISTANCE_MIN_SIZE = 0.25;
 
 type Props = {
     id?: string;
@@ -26,12 +24,12 @@ const FLCube = React.forwardRef<Object3D, Props>(({ id, points, color, onClick =
         return (<meshBasicMaterial color={color} />);
     }, [color]);
 
-    useEffect(() => {
-        document.body.style.cursor = hovered ? 'pointer' : 'auto';
-        if (boxRef) {
-            boxRef.material.opacity = hovered ? 1 : 0.5;
-        }
-    }, [hovered, boxRef]);
+    // useEffect(() => {
+    //     document.body.style.cursor = hovered ? 'pointer' : 'auto';
+    //     if (boxRef) {
+    //         // boxRef.material.opacity = hovered ? 1 : 0.5;
+    //     }
+    // }, [hovered, boxRef]);
 
     return (
         <group name={id} userData={({ type: 'cube' })} ref={ref} rotation={[ax, ay, az]} position={[px, py, pz]} scale={[sx, sy, sz]}
