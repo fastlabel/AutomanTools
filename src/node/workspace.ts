@@ -86,6 +86,9 @@ export const WorkSpaceDriver = {
                     // load Json
                     return FileDriver.loadJson(targetPath + '.json');
                 } else if (value === 'folder') {
+                    if (!fs.existsSync(targetPath)) {
+                        return Promise.resolve();
+                    }
                     const folderFiles = fs.readdirSync(targetPath).reduce<any>((r, p) => {
                         const [fileName, extension] = p.split('.');
                         console.debug({ path, fileName, extension });

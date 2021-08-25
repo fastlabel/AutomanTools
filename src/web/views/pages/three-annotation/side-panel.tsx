@@ -7,6 +7,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Typography from '@material-ui/core/Typography';
 import SettingsIcon from '@material-ui/icons/Settings';
+import { useSnackbar } from 'notistack';
 import { Resizable, ResizeCallback } from "re-resizable";
 import React, { FC, useCallback, useMemo, useState } from "react";
 import { useHistory } from 'react-router-dom';
@@ -45,11 +46,12 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
 
     // TODO should move in index.
     const history = useHistory();
+    const { enqueueSnackbar } = useSnackbar();
 
     const { taskRom, taskFrame, taskEditor, taskAnnotations, editingTaskAnnotation, selectAnnotationClass, selectTaskAnnotations, saveFrameTaskAnnotations } = TaskStore.useContainer();
 
     const [width, setWidth] = useState<number>(360);
-    const [height, setHeight] = useState<number>(180);
+    const [height, setHeight] = useState<number>(240);
 
     const selectedTaskAnnotationIdSet = useMemo<Set<string>>(() => {
         if (taskEditor.editorState.mode === 'selecting_taskAnnotation') {
@@ -138,7 +140,10 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
                         <ListItem dense>
                             <Grid container spacing={2}>
                                 <Grid item xs={6}><Button fullWidth variant="contained" onClick={() => history.push('/')}>取り消す</Button></Grid>
-                                <Grid item xs={6}><Button fullWidth variant="contained" color="primary" onClick={() => saveFrameTaskAnnotations()}>保存</Button></Grid>
+                                <Grid item xs={6}><Button fullWidth variant="contained" color="primary" onClick={() => {
+                                    saveFrameTaskAnnotations();
+                                    enqueueSnackbar('保存しました');
+                                }}>保存</Button></Grid>
                             </Grid>
                         </ListItem>
                     </List>

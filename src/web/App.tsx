@@ -1,3 +1,4 @@
+import { SnackbarProvider } from 'notistack';
 import React from 'react';
 import {
   BrowserRouter as Router, Route, Switch
@@ -17,23 +18,25 @@ export const App = (): JSX.Element => {
   const projectFsRepository = useProjectFsRepository(workspace);
   return (
     <ProjectRepositoryContext.Provider value={projectFsRepository}>
-      <Router>
-        <Switch>
-          <Route path="/threeannotation">
-            <TaskStore.Provider>
-              <AnnotationClassStore.Provider>
-                <ThreeAnnotationPage />
-              </AnnotationClassStore.Provider>
-            </TaskStore.Provider>
-          </Route>
-          <Route path="/workspace">
-            <WorkspacePage />
-          </Route>
-          <Route path="/">
-            <StartPage />
-          </Route>
-        </Switch>
-      </Router>
+      <SnackbarProvider maxSnack={3} hideIconVariant>
+        <Router>
+          <Switch>
+            <Route path="/threeannotation">
+              <TaskStore.Provider>
+                <AnnotationClassStore.Provider>
+                  <ThreeAnnotationPage />
+                </AnnotationClassStore.Provider>
+              </TaskStore.Provider>
+            </Route>
+            <Route path="/workspace">
+              <WorkspacePage />
+            </Route>
+            <Route path="/">
+              <StartPage />
+            </Route>
+          </Switch>
+        </Router>
+      </SnackbarProvider>
     </ProjectRepositoryContext.Provider>
   );
 };

@@ -5,7 +5,7 @@ import React, { FC, Reducer, useCallback, useEffect, useReducer } from 'react';
 import {
   FLDialogActions,
   FLDialogContent,
-  FLDialogTitle,
+  FLDialogTitle
 } from '../../../components/dialogs/fl-dialog';
 import FLTextField from '../../../components/fields/fl-text-field';
 import { FormUtil } from '../../../components/fields/form-util';
@@ -96,19 +96,19 @@ const ClassFormDialog: FC<Props> = ({ open, classVo, onClose, onSubmit }) => {
           </Grid>
           <Grid item xs={4}>
             <FLTextField
-              label="長さ（初期値）"
+              label="全長 X（初期値）"
               inputType="number"
               form={['defaultSize.x', form, dispatchForm]}></FLTextField>
           </Grid>
           <Grid item xs={4}>
             <FLTextField
-              label="幅（初期値）"
+              label="全幅 Y（初期値）"
               inputType="number"
               form={['defaultSize.y', form, dispatchForm]}></FLTextField>
           </Grid>
           <Grid item xs={4}>
             <FLTextField
-              label="高さ（初期値）"
+              label="全高 Z（初期値）"
               inputType="number"
               form={['defaultSize.z', form, dispatchForm]}></FLTextField>
           </Grid>

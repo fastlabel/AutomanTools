@@ -74,9 +74,9 @@ const InstanceList: FC<Props> = ({
         rotationX,
         rotationY,
         rotationZ,
-        width,
-        height,
-        deps,
+        sizeX,
+        sizeY,
+        sizeZ
       ] = item.points[frameNo];
       const data = {
         positionX,
@@ -85,9 +85,9 @@ const InstanceList: FC<Props> = ({
         rotationX,
         rotationY,
         rotationZ,
-        width,
-        height,
-        deps,
+        sizeX,
+        sizeY,
+        sizeZ,
       };
       const formObj: FormState<any> = { data };
       return (
@@ -145,24 +145,24 @@ const InstanceList: FC<Props> = ({
               <FLTextField
                 mode="list"
                 readonly={true}
-                label={'幅'}
-                form={['width', formObj]}
+                label={'全長 X'}
+                form={['sizeX', formObj]}
               />
             </ListItem>
             <ListItem dense>
               <FLTextField
                 mode="list"
                 readonly={true}
-                label={'高さ'}
-                form={['height', formObj]}
+                label={'全幅 Y'}
+                form={['sizeY', formObj]}
               />
             </ListItem>
             <ListItem dense>
               <FLTextField
                 mode="list"
                 readonly={true}
-                label={'長さ'}
-                form={['deps', formObj]}
+                label={'全高 Z'}
+                form={['sizeZ', formObj]}
               />
             </ListItem>
           </List>
