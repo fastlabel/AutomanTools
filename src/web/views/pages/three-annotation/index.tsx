@@ -109,11 +109,11 @@ const ThreeAnnotationPage: FC = () => {
       const cameraExtrinsicMatrix = new Matrix4();
       const extrinsic = calibration.cameraExtrinsicMat;
       cameraExtrinsicMatrix.set(...extrinsic[0], ...extrinsic[1], ...extrinsic[2], ...extrinsic[3]);
-      // const cameraExtrinsicMatrixT = cameraExtrinsicMatrix.clone().transpose();
+      const cameraExtrinsicMatrixT = cameraExtrinsicMatrix.clone().transpose();
 
       // Flip the calibration information along with all axes.
       const flipMatrix = new Matrix4();
-      flipMatrix.set(-1, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1);
+      flipMatrix.set(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1);
 
       // NOTE: THREE.Matrix4.elements contains matrices in column-major order, but not row-major one.
       //       So, we need the transposed matrix to get the elements in row-major order.
@@ -131,6 +131,7 @@ const ThreeAnnotationPage: FC = () => {
       const [n11, n12, n13, n14, n21, n22, n23, n24, n31, n32, n33, n34, n41, n42, n43, n44] = cameraExtrinsicMatrixFlippedT.elements;
       imageCamera.matrix.set(n11, n12, n13, n14, n21, n22, n23, n24, n31, n32, n33, n34, n41, n42, n43, n44);
       imageCamera.matrixWorld.copy(imageCamera.matrix);
+      imageCamera.updateProjectionMatrix();
       imageCamera.matrixAutoUpdate = false;
       return imageCamera;
     }

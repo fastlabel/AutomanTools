@@ -83,7 +83,13 @@ export class FLTransformControlsGizmo extends Object3D {
             handle.rotation.set(0, 0, 0);
             handle.position.copy(this.worldPosition);
 
-            handle.scale.copy(object.scale);
+            if (handle.name === 'T_BOX') {
+                handle.scale.copy(object.scale);
+            } else {
+                // TODO fix point size should fix 
+                // _setupGizmo resolve position in geometry
+                handle.scale.copy(object.scale);
+            }
 
             // Align handles to current local or world rotation
             handle.quaternion.copy(quaternion)
@@ -216,7 +222,8 @@ export class FLTransformControlsGizmo extends Object3D {
         const [points, rotation] = _renderPoints(this.control, _boxPoints());
         const circleGeometry = new CircleGeometry(0.1, 32);
         const _PointMesh = (points: Vector3, rotation: Euler | undefined, material: MeshBasicMaterial): _BaseGizItemSet => {
-            return [new Mesh(circleGeometry, material), points.toArray(), rotation ? rotation.toArray() : undefined];
+            const mesh = new Mesh(circleGeometry, material);
+            return [mesh, points.toArray(), rotation ? rotation.toArray() : undefined];
         };
 
         const _gizom: { [name: string]: _BaseGizItemSet[] } = {

@@ -94,7 +94,7 @@ const ImagePopover: FC<Props> = ({ cubeGroup, calibrationCamera }) => {
             setState({
                 open: true, width, height,
                 imageMesh: (<>
-                    <mesh position={_vector.clone()} rotation={new Euler(0, Math.PI / 2, Math.PI / 2)} >
+                    <mesh position={_vector.clone()} rotation={new Euler(0, -Math.PI / 2, -Math.PI / 2)} >
                         <planeGeometry args={[width, height]} />
                         <meshBasicMaterial args={[({ map: tex })]} />
                     </mesh>

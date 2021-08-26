@@ -1,7 +1,6 @@
 /* eslint-disable */
 import {
-  Box3, Camera, EventDispatcher,
-  Matrix4,
+  Box3, Camera, EventDispatcher, Group, Matrix4,
   MOUSE,
   Object3D,
   OrthographicCamera,
@@ -335,25 +334,32 @@ class FLOrbitControls extends EventDispatcher {
     this.set0 = (object: Object3D): void => {
       const position = object.position;
       scope.target0.copy(position);
+
+      const camera = scope.object as OrthographicCamera;
+      const baseSize = Math.min(camera.top, camera.right) * 1;
+
+      const scale = (object as Group).scale;
+
       let copy = position.clone();
+      let zoom = camera.zoom;
       switch (this.controlType) {
         case 'top':
           copy.add(new Vector3(0, 0, 1).applyEuler(object.rotation));
+          zoom = Math.floor(baseSize / Math.max(scale.x, scale.y));
           break;
         case 'side':
           copy.add(new Vector3(0, -1, 0).applyEuler(object.rotation));
+          zoom = Math.floor(baseSize / Math.max(scale.x, scale.z));
           break;
         case 'front':
           copy.add(new Vector3(-1, 0, 0).applyEuler(object.rotation));
+          zoom = Math.floor(baseSize / Math.max(scale.y, scale.z));
           break;
       }
-      // _box.setFromObject(object);
-      // TODO hot fix target size now[adjust 1 - 5]
-      const camera = scope.object as OrthographicCamera;
-      // if (camera.zoom !== 60) {
-      //   camera.zoom = 60;
-      //   camera.updateProjectionMatrix();
-      // }
+      if (zoom !== camera.zoom) {
+        camera.zoom = zoom;
+        camera.updateProjectionMatrix();
+      }
       if (!copy.equals(scope.position0)) {
         // scope.object.up.applyEuler(object.rotation);
         scope.position0.copy(copy);
