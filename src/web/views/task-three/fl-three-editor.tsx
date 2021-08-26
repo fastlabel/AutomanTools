@@ -76,7 +76,7 @@ const FLThreeEditor: FC<Props> = ({ cubeGroupRef, frameNo, annotations, bgMain, 
                             <Typography>上面</Typography>
                         </Box>
                         <Box height={footerBoxH}>
-                            <Canvas orthographic camera={{ near, far, zoom }} style={{ backgroundColor: 'black' }}>
+                            <Canvas orthographic camera={{ near, far, zoom, up: new Vector3(1, 0, 0) }} style={{ backgroundColor: 'black' }}>
                                 {bgSub}
                                 <FLObjectControls control='top' target={target} onObjectChange={onObjectChange} />
                             </Canvas>
@@ -87,7 +87,7 @@ const FLThreeEditor: FC<Props> = ({ cubeGroupRef, frameNo, annotations, bgMain, 
                             <Typography>側面</Typography>
                         </Box>
                         <Box height={footerBoxH}>
-                            <Canvas orthographic camera={{ near, far, zoom }} style={{ backgroundColor: 'black' }}>
+                            <Canvas orthographic camera={{ near, far, zoom, up: new Vector3(0, 0, 1), position: new Vector3(0, -1, 0) }} style={{ backgroundColor: 'black' }}>
                                 {bgSub}
                                 <FLObjectControls control='side' target={target} onObjectChange={onObjectChange} />
                             </Canvas>
@@ -98,7 +98,7 @@ const FLThreeEditor: FC<Props> = ({ cubeGroupRef, frameNo, annotations, bgMain, 
                             <Typography>前面</Typography>
                         </Box>
                         <Box height={footerBoxH}>
-                            <Canvas orthographic camera={{ near, far, zoom, up: new Vector3(1, 0, 0) }} style={{ backgroundColor: 'black' }} >
+                            <Canvas orthographic camera={{ near, far, zoom, up: new Vector3(0, 0, 1), position: new Vector3(1, 0, 0) }} style={{ backgroundColor: 'black' }} >
                                 {bgSub}
                                 <FLObjectControls control='front' target={target} onObjectChange={onObjectChange} />
                             </Canvas>

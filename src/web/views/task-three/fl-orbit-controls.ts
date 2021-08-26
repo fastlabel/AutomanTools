@@ -338,24 +338,27 @@ class FLOrbitControls extends EventDispatcher {
       let copy = position.clone();
       switch (this.controlType) {
         case 'top':
-          copy.setZ(position.z + 1);
+          copy.add(new Vector3(0, 0, 1).applyEuler(object.rotation));
           break;
         case 'side':
-          copy.setY(position.y - 1);
+          copy.add(new Vector3(0, -1, 0).applyEuler(object.rotation));
           break;
         case 'front':
-          copy.setX(position.x - 1);
+          copy.add(new Vector3(-1, 0, 0).applyEuler(object.rotation));
           break;
       }
       // _box.setFromObject(object);
       // TODO hot fix target size now[adjust 1 - 5]
       const camera = scope.object as OrthographicCamera;
-      if (camera.zoom !== 60) {
-        camera.zoom = 60;
-        camera.updateProjectionMatrix();
+      // if (camera.zoom !== 60) {
+      //   camera.zoom = 60;
+      //   camera.updateProjectionMatrix();
+      // }
+      if (!copy.equals(scope.position0)) {
+        // scope.object.up.applyEuler(object.rotation);
+        scope.position0.copy(copy);
+        this.reset();
       }
-      scope.position0.copy(copy.applyEuler(object.rotation));
-      this.reset();
     }
     //
     // internals

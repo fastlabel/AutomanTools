@@ -177,8 +177,7 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
     public attach = (object: Object3D): this => {
         this.object = object;
         this.visible = true;
-        this.orbit?.target.copy(object.position);
-        this.orbit?.saveState();
+        this.orbit?.set0(this.object);
         this.gizmo.attach(object);
 
         return this
@@ -207,7 +206,7 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
 
             this.parentQuaternionInv.copy(this.parentQuaternion).invert()
             this.worldQuaternionInv.copy(this.worldQuaternion).invert()
-            if (this.dragging === false || (this.axis !== 'T_BOX' && this.axis !== 'R_POINT')) {
+            if (this.dragging === false || (this.axis !== 'T_BOX')) {
                 this.orbit?.set0(this.object);
             }
         }
@@ -280,8 +279,6 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
                 object.position.applyQuaternion(this.quaternionStart);
             }
         } else if (this.axis === 'R_POINT') {
-            this.offset.copy(this.pointEnd).sub(this.pointStart);
-
             this.rotationAxis.copy(this.eye);
             this.rotationAngle = this.pointEnd.angleTo(this.pointStart);
 
@@ -298,6 +295,8 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
             this.rotationAxis.applyQuaternion(this.parentQuaternionInv);
             object.quaternion.copy(this.tempQuaternion.setFromAxisAngle(this.rotationAxis, this.rotationAngle));
             object.quaternion.multiply(this.quaternionStart).normalize();
+
+            console.log({ rAngle: this.rotationAngle, rSnap: this.rotationSnap, rAxis: this.rotationAxis, tempQ: this.tempQuaternion, qStart: this.quaternionStart });
         } else {
             this.tempVector.copy(this.pointStart);
             this.tempVector2.copy(this.pointEnd);
