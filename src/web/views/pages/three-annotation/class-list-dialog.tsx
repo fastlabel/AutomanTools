@@ -1,16 +1,11 @@
 import {
-  createStyles,
-  ListItemText,
-  makeStyles,
-  Theme,
+  createStyles, makeStyles,
+  Theme
 } from '@material-ui/core';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import AddBoxIcon from '@material-ui/icons/AddBox';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
 import React, { FC, useCallback, useEffect } from 'react';
 import { FLDialogTitle } from '../../../components/dialogs/fl-dialog';
 import AnnotationClassStore from '../../../stores/annotation-class-store';
@@ -40,9 +35,9 @@ const ClassListDialog: FC<Props> = () => {
     dispatchAnnotationClass({ type: 'save' });
   }, []);
 
-  const handleFormSubmit = (vo: AnnotationClassVO) => {
+  const handleFormSubmit = (vo: AnnotationClassVO, type: 'add' | 'update' = 'add') => {
     return new Promise<void>((resolve) => {
-      dispatchAnnotationClass({ type: 'add', vo });
+      dispatchAnnotationClass({ type, vo });
       resolve();
     });
   };

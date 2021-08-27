@@ -4,6 +4,10 @@ import { createContainer } from "unstated-next";
 import { ProjectRepositoryContext } from "../repositories/project-repository";
 import { AnnotationClassVO, TaskAnnotationVO, TaskAnnotationVOPoints, TaskFrameVO, TaskROMVO } from "../types/vo";
 
+export type TaskToolbar = {
+    selectMode: 'control' | 'select';
+    showLabel: boolean;
+};
 
 export type TaskROMState = {
     status: 'none';
@@ -86,6 +90,8 @@ const useTask = () => {
     const [taskEditor, _updateTaskEditor] = useState<TaskEditorState>({ pageMode: 'threeEdit', editorState: { mode: 'neutral', selectingTaskAnnotations: [] } });
 
     const [editingTaskAnnotation, _setEditingTaskAnnotation] = useState<TaskAnnotationVO>();
+
+    const [taskToolBar, updateTaskToolBar] = useState<TaskToolbar>({ selectMode: 'control', showLabel: false });
 
     const _updateEditingTaskAnnotation = throttle((newVo: TaskAnnotationVO | undefined) => {
         _setEditingTaskAnnotation(newVo);
@@ -279,6 +285,7 @@ const useTask = () => {
     }, [_updateTaskEditor]);
 
     return {
+        taskToolBar,
         pageStatus,
         // states
         taskRom,
@@ -289,6 +296,7 @@ const useTask = () => {
 
         editingTaskAnnotation,
         // control
+        updateTaskToolBar,
         // # ImageDialog
         openImageDialog,
         moveTopicImage,

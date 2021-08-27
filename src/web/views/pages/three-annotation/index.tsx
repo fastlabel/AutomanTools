@@ -41,6 +41,7 @@ const ThreeAnnotationPage: FC = () => {
   const history = useHistory();
 
   const {
+    taskToolBar,
     taskRom,
     taskEditor,
     taskFrame,
@@ -144,6 +145,7 @@ const ThreeAnnotationPage: FC = () => {
         <FLThreeEditor
           frameNo={taskFrame.currentFrame}
           annotations={taskAnnotations}
+          showLabel={taskToolBar.showLabel}
           cubeGroupRef={cubeGroupRef}
           bgMain={pcdObj}
           bgSub={pcdEditorObj}

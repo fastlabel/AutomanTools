@@ -18,7 +18,7 @@ type Props = {
   open: boolean;
   classVo?: AnnotationClassVO;
   onClose: () => void;
-  onSubmit: (vo: AnnotationClassVO) => Promise<void>;
+  onSubmit: (vo: AnnotationClassVO, type: 'add' | 'update') => Promise<void>;
 };
 
 const formReducer: Reducer<FormState<AnnotationClassVO>, FormAction> = (
@@ -41,6 +41,8 @@ const formReducer: Reducer<FormState<AnnotationClassVO>, FormAction> = (
 const ClassFormDialog: FC<Props> = ({ open, classVo, onClose, onSubmit }) => {
   const handleClose = useCallback(() => onClose(), []);
 
+  const submitType = !!classVo ? 'update' : 'add';
+
   const initialForm = {
     data: classVo || AnnotationClassUtil.create(),
     helper: {},
@@ -56,13 +58,13 @@ const ClassFormDialog: FC<Props> = ({ open, classVo, onClose, onSubmit }) => {
   }, [open, classVo]);
 
   const handleClickSaveCreate = () => {
-    onSubmit(form.data).then(() => {
+    onSubmit(form.data, submitType).then(() => {
       dispatchForm({ type: 'init', data: AnnotationClassUtil.create() });
     });
   };
 
   const handleClickSaveClose = () => {
-    onSubmit(form.data).then(() => {
+    onSubmit(form.data, submitType).then(() => {
       onClose();
     });
   };

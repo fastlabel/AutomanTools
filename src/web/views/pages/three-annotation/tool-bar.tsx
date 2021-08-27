@@ -35,7 +35,7 @@ type Props = {
 
 const ThreeToolbar: FC<Props> = () => {
     const classes = useStyles();
-    const { taskRom, topicImageDialog, openImageDialog, saveFrameTaskAnnotations } = TaskStore.useContainer();
+    const { taskToolBar, taskRom, topicImageDialog, updateTaskToolBar, openImageDialog, saveFrameTaskAnnotations } = TaskStore.useContainer();
 
     const [disabledBase, disabledShowTopicImageDialog] = useMemo(() => {
         if (taskRom.status === 'loaded') {
@@ -59,10 +59,10 @@ const ThreeToolbar: FC<Props> = () => {
         <Paper>
             <List disablePadding>
                 <ListItem dense>
-                    <_ToolButton toolTip="" active={true} icon={(<OpenWithOutlinedIcon />)} />
-                    <_ToolButton toolTip="" icon={(<TouchAppOutlinedIcon />)} />
+                    <_ToolButton toolTip="" active={taskToolBar.selectMode === 'control'} icon={(<OpenWithOutlinedIcon />)} onClick={() => updateTaskToolBar(pre => ({ ...pre, selectMode: 'control' }))} />
+                    <_ToolButton toolTip="" active={taskToolBar.selectMode === 'select'} icon={(<TouchAppOutlinedIcon />)} onClick={() => updateTaskToolBar(pre => ({ ...pre, selectMode: 'select' }))} />
                     <Box mr={2} />
-                    <_ToolButton toolTip="" icon={(<FormatShapesOutlinedIcon />)} />
+                    <_ToolButton toolTip="" active={taskToolBar.showLabel} icon={(<FormatShapesOutlinedIcon />)} onClick={() => updateTaskToolBar(pre => ({ ...pre, showLabel: !pre.showLabel }))} />
                     <_ToolButton toolTip="" disabled={disabledShowTopicImageDialog} active={topicImageDialog.open} icon={(<PhotoLibraryOutlinedIcon />)} onClick={() => openImageDialog(!topicImageDialog.open)} />
                     <Box mr={2} />
                     <_ToolButton toolTip="" icon={(<SaveOutlinedIcon />)} onClick={() => saveFrameTaskAnnotations()} />
