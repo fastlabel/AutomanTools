@@ -98,9 +98,9 @@ const ThreeAnnotationPage: FC = () => {
     return [undefined, undefined, undefined];
   }, [taskFrame]);
 
-  const calibrationCamera = useMemo(() => {
+  const [cameraHelper, calibrationCamera] = useMemo(() => {
     const imageTopicId = topicImageDialog.currentTopicId;
-    if (taskRom.status === 'loaded' && imageTopicId && taskRom.calibrations[imageTopicId]) {
+    if (topicImageDialog.open && taskRom.status === 'loaded' && imageTopicId && taskRom.calibrations[imageTopicId]) {
       const calibration = taskRom.calibrations[imageTopicId];
       const cameraMatrix = new Matrix4();
       const mat = calibration.cameraMat;
@@ -134,9 +134,9 @@ const ThreeAnnotationPage: FC = () => {
       imageCamera.matrixWorld.copy(imageCamera.matrix);
       imageCamera.updateProjectionMatrix();
       imageCamera.matrixAutoUpdate = false;
-      return imageCamera;
+      return [(<cameraHelper args={[imageCamera]} />), imageCamera];
     }
-    return undefined;
+    return [undefined, undefined];
   }, [taskRom, topicImageDialog]);
 
   const editor = useMemo(() => {
@@ -149,10 +149,10 @@ const ThreeAnnotationPage: FC = () => {
           cubeGroupRef={cubeGroupRef}
           bgMain={pcdObj}
           bgSub={pcdEditorObj}
+          cameraHelper={cameraHelper}
           targets={selectingTaskAnnotations}
           position0={position0}
           preObject={selectingAnnotationClass}
-          calibrationCamera={calibrationCamera}
           onClickObj={(e) => {
 
           }}
@@ -206,7 +206,7 @@ const ThreeAnnotationPage: FC = () => {
   }, [
     taskFrame,
     taskAnnotations,
-    calibrationCamera,
+    cameraHelper,
     pcdObj,
     position0,
     selectingAnnotationClass,

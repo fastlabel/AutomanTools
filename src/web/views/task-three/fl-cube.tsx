@@ -1,7 +1,7 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import { Html } from '@react-three/drei';
 import { ThreeEvent } from '@react-three/fiber';
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { BoxGeometry, BufferAttribute, BufferGeometry, Group, LineBasicMaterial, LineSegments, Mesh, MeshBasicMaterial, Vector3 } from 'three';
 import { TaskAnnotationVOPoints } from '../../types/vo';
 
@@ -32,7 +32,7 @@ type Props = {
 
 const omitVal = (val: string, len: number) => '…' + val.slice(val.length - len);
 
-const FLCube: FC<Props> = React.forwardRef<Group, Props>(({ id, points, color, showLabel = false, onClick = f => f }, ref) => {
+const FLCube = React.forwardRef<Group, Props>(({ id, points, color, showLabel = false, onClick = f => f }, ref) => {
     const [px, py, pz, ax, ay, az, sx, sy, sz] = points;
     const styles = useStyles();
 

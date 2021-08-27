@@ -1,7 +1,7 @@
 import { ReactThreeFiber, ThreeEvent, useFrame, useThree } from '@react-three/fiber';
 import * as React from 'react';
 import { useMemo } from 'react';
-import { Camera, EventDispatcher, Object3D, Vector3 } from 'three';
+import { Camera, EventDispatcher, Group, Object3D, Vector3 } from 'three';
 import { AnnotationClassVO, TaskAnnotationVOPoints } from '../../types/vo';
 import FLCube from './fl-cube';
 
@@ -27,7 +27,7 @@ const FLAnnotationControls = React.forwardRef<FLAnnotationControlsImpl, Prop>(
         const explCamera = camera || defaultCamera;
         const explDomElement = domElement || gl.domElement;
 
-        const preCube = React.createRef<Object3D>();
+        const preCube = React.createRef<Group>();
         const controls = React.useMemo(() => new FLAnnotationControlsImpl(explCamera), [explCamera]);
 
         useFrame(() => {
