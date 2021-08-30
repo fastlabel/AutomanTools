@@ -16,7 +16,10 @@ const FLCubes = React.forwardRef<Object3D, Props>(({ frameNo, annotations, showL
         <group ref={ref}>
             {annotations.map(a => {
                 const points = a.points[frameNo as any];
-                return (<FLCube key={a.id} id={a.id} points={points} showLabel={showLabel} color={a.color} onClick={onClick} />);
+                if (points) {
+                    return (<FLCube key={a.id} id={a.id} points={points} showLabel={showLabel} color={a.color} onClick={onClick} />);
+                }
+                return (undefined);
             })}
         </group>
     )

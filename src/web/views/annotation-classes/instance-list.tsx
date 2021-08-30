@@ -77,7 +77,7 @@ const InstanceList: FC<Props> = ({
         sizeX,
         sizeY,
         sizeZ
-      ] = item.points[frameNo];
+      ] = item.points[frameNo] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
       const data = {
         positionX,
         positionY,

@@ -12,7 +12,7 @@ import { ProjectType } from '../../../types/const';
 const TargetItemTypes = [
     { key: ProjectType.pcd_only, label: 'PCD' },
     { key: ProjectType.pcd_image, label: 'PCD - 画像付き' },
-    // { key: ProjectType.pcd_image_frames, label: 'PCD - 連続した情報' }
+    { key: ProjectType.pcd_image_frames, label: 'PCD - 連続した情報' }
 ];
 
 const CONST_FILE_PROPS: any = {
@@ -28,12 +28,21 @@ const CONST_FILE_PROPS: any = {
     },
     pcd_image: {
         description: {
-            main: "PCD/画像をドラッグ&ドロップしてください",
-            sub: "PCD/PNG/JPEGのみをサポートしています",
-            btn: "PCD/画像をアップロード",
+            main: "PCD/画像/キャリブレーションをドラッグ&ドロップしてください",
+            sub: "PCD、画像[PNG/JPEG]、キャリブレーション[YAML]をサポートしています",
+            btn: "PCD/画像/キャリブレーションをアップロード",
             btnUpdate: "ファイルを変更"
         },
         accept: ['.pcd', 'image/jpeg', 'image/png', '.yaml']
+    },
+    pcd_image_frames: {
+        description: {
+            main: "フォルダをドラッグ&ドロップしてください",
+            sub: "特定の形式のみサポートしています",
+            btn: "フォルダをアップロード",
+            btnUpdate: "フォルダを変更"
+        },
+        mode: 'folder'
     },
 };
 

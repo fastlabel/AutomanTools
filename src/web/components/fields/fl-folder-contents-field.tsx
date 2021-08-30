@@ -5,6 +5,8 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined';
 import FilterDramaIcon from '@material-ui/icons/FilterDrama';
+import PanoramaOutlinedIcon from '@material-ui/icons/PanoramaOutlined';
+import PermDataSettingOutlinedIcon from '@material-ui/icons/PermDataSettingOutlined';
 import React, { FC } from "react";
 import { useDropzone } from "react-dropzone";
 import FLFileList from "../lists/fl-file-list";
@@ -33,6 +35,11 @@ const useStyles = makeStyles((theme: Theme) =>
             "&:focus": {
                 outline: "none",
             },
+        },
+        itemContent: {
+            maxHeight: 200,
+            overflowX: 'hidden',
+            overflowY: 'auto'
         }
     }),
 );
@@ -69,13 +76,14 @@ type Props = {
         btn?: string;
         btnUpdate?: string;
     };
+    mode?: 'file' | 'folder';
     accept?: string;
     maxFiles?: number;
     form: [name: string, obj: FormState<any>, dispatch: React.Dispatch<FormAction>];
 };
 
 
-const FLFolderContentsField: FC<Props> = ({ label, description, accept, maxFiles, form }) => {
+const FLFolderContentsField: FC<Props> = ({ label, description, mode = 'file', accept, maxFiles, form }) => {
     const [name, obj, dispatch] = form;
     const formValue = FormUtil.resolve(name, obj.data) as File[];
 
@@ -86,12 +94,21 @@ const FLFolderContentsField: FC<Props> = ({ label, description, accept, maxFiles
             dispatch({ type: 'change', name, value: acceptedFiles });
         }
     });
-    const classes = useStyles();
+    const styles = useStyles();
 
     const selectCount = formValue?.length || 0;
     const showFileList = selectCount > 0 && maxFiles !== 1;
     const fileList = showFileList && formValue ?
-        formValue.map((v, i) => ({ id: v.path, label: v.name, labelIcon: FilterDramaIcon })) : [];
+        formValue.map((v, i) => {
+            const [fileName, ex] = v.name.split('.');
+            if (ex === 'pcd') {
+                return ({ id: v.path, label: v.name, labelIcon: FilterDramaIcon });
+            } else if (ex === 'yaml' || ex === 'yml') {
+                return ({ id: v.path, label: v.name, labelIcon: PermDataSettingOutlinedIcon });
+            }
+            return ({ id: v.path, label: v.name, labelIcon: PanoramaOutlinedIcon });
+        }) : [];
+    console.log(fileList);
     const fileItem = selectCount === 1 && formValue ? formValue[0] : { name: '' };
 
     const dropContentProps = selectCount === 0 ?
@@ -110,6 +127,11 @@ const FLFolderContentsField: FC<Props> = ({ label, description, accept, maxFiles
             btnLabel: description?.btnUpdate
         };
 
+    const directoryPops = mode === 'folder' ? {
+        directory: "",
+        webkitdirectory: ""
+    } : {};
+
     return (
         <React.Fragment>
             <Box mb={1}>
@@ -117,9 +139,9 @@ const FLFolderContentsField: FC<Props> = ({ label, description, accept, maxFiles
                     {label}
                 </Typography>
             </Box>
-            <Box>
-                <div {...getRootProps({ className: classes.dragzone })}>
-                    <input {...getInputProps()} />
+            <Box className={styles.itemContent}>
+                <div {...getRootProps({ className: styles.dragzone })}>
+                    <input {...getInputProps()} {...directoryPops} />
                     {showFileList ?
                         <FLFileList items={fileList} /> :
                         // else case

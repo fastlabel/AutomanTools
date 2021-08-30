@@ -129,13 +129,6 @@ const ImagePopover: FC<Props> = ({ cubeGroup, calibrationCamera }) => {
                 open={state.open}>
 
                 <Box className={styles.content}>
-                    {topicImageDialog.hasPrev && <Box className={styles.prevButton} m={0}>
-                        <Box height={48}>
-                            <IconButton aria-label="image-popover-prev" onClick={() => moveTopicImage('prev')}>
-                                <ArrowBackIosOutlinedIcon />
-                            </IconButton>
-                        </Box>
-                    </Box>}
                     <Box style={({ cursor: 'move' })} width={800} height={229.95169082125605}>
                         {state.imageMesh &&
                             <Canvas camera={calibrationCamera} resize={({ debounce: 500 })}>
@@ -143,6 +136,13 @@ const ImagePopover: FC<Props> = ({ cubeGroup, calibrationCamera }) => {
                                 {state.imageMesh}
                             </Canvas>}
                     </Box>
+                    {topicImageDialog.hasPrev && <Box className={styles.prevButton} m={0}>
+                        <Box height={48}>
+                            <IconButton aria-label="image-popover-prev" onClick={() => moveTopicImage('prev')}>
+                                <ArrowBackIosOutlinedIcon />
+                            </IconButton>
+                        </Box>
+                    </Box>}
                     {topicImageDialog.hasNext && <Box className={styles.nextButton} m={0}>
                         <Box height={48}>
                             <IconButton aria-label="image-popover-next" onClick={() => moveTopicImage('next')} >

@@ -26,28 +26,43 @@ export const useProjectFsRepository = (workspaceContext: any): ProjectRepository
         create(vo: { projectId: string; type: ProjectType; targets: File[] }): Promise<void> {
 
             const calibration = new Set();
+            const frames = new Set<string>();
+            const topicIds = new Set();
+
             const targetQuery = vo.targets.reduce<any>((res, f) => {
                 const [topicId, extension] = f.name.split('.');
                 const targetInfo = res.target_info.resource;
 
-                // TODO workaround
-                if (!res['0001']) {
-                    res['0001'] = {};
-                    targetInfo.frames.push('0001');
+                const delimiter = f.path.includes('\\') ? '\\' : '/';
+                const paths = f.path.split(delimiter);
+                let parent = paths[paths.length - 2];
+                const cFrameNo = Number(parent);
+                if (!(parent === 'calibration' || (!Number.isNaN(cFrameNo) && Number.isInteger(cFrameNo)))) {
+                    if (vo.type === ProjectType.pcd_image_frames) {
+                        throw new Error('folder structure is not supported !! path:' + f.path);
+                    }
+                    parent = extension === 'yaml' || extension === 'yml' ? 'calibration' : '0001';
                 }
-                if (!res['calibration']) {
-                    res['calibration'] = {};
+
+                if (!res[parent]) {
+                    res[parent] = {};
+                    if (parent !== 'calibration') {
+                        frames.add(parent);
+                    }
                 }
                 if (extension === 'pcd') {
-                    res['0001'][topicId] = { method: 'copy', fromPath: f.path, extension };
+                    res[parent][topicId] = { method: 'copy', fromPath: f.path, extension };
                     targetInfo.pcdTopicId = topicId;
                     return res;
                 } else if (IMAGE_EXTENSION.includes(extension)) {
-                    res['0001'][topicId] = { method: 'copy', fromPath: f.path, extension };
-                    targetInfo.imageTopics.push({ topicId, extension } as TaskImageTopicVO);
+                    res[parent][topicId] = { method: 'copy', fromPath: f.path, extension };
+                    if (!topicIds.has(topicId)) {
+                        topicIds.add(topicId);
+                        targetInfo.imageTopics.push({ topicId, extension } as TaskImageTopicVO);
+                    }
                     return res;
                 } else if (extension === 'yaml' || extension === 'yml') {
-                    res['calibration'][topicId] = { method: 'copy', fromPath: f.path, extension };
+                    res[parent][topicId] = { method: 'copy', fromPath: f.path, extension };
                     calibration.add(topicId);
                     return res;
                 }
@@ -62,7 +77,7 @@ export const useProjectFsRepository = (workspaceContext: any): ProjectRepository
                     }
                 }
             });
-
+            targetQuery.target_info.resource.frames = Array.from<string>(frames.values()).sort();
             targetQuery.target_info.resource.imageTopics.forEach((t: TaskImageTopicVO) => {
                 t.calibration = calibration.has(t.topicId);
             });
