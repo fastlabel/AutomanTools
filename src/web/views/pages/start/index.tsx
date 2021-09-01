@@ -4,11 +4,10 @@ import {
   Grid,
   makeStyles,
   Theme,
-  Typography,
+  Typography
 } from '@material-ui/core';
 import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import React, { FC, useCallback } from 'react';
-import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ApplicationConst } from '../../../application/const';
 import WorkspaceContext from '../../../context/workspace';
@@ -17,7 +16,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       flexGrow: 1,
-      height: '100vh',
+      height: '100%',
       width: '100vw',
     },
     main: {

@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
         main: {
             minHeight: 600,
             maxWidth: 700,
-            height: '100vh',
+            height: '100%',
             width: '90vw',
         },
         item: {

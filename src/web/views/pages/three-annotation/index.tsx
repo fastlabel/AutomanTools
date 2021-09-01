@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       flexGrow: 1,
-      height: '100vh',
+      height: '100%',
       width: '100vw',
     },
     mainPanel: {
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) =>
       maxWidth: 'calc(100vw - 360px)',
     },
     mainContentPanel: {
-      height: '100vh',
+      height: '100%'
     },
     mainContent: {
       flexGrow: 1,
@@ -80,14 +80,14 @@ const ThreeAnnotationPage: FC = () => {
   }, [taskEditor]);
 
   const [pcdObj, pcdEditorObj, position0] = useMemo(() => {
-    if (taskFrame.status === 'loaded') {
+    if (taskFrame.status !== 'none' && taskFrame.pcdResource) {
       const pcd = taskFrame.pcdResource;
       const x = PcdUtil.getMaxMin(pcd.position, 'x');
       const y = PcdUtil.getMaxMin(pcd.position, 'y');
       const z = PcdUtil.getMaxMin(pcd.position, 'z');
       return [
-        <FLPcd pcd={taskFrame.pcdResource} />,
-        <FLPcd pcd={taskFrame.pcdResource} baseSize={0.08} />,
+        <FLPcd pcd={pcd} />,
+        <FLPcd pcd={pcd} baseSize={0.08} />,
         new Vector3(
           (x.min + x.max) / 2,
           (z.min + z.max) / 2,
@@ -140,7 +140,7 @@ const ThreeAnnotationPage: FC = () => {
   }, [taskRom, topicImageDialog]);
 
   const editor = useMemo(() => {
-    if (taskFrame.status === 'loaded' && pcdObj) {
+    if (taskFrame.status !== 'none' && pcdObj) {
       return (
         <FLThreeEditor
           frameNo={taskFrame.currentFrame}

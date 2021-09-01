@@ -13,6 +13,8 @@ const FLObjectControls: FC<{ control: ControlType, target?: Object3D, onObjectCh
     useEffect(() => {
         if (target) {
             controls.attach(target);
+        } else {
+            controls.detach();
         }
     }, [controls, target]);
 

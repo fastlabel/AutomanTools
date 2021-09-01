@@ -26,6 +26,8 @@ export type TaskFrameState = {
 } | {
     status: 'loading';
     currentFrame: string;
+    pcdResource?: any;
+    imageResources?: any;
 } | ({
     status: 'loaded';
 } & TaskFrameVO);
@@ -125,6 +127,15 @@ const useTask = () => {
             }, {} as any);
             projectRepository.loadFrameResource(projectId, taskId, frameNo, pcdTopicId, _imageTopics).then(vo => {
                 _updateTaskFrame({ ...vo, status: 'loaded' });
+                _updateTopicImageDialog((prev) => {
+                    if (taskRom.status !== 'loaded') return prev;
+
+                    const newState = { ...prev };
+                    if (newState.currentTopicId) {
+                        newState.currentImageData = vo.imageResources[newState.currentTopicId];
+                    }
+                    return newState;
+                });
             });
             return;
         }
@@ -163,7 +174,7 @@ const useTask = () => {
                 newState.currentIndex = 0;
                 newState.currentTopicId = newState.topicIds[newState.currentIndex];
             }
-            if (newState.currentTopicId && (prev.currentTopicId !== newState.currentTopicId || !newState.currentImageData)) {
+            if (newState.currentTopicId) {
                 newState.currentImageData = taskFrame.imageResources[newState.currentTopicId];
             }
             if (prev.currentIndex !== newState.currentIndex) {
@@ -198,7 +209,7 @@ const useTask = () => {
 
     const changeFrame = useCallback((frameNo: string) => {
         if (taskRom.status !== 'loaded') return;
-        _updateTaskFrame({ status: 'loading', currentFrame: frameNo });
+        _updateTaskFrame(pre => ({ ...pre, status: 'loading', currentFrame: frameNo }));
     }, [taskRom, _updateTaskFrame]);
 
     const saveFrameTaskAnnotations = useCallback(() => {

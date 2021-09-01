@@ -47,7 +47,7 @@ type Props = {
     onObjectChange?: (event: Event) => void;
 };
 
-const C_RESIZE = { debounce: 500 };
+const C_RESIZE = { debounce: 100 };
 
 const FLThreeEditor: FC<Props> = ({ frameNo, annotations, showLabel, cubeGroupRef, bgMain, bgSub, position0, targets, preObject, cameraHelper, onClickObj = f => f, onPutObject = f => f, onObjectChange = f => f }) => {
     const styles = useStyles();
@@ -82,7 +82,7 @@ const FLThreeEditor: FC<Props> = ({ frameNo, annotations, showLabel, cubeGroupRe
         };
     }, [rootRef]);
 
-    const footerBoxH = 336;
+    const footerBoxH = 320;
     return (
         <div className={styles.root} ref={rootRef}>
             <Box flexGrow={1} mt={2} mr={2} ml={2} mb={1}>

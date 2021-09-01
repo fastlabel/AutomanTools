@@ -24,7 +24,7 @@ type PanelTitleProps = {
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
-            height: '100vh'
+            height: '100%'
         },
         taskAnnotation: {
             flexGrow: 1,

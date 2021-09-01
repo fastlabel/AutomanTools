@@ -3,7 +3,6 @@ import Box from "@material-ui/core/Box";
 import IconButton from "@material-ui/core/IconButton";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import Paper from "@material-ui/core/Paper";
 import Tooltip from "@material-ui/core/Tooltip";
 import ArrowBackIosOutlinedIcon from '@material-ui/icons/ArrowBackIosOutlined';
 import ArrowForwardIosOutlinedIcon from '@material-ui/icons/ArrowForwardIosOutlined';
@@ -58,7 +57,7 @@ const ThreeToolbar: FC<Props> = () => {
     }, []);
 
     const [showFramePaging, currentFrameNo, totalFrameNo, onClickBackFrame, onClickNextFrame] = useMemo(() => {
-        if (taskRom.status !== 'loaded' || taskFrame.status !== 'loaded') {
+        if (taskRom.status !== 'loaded' || taskFrame.status === 'none') {
             return [false, 0, 0, undefined, undefined];
         }
         const totalFrameNo = taskRom.frames.length;
@@ -66,15 +65,17 @@ const ThreeToolbar: FC<Props> = () => {
             return [false, 1, 1, undefined, undefined];
         }
         const currentFrameNo = Number(taskFrame.currentFrame);
-        return [true, currentFrameNo, totalFrameNo, () => {
+        const onClickBackFrame = taskFrame.status === 'loaded' ? () => {
             changeFrame(taskRom.frames[currentFrameNo - 2]);
-        }, () => {
+        } : undefined;
+        const onClickNextFrame = taskFrame.status === 'loaded' ? () => {
             changeFrame(taskRom.frames[currentFrameNo]);
-        }];
+        } : undefined;
+        return [true, currentFrameNo, totalFrameNo, onClickBackFrame, onClickNextFrame];
     }, [taskRom, taskFrame, changeFrame]);
 
     return (
-        <Paper>
+        <Box borderRight={'1px solid rgba(0, 0, 0, 0.12)'}>
             <List disablePadding>
                 <ListItem dense>
                     <_ToolButton toolTip="" active={taskToolBar.selectMode === 'control'} icon={(<OpenWithOutlinedIcon />)} onClick={() => updateTaskToolBar(pre => ({ ...pre, selectMode: 'control' }))} />
@@ -87,16 +88,16 @@ const ThreeToolbar: FC<Props> = () => {
                     <Box flexGrow={1} />
                     {showFramePaging &&
                         (<>
-                            <_ToolButton toolTip="" disabled={currentFrameNo === 1} icon={(<ArrowBackIosOutlinedIcon />)} onClick={onClickBackFrame} />
+                            <_ToolButton toolTip="" disabled={!onClickBackFrame} icon={(<ArrowBackIosOutlinedIcon />)} onClick={onClickBackFrame} />
                             <Box minWidth={68} display='flex' justifyContent='center'>
                                 <Typography variant="body1">{currentFrameNo}/{totalFrameNo}</Typography>
                             </Box>
-                            <_ToolButton toolTip="" disabled={currentFrameNo === totalFrameNo} icon={(<ArrowForwardIosOutlinedIcon />)} onClick={onClickNextFrame} />
+                            <_ToolButton toolTip="" disabled={!onClickNextFrame} icon={(<ArrowForwardIosOutlinedIcon />)} onClick={onClickNextFrame} />
                         </>)
                     }
                 </ListItem>
             </List>
-        </Paper>);
+        </Box>);
 };
 
 export default ThreeToolbar;

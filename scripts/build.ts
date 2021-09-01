@@ -11,6 +11,7 @@ build({
     win: {
       target: ['nsis'],
       publisherName: 'FastLabel',
+      icon: "icon/favicon-512.png",
       fileAssociations: [
         {
           ext: ['bmp', 'gif', 'jpeg', 'jpg', 'png', 'ico', 'svg', 'webp'],
@@ -31,7 +32,7 @@ build({
         target: 'default',
         arch: ['x64', 'arm64'],
       },
-      icon: 'assets/icon.icns',
+      icon: "icon/favicon-512.png",
       // dmg should not use below it make error
       // extendInfo: {
       // },

@@ -26,6 +26,7 @@ const createWindow = () => {
     width: 1920,
     height: 1080,
     title: 'FastLabel 3D Annotation',
+    frame: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
@@ -68,6 +69,20 @@ const createWindow = () => {
       .catch((error) => console.log(error));
     return result;
   });
+
+  ipcMain.handle('minimize', () => mainWindow.minimize());
+  ipcMain.handle('maximize', () => mainWindow.maximize());
+  ipcMain.handle('restore', () => mainWindow.unmaximize());
+  ipcMain.handle('close', () => mainWindow.close());
+
+  mainWindow.on('maximize', () => mainWindow.webContents.send('maximized'));
+  mainWindow.on('unmaximize', () => mainWindow.webContents.send('unMaximized'));
+  mainWindow.on('resized', () => {
+    if (mainWindow.isMaximized()) return;
+    mainWindow.webContents.send('resized');
+  });
+  mainWindow.on('focus', () => mainWindow.webContents.send('get-focus'));
+  mainWindow.on('blur', () => mainWindow.webContents.send('get-blur'));
 
   if (isDev) mainWindow.webContents.openDevTools({ mode: 'detach' });
 

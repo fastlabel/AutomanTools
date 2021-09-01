@@ -1,6 +1,7 @@
 declare global {
   interface Window {
     workspace: Workspace;
+    appApi: AppApi;
   }
 };
 
@@ -47,3 +48,27 @@ export type WKSaveParam = {
   wkDir: string;
   query: WKSkeleton<WKJsonSaveCommand, WKCopyCommand>
 };
+
+export interface AppApi {
+  contextMenu: () => void;
+
+  close: () => Promise<void>;
+  restore: () => Promise<void>;
+  maximize: () => Promise<void>;
+  minimize: () => Promise<void>;
+
+  resized: (listener: () => Promise<void>) => Electron.IpcRenderer;
+  removeResized: () => Electron.IpcRenderer;
+
+  maximized: (listener: () => Promise<void>) => Electron.IpcRenderer;
+  removeMaximized: () => Electron.IpcRenderer;
+
+  unMaximized: (listener: () => Promise<void>) => Electron.IpcRenderer;
+  removeUnMaximized: () => Electron.IpcRenderer;
+
+  getFocus: (listener: () => Promise<void>) => Electron.IpcRenderer;
+  removeGetFocus: () => Electron.IpcRenderer;
+
+  getBlur: (listener: () => Promise<void>) => Electron.IpcRenderer;
+  removeGetBlur: () => Electron.IpcRenderer;
+}

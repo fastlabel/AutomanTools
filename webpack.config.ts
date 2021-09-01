@@ -49,6 +49,10 @@ const config: Configuration = {
         ],
       },
       {
+        test: /\.(jpg|png)$/,
+        type: "asset/inline",
+      },
+      {
         test: /\.(bmp|ico|gif|jpe?g|png|svg|ttf|eot|woff?2?)$/,
         type: 'asset/resource',
       },
