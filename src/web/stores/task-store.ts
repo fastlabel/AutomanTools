@@ -65,6 +65,19 @@ export type TaskEditorState = {
     }
 };
 
+export type UpdateTaskAnnotationCommand = {
+    type: 'addFrame';
+    id: string;
+    frameNo: string;
+} | {
+    type: 'removeFrame';
+    id: string;
+    frameNo: string;
+} | {
+    type: 'removeAll';
+    id: string;
+};
+
 export type UpdateTaskAnnotationsCommand = {
     type: 'objectTransForm';
     frameNo: string;
@@ -75,7 +88,7 @@ export type UpdateTaskAnnotationsCommand = {
     };
 } | {
     type: 'updateAttr';
-};
+} | UpdateTaskAnnotationCommand;
 
 const useTask = () => {
     const projectRepository = useContext(ProjectRepositoryContext);
@@ -236,6 +249,24 @@ const useTask = () => {
                 }
                 return prev;
             });
+        } else if (param.type === 'addFrame') {
+            _updateTaskAnnotations(prev => prev.map(i => {
+                if (i.id !== param.id) {
+                    return i;
+                }
+                // i.points[param.frameNo] = 
+                return i;
+            }));
+        } else if (param.type === 'removeFrame') {
+            _updateTaskAnnotations(prev => prev.map(i => {
+                if (i.id !== param.id) {
+                    return i;
+                }
+                delete i.points[param.frameNo];
+                return i;
+            }));
+        } else if (param.type === 'removeAll') {
+            _updateTaskAnnotations(prev => prev.filter(i => i.id !== param.id));
         }
     }, [_updateTaskAnnotations]);
 

@@ -1,4 +1,4 @@
-import { Collapse, createStyles, makeStyles, Theme } from '@material-ui/core';
+import { Collapse, createStyles, makeStyles, Menu, MenuItem, Theme } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -6,11 +6,13 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
+import MoreVertOutlinedIcon from '@material-ui/icons/MoreVertOutlined';
 import VisibilityOffOutlinedIcon from '@material-ui/icons/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
-import React, { FC, useMemo } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import FLTextField from '../../components/fields/fl-text-field';
 import { FormState } from '../../components/fields/type';
+import { UpdateTaskAnnotationCommand } from '../../stores/task-store';
 import { AnnotationType } from '../../types/const';
 import { TaskAnnotationVO } from '../../types/vo';
 
@@ -34,6 +36,7 @@ const useStyles = makeStyles((theme: Theme) =>
 type Props = {
   frameNo: string;
   instances: TaskAnnotationVO[];
+  multiFrame: boolean;
   editingTaskAnnotation?: TaskAnnotationVO;
   invisibleClasses?: Set<string>;
   selectedItems?: Set<string>;
@@ -42,6 +45,7 @@ type Props = {
     mode?: 'add' | 'remove' | 'single' | 'clear'
   ) => void;
   onClickToggleInvisible?: (item: TaskAnnotationVO, visible: boolean) => void;
+  onUpdateTaskAnnotation?: (event: UpdateTaskAnnotationCommand) => void;
 };
 
 const resolveMode = (selected: boolean, event: any) => {
@@ -54,16 +58,24 @@ const resolveMode = (selected: boolean, event: any) => {
 const InstanceList: FC<Props> = ({
   frameNo,
   instances,
+  multiFrame,
   editingTaskAnnotation,
   invisibleClasses,
   selectedItems,
   onClickItem = (f) => f,
   onClickToggleInvisible,
+  onUpdateTaskAnnotation = (f) => f
 }) => {
   const styleClasses = useStyles();
-  const getClassTagStyle = (type: AnnotationType): any => {
-    return styleClasses.markCuboid;
-  };
+  const [anchor, setAnchor] = React.useState<null | { element: HTMLElement, vo: TaskAnnotationVO }>(null);
+
+  const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>, vo: TaskAnnotationVO) => {
+    setAnchor({ element: event.currentTarget, vo });
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setAnchor(null);
+  }, []);
 
   const collapseContent = useMemo(
     () => (item: TaskAnnotationVO) => {
@@ -203,8 +215,16 @@ const InstanceList: FC<Props> = ({
               ) : (
                 <ExpandMore color="action" />
               )}
-              {onClickToggleInvisible ? (
-                <ListItemSecondaryAction>
+              <ListItemSecondaryAction>
+                <IconButton
+                  aria-controls="task-annotation-menu"
+                  aria-haspopup="true"
+                  color="default"
+                  size="small"
+                  onClick={(event) => handleClick(event, item)}>
+                  <MoreVertOutlinedIcon fontSize="small" />
+                </IconButton>
+                {onClickToggleInvisible ? (
                   <IconButton
                     color="default"
                     size="small"
@@ -215,8 +235,8 @@ const InstanceList: FC<Props> = ({
                       <VisibilityOffOutlinedIcon fontSize="small" />
                     )}
                   </IconButton>
-                </ListItemSecondaryAction>
-              ) : undefined}
+                ) : undefined}
+              </ListItemSecondaryAction>
             </ListItem>
             {content && content(item)}
           </React.Fragment>
@@ -225,12 +245,44 @@ const InstanceList: FC<Props> = ({
     [invisibleClasses, selectedItems]
   );
 
+  const getClassTagStyle = (type: AnnotationType): any => {
+    return styleClasses.markCuboid;
+  };
+
   return (
-    <List component="div" disablePadding>
-      {selectedItems?.size === 1 && editingTaskAnnotation
-        ? listItemRenderer(editingTaskAnnotation, collapseContent)
-        : instances.map((item, index) => listItemRenderer(item))}
-    </List>
+    <>
+      <List component="div" disablePadding>
+        {selectedItems?.size === 1 && editingTaskAnnotation
+          ? listItemRenderer(editingTaskAnnotation, collapseContent)
+          : instances.map((item, index) => listItemRenderer(item))}
+      </List>
+      <Menu
+        id="task-annotation-menu"
+        anchorEl={anchor?.element}
+        keepMounted
+        open={Boolean(anchor)}
+        onClose={handleClose}
+      >
+        {multiFrame && <MenuItem onClick={() => {
+          if (anchor) {
+            onUpdateTaskAnnotation({ type: 'addFrame', id: anchor.vo.id, frameNo });
+          }
+          handleClose();
+        }}>フレームに追加</MenuItem>}
+        {multiFrame && <MenuItem onClick={() => {
+          if (anchor) {
+            onUpdateTaskAnnotation({ type: 'removeFrame', id: anchor.vo.id, frameNo });
+          }
+          handleClose();
+        }}>フレームから削除</MenuItem>}
+        <MenuItem onClick={() => {
+          if (anchor) {
+            onUpdateTaskAnnotation({ type: 'removeAll', id: anchor.vo.id });
+          }
+          handleClose();
+        }}>全削除</MenuItem>
+      </Menu>
+    </>
   );
 };
 
