@@ -34,6 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
 type Props = {
     frameNo: string;
     annotations: TaskAnnotationVO[];
+    selectable: boolean;
     showLabel: boolean;
     cubeGroupRef?: React.RefObject<Group>;
     bgMain?: JSX.Element;
@@ -49,7 +50,7 @@ type Props = {
 
 const C_RESIZE = { debounce: 100 };
 
-const FLThreeEditor: FC<Props> = ({ frameNo, annotations, showLabel, cubeGroupRef, bgMain, bgSub, position0, targets, preObject, cameraHelper, onClickObj = f => f, onPutObject = f => f, onObjectChange = f => f }) => {
+const FLThreeEditor: FC<Props> = ({ frameNo, annotations, selectable, showLabel, cubeGroupRef, bgMain, bgSub, position0, targets, preObject, cameraHelper, onClickObj = f => f, onPutObject = f => f, onObjectChange = f => f }) => {
     const styles = useStyles();
     const [near, far, zoom] = useMemo(() => [0.01, 500, 10], []);
     const [target, setTarget] = useState<Object3D>();
@@ -89,7 +90,7 @@ const FLThreeEditor: FC<Props> = ({ frameNo, annotations, showLabel, cubeGroupRe
                 <Canvas camera={{ fov: 90, up: new Vector3(0, 0, 1), rotation: new Euler(0, 0, 0, 'ZXY') }} style={{ backgroundColor: 'black' }} resize={C_RESIZE}>
                     <FLMainControls position0={position0} preObject={preObject} onPutObject={onPutObject} />
                     {bgMain}
-                    <FLCubes ref={_cubeGroupRef} showLabel={showLabel} frameNo={frameNo} annotations={annotations} />
+                    <FLCubes ref={_cubeGroupRef} selectable={selectable} showLabel={showLabel} frameNo={frameNo} annotations={annotations} onClick={onClickObj} />
                     {cameraHelper}
                 </Canvas>
             </Box>

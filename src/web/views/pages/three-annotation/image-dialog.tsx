@@ -90,7 +90,6 @@ const ImagePopover: FC<Props> = ({ cubeGroup, calibrationCamera }) => {
             _vector.set(30, 0, 0);
             const width = 120;
             const height = tex.image.height / (tex.image.width / width);
-            console.log(_vector);
             setState({
                 open: true, width, height,
                 imageMesh: (<>

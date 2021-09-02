@@ -107,6 +107,13 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
         return height + 62;
     }, [height]);
 
+    const filteredTaskAnnotations = useMemo(() => {
+        if (taskAnnotationFilterAll) {
+            return taskAnnotations;
+        }
+        return taskAnnotations.filter(vo => vo.points[frameNo]);
+    }, [frameNo, taskAnnotations, taskAnnotationFilterAll])
+
     const onLeftResizeStop = useCallback<ResizeCallback>(
         (e, direction, ref, d) => {
             setWidth((width) => width + d.width);
@@ -149,7 +156,7 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
     return (
         <Resizable
             size={{ width, height: '100%' }}
-            enable={{ left: true }}
+            enable={{ left: false }}
             onResizeStop={onLeftResizeStop}>
             <Grid container direction="column" className={classes.root}>
                 <Grid
@@ -210,12 +217,12 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
                         titleItem={
                             <Typography
                                 variant="body2"
-                                color="textSecondary">{`件数: ${taskAnnotations.length}`}</Typography>
+                                color="textSecondary">{`件数: ${filteredTaskAnnotations.length}`}</Typography>
                         }>
                         <InstanceList
                             editingTaskAnnotation={editingTaskAnnotation}
                             frameNo={frameNo}
-                            instances={taskAnnotations}
+                            instances={filteredTaskAnnotations}
                             multiFrame={multiFrame}
                             selectedItems={selectedTaskAnnotationIdSet}
                             onClickItem={onClickTaskAnnotation}

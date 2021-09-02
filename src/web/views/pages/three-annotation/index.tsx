@@ -8,7 +8,7 @@ import TaskStore from '../../../stores/task-store';
 import { TaskAnnotationVOPoints } from '../../../types/vo';
 import PcdUtil from '../../../utils/pcd-util';
 import FLPcd from '../../task-three/fl-pcd';
-import { TaskAnnotationUtil } from './../../../use-case/task-annotation-util';
+import { TaskAnnotationUtil } from './../../../utils/task-annotation-util';
 import FLThreeEditor from './../../task-three/fl-three-editor';
 import ClassListDialog from './class-list-dialog';
 import ImageDialog from './image-dialog';
@@ -69,6 +69,11 @@ const ThreeAnnotationPage: FC = () => {
       });
     }
   }, [taskRom]);
+
+  const onClickObj = useCallback((e: any) => {
+    const selected = taskAnnotations.filter(vo => vo.id === e.eventObject.parent.name);
+    selectTaskAnnotations(selected, 'single');
+  }, [taskAnnotations, selectTaskAnnotations]);
 
   const [selectingAnnotationClass, selectingTaskAnnotations] = useMemo(() => {
     if (taskEditor.editorState.mode === 'selecting_annotationClass') {
@@ -145,6 +150,7 @@ const ThreeAnnotationPage: FC = () => {
         <FLThreeEditor
           frameNo={taskFrame.currentFrame}
           annotations={taskAnnotations}
+          selectable={taskToolBar.selectMode === 'select'}
           showLabel={taskToolBar.showLabel}
           cubeGroupRef={cubeGroupRef}
           bgMain={pcdObj}
@@ -153,15 +159,13 @@ const ThreeAnnotationPage: FC = () => {
           targets={selectingTaskAnnotations}
           position0={position0}
           preObject={selectingAnnotationClass}
-          onClickObj={(e) => {
-
-          }}
+          onClickObj={onClickObj}
           onPutObject={(e, annotationClass) => {
             const vo = TaskAnnotationUtil.create(
               annotationClass,
               taskFrame.currentFrame
             );
-            const cubeMesh = e.eventObject as Group;
+            const cubeMesh = e.eventObject.parent as Group;
             const p = cubeMesh.position;
             const r = cubeMesh.rotation;
             const { defaultSize } = annotationClass;
@@ -211,7 +215,8 @@ const ThreeAnnotationPage: FC = () => {
     position0,
     selectingAnnotationClass,
     selectingTaskAnnotations,
-    cubeGroupRef
+    cubeGroupRef,
+    onClickObj
   ]);
 
   // initialize Editor

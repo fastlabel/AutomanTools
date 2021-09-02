@@ -1,7 +1,7 @@
 import { ReactThreeFiber, ThreeEvent, useFrame, useThree } from '@react-three/fiber';
 import * as React from 'react';
 import { useMemo } from 'react';
-import { Camera, EventDispatcher, Group, Object3D, Vector3 } from 'three';
+import { Camera, EventDispatcher, Group, Object3D, Scene, Vector3 } from 'three';
 import { AnnotationClassVO, TaskAnnotationVOPoints } from '../../types/vo';
 import FLCube from './fl-cube';
 
@@ -22,13 +22,14 @@ const FLAnnotationControls = React.forwardRef<FLAnnotationControlsImpl, Prop>(
         const invalidate = useThree(({ invalidate }) => invalidate)
         const defaultCamera = useThree(({ camera }) => camera);
         const gl = useThree(({ gl }) => gl);
+        const scene = useThree(({ scene }) => scene);
 
         // const performance = useThree(({ performance }) => performance)
         const explCamera = camera || defaultCamera;
         const explDomElement = domElement || gl.domElement;
 
         const preCube = React.createRef<Group>();
-        const controls = React.useMemo(() => new FLAnnotationControlsImpl(explCamera), [explCamera]);
+        const controls = React.useMemo(() => new FLAnnotationControlsImpl(explCamera, scene), [explCamera, scene]);
 
         useFrame(() => {
             if (controls.enabled) { }
@@ -60,7 +61,7 @@ const FLAnnotationControls = React.forwardRef<FLAnnotationControlsImpl, Prop>(
         return (
             <>
                 <primitive ref={ref} object={controls} enableDamping={false} {...restProps} />
-                {(preObject && points) && (<FLCube ref={preCube} points={points} color={preObject.color} onClick={(e) => { onPutObject(e, preObject) }} />)}
+                {(preObject && points) && (<FLCube ref={preCube} points={points} color={preObject.color} selectable={true} onClick={(e) => { onPutObject(e, preObject) }} />)}
             </>
         )
     }
@@ -74,6 +75,7 @@ export class FLAnnotationControlsImpl extends EventDispatcher {
     private _domElementKeyEvents: HTMLElement | null = null;
 
     camera: Camera;
+    scene: Scene;
     object?: Object3D;
     domElement?: HTMLElement;
     enabled: boolean;
@@ -82,13 +84,16 @@ export class FLAnnotationControlsImpl extends EventDispatcher {
     detach: () => void;
     dispose: () => void;
 
-    constructor(camera: Camera) {
+    constructor(camera: Camera, scene: Scene) {
         super();
         this.camera = camera;
+        this.scene = scene;
         this.enabled = true;
 
         const onPointerMove = (event: PointerEvent) => {
             if (this.enabled === false) return;
+
+
 
             // adjust preObject3D
             if (this.object) {

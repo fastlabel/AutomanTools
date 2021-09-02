@@ -41,13 +41,9 @@ export type TaskAnnotationVOPoints =
         ax: number, ay: number, az: number,
         sx: number, sy: number, sz: number];
 
-export type TaskAnnotationVO = {
+export type TaskAnnotationOriginVO = {
     id: string;
     annotationClassId: string;
-    type: AnnotationType;
-    title: string;
-    value: string;
-    color: string;
     attributes: {
         code: string;
     },
@@ -55,6 +51,13 @@ export type TaskAnnotationVO = {
     createdAt: string;
     updatedAt: string;
 };
+
+export type TaskAnnotationVO = {
+    type: AnnotationType;
+    title: string;
+    value: string;
+    color: string;
+} & TaskAnnotationOriginVO;
 
 export type AnnotationClassVO = {
     id: string;

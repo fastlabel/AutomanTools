@@ -1,9 +1,11 @@
 
 import { LoaderUtils } from "three";
+import { ApplicationConst } from "../application/const";
 import { ProjectType } from "../types/const";
 import { AnnotationClassVO, TaskAnnotationVO, TaskFrameVO, TaskImageTopicVO, TaskROMVO } from '../types/vo';
 import PcdUtil from "../utils/pcd-util";
 import { CalibrationUtil } from './../utils/calibration-util';
+import { TaskAnnotationUtil } from './../utils/task-annotation-util';
 import { ProjectRepository } from "./project-repository";
 
 const workspaceApi = window.workspace;
@@ -88,7 +90,7 @@ export const useProjectFsRepository = (workspaceContext: any): ProjectRepository
                     wkDir,
                     query: {
                         meta: {
-                            project: { method: 'json', resource: { projectId: vo.projectId } },
+                            project: { method: 'json', resource: { projectId: vo.projectId, version: ApplicationConst.version } },
                             annotation_classes: { method: 'json', resource: [] },
                         },
                         target: targetQuery,
@@ -120,10 +122,10 @@ export const useProjectFsRepository = (workspaceContext: any): ProjectRepository
                     }
                 }).then((res) => {
                     const project = res.meta?.project;
-                    const annotationClasses = res.meta?.annotation_classes;
+                    const annotationClasses = res.meta?.annotation_classes as AnnotationClassVO[];
                     const targetInfo = res.target?.target_info;
                     const taskROM = { ...project, ...targetInfo, annotationClasses };
-                    const taskAnnotations = res.output?.annotation_data;
+                    const taskAnnotations = TaskAnnotationUtil.merge(res.output?.annotation_data, annotationClasses);
                     const calibrationYamlObjs = res.target?.calibration;
                     if (calibrationYamlObjs) {
                         const calibrations = Object.keys(calibrationYamlObjs).reduce<any>((r, key) => {
@@ -190,13 +192,14 @@ export const useProjectFsRepository = (workspaceContext: any): ProjectRepository
             });
         },
         saveFrameTaskAnnotations(vo: TaskAnnotationVO[]): Promise<void> {
+            const originVos = vo.map(TaskAnnotationUtil.formSaveJson);
             return new Promise((resolve, reject) => {
                 const wkDir = workspaceContext.workspaceFolder;
                 workspaceApi.save({
                     wkDir,
                     query: {
                         output: {
-                            annotation_data: { method: 'json', resource: vo },
+                            annotation_data: { method: 'json', resource: originVos },
                         }
                     }
                 }).then(() => resolve())

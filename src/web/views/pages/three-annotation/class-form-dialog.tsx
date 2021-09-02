@@ -11,7 +11,7 @@ import FLTextField from '../../../components/fields/fl-text-field';
 import { FormUtil } from '../../../components/fields/form-util';
 import { FormAction, FormState } from '../../../components/fields/type';
 import { AnnotationClassVO } from '../../../types/vo';
-import { AnnotationClassUtil } from '../../../use-case/annotation-class-util';
+import { AnnotationClassUtil } from '../../../utils/annotation-class-util';
 import FLColorField from './../../../components/fields/fl-color-field';
 
 type Props = {

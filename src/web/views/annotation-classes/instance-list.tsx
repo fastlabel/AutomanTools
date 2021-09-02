@@ -15,11 +15,15 @@ import { FormState } from '../../components/fields/type';
 import { UpdateTaskAnnotationCommand } from '../../stores/task-store';
 import { AnnotationType } from '../../types/const';
 import { TaskAnnotationVO } from '../../types/vo';
+import { FormatUtil } from '../../utils/format-util';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     flexGrow: {
       flexGrow: 1,
+    },
+    otherFrameItem: {
+      opacity: 0.8
     },
     markCuboid: {
       marginRight: theme.spacing(1),
@@ -66,7 +70,7 @@ const InstanceList: FC<Props> = ({
   onClickToggleInvisible,
   onUpdateTaskAnnotation = (f) => f
 }) => {
-  const styleClasses = useStyles();
+  const styles = useStyles();
   const [anchor, setAnchor] = React.useState<null | { element: HTMLElement, vo: TaskAnnotationVO }>(null);
 
   const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>, vo: TaskAnnotationVO) => {
@@ -190,17 +194,20 @@ const InstanceList: FC<Props> = ({
         item: TaskAnnotationVO,
         content?: (item: TaskAnnotationVO) => JSX.Element
       ) => {
+        const hasFrame = item.points[frameNo];
         const selected = selectedItems?.has(item.id) === true;
         const hidden = invisibleClasses?.has(item.id);
 
         return (
           <React.Fragment key={item.id}>
             <ListItem
+              className={hasFrame ? undefined : styles.otherFrameItem}
               button
               dense
               selected={selected}
-              onClick={(event) =>
+              onClick={hasFrame ? (event) =>
                 onClickItem(item, resolveMode(selected, event))
+                : undefined
               }>
               <span
                 style={{ backgroundColor: item.color }}
@@ -208,13 +215,14 @@ const InstanceList: FC<Props> = ({
               />
               <ListItemText
                 primary={item.title}
-                className={styleClasses.flexGrow}
+                secondary={`id ${FormatUtil.omitVal(item.id, 3)}`}
+                className={styles.flexGrow}
               />
-              {selected ? (
+              {hasFrame ? selected ? (
                 <ExpandLess color="action" />
               ) : (
                 <ExpandMore color="action" />
-              )}
+              ) : undefined}
               <ListItemSecondaryAction>
                 <IconButton
                   aria-controls="task-annotation-menu"
@@ -245,8 +253,17 @@ const InstanceList: FC<Props> = ({
     [invisibleClasses, selectedItems]
   );
 
+  const [disabledAddFrame, disabledRemoveFrame, disabledRemoveAll] = useMemo(() => {
+    if (anchor) {
+      const disabledAddFrame = !!anchor.vo.points[frameNo];
+      const disabledRemoveFrame = !disabledAddFrame || Object.keys(anchor.vo.points).length === 1;
+      return [disabledAddFrame, disabledRemoveFrame, false];
+    }
+    return [true, true, true];
+  }, [anchor]);
+
   const getClassTagStyle = (type: AnnotationType): any => {
-    return styleClasses.markCuboid;
+    return styles.markCuboid;
   };
 
   return (
@@ -263,21 +280,22 @@ const InstanceList: FC<Props> = ({
         open={Boolean(anchor)}
         onClose={handleClose}
       >
-        {multiFrame && <MenuItem onClick={() => {
+        {multiFrame && <MenuItem disabled={disabledAddFrame} onClick={() => {
           if (anchor) {
             onUpdateTaskAnnotation({ type: 'addFrame', id: anchor.vo.id, frameNo });
           }
           handleClose();
         }}>フレームに追加</MenuItem>}
-        {multiFrame && <MenuItem onClick={() => {
+        {multiFrame && <MenuItem disabled={disabledRemoveFrame} onClick={() => {
           if (anchor) {
             onUpdateTaskAnnotation({ type: 'removeFrame', id: anchor.vo.id, frameNo });
           }
           handleClose();
         }}>フレームから削除</MenuItem>}
-        <MenuItem onClick={() => {
+        <MenuItem disabled={disabledRemoveAll} onClick={() => {
           if (anchor) {
             onUpdateTaskAnnotation({ type: 'removeAll', id: anchor.vo.id });
+            onClickItem(anchor.vo, 'remove');
           }
           handleClose();
         }}>全削除</MenuItem>

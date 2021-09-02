@@ -1,8 +1,9 @@
 import { throttle } from "lodash";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { createContainer } from "unstated-next";
 import { ProjectRepositoryContext } from "../repositories/project-repository";
 import { AnnotationClassVO, TaskAnnotationVO, TaskAnnotationVOPoints, TaskFrameVO, TaskROMVO } from "../types/vo";
+import { TaskAnnotationUtil } from './../utils/task-annotation-util';
 
 export type TaskToolbar = {
     selectMode: 'control' | 'select';
@@ -152,7 +153,15 @@ const useTask = () => {
             });
             return;
         }
-    }, [taskFrame])
+    }, [taskFrame]);
+
+    const frameNoSet = useMemo(() => {
+        if (taskRom.status !== 'loaded' || taskFrame.status !== 'loaded') {
+            return undefined;
+        }
+        const currentFrameNo = Number(taskFrame.currentFrame);
+        return { source: taskRom.frames[currentFrameNo - 2], dist: taskRom.frames[currentFrameNo - 1] }
+    }, [taskRom, taskFrame]);
 
     // Task Store Event
     const open = useCallback((projectId: string, taskId: string, frameNo?: string) => {
@@ -173,6 +182,7 @@ const useTask = () => {
         projectRepository.loadAnnotationClasses(projectId).then(vo => {
             _updateTaskRom((prev) => ({ ...prev, annotationClasses: vo.annotationClasses }));
             // TODO update taskAnnotation
+            _updateTaskAnnotations(pre => TaskAnnotationUtil.merge(pre, vo.annotationClasses))
             _updatePageStatus('ready');
         });
     }, [projectRepository, _updateTaskRom, _updatePageStatus]);
@@ -250,20 +260,21 @@ const useTask = () => {
                 return prev;
             });
         } else if (param.type === 'addFrame') {
-            _updateTaskAnnotations(prev => prev.map(i => {
-                if (i.id !== param.id) {
-                    return i;
+            _updateTaskAnnotations(prev => prev.map(vo => {
+                if (vo.id !== param.id || vo.points[param.frameNo]) {
+                    return vo;
                 }
-                // i.points[param.frameNo] = 
-                return i;
+                const nearestFrameNo = TaskAnnotationUtil.findNearestFramePoints(vo, param.frameNo);
+                vo.points[param.frameNo] = [...vo.points[nearestFrameNo]];
+                return vo;
             }));
         } else if (param.type === 'removeFrame') {
-            _updateTaskAnnotations(prev => prev.map(i => {
-                if (i.id !== param.id) {
-                    return i;
+            _updateTaskAnnotations(prev => prev.map(vo => {
+                if (vo.id !== param.id) {
+                    return vo;
                 }
-                delete i.points[param.frameNo];
-                return i;
+                delete vo.points[param.frameNo];
+                return vo;
             }));
         } else if (param.type === 'removeAll') {
             _updateTaskAnnotations(prev => prev.filter(i => i.id !== param.id));
@@ -274,9 +285,12 @@ const useTask = () => {
         _updateTaskAnnotations(prev => prev.concat(vos));
     }, [_updateTaskAnnotations]);
 
-    const removeTaskAnnotations = (taskAnnotationIds: string[]) => {
-
-    };
+    const copyFrameTaskAnnotations = useCallback((targetId?: string) => {
+        if (!frameNoSet) return;
+        _updateTaskAnnotations(prev => {
+            return TaskAnnotationUtil.copyFramePoints(prev, frameNoSet, targetId);
+        });
+    }, [_updateTaskAnnotations, frameNoSet]);
 
     // ${copyTaskAnnotations}$ void
     // ${pasteTaskAnnotations}$ target:{x:y:z}
@@ -353,7 +367,7 @@ const useTask = () => {
         // # TaskAnnotations
         addTaskAnnotations,
         updateTaskAnnotations,
-        removeTaskAnnotations,
+        copyFrameTaskAnnotations,
 
         selectAnnotationClass,
         selectTaskAnnotations
