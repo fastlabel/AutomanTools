@@ -3,22 +3,22 @@ declare global {
     workspace: Workspace;
     appApi: AppApi;
   }
-};
+}
 
 export interface Workspace {
   openFolderDialog: () => Promise<string>;
   save: (param: WKSaveParam) => Promise<void>;
   load: (param: WKLoadParam) => Promise<WKSkeleton<any, ArrayBuffer>>;
   exist: (param: WKLoadParam) => Promise<WKSkeleton<boolean, boolean>>;
-};
+}
 
 export type WKJsonSaveCommand = {
-  method: 'json'
+  method: 'json';
   resource: any;
 };
 
 export type WKCopyCommand = {
-  method: 'copy'
+  method: 'copy';
   fromPath: string;
   extension: string;
 };
@@ -36,17 +36,17 @@ export type WKSkeleton<J, R> = {
   //  calibration?: { [topicId: string]: J; } | 'folder'
   output?: {
     annotation_data: J;
-  }
-}
+  };
+};
 
 export type WKLoadParam = {
   wkDir: string;
-  query: WKSkeleton<true, string>
+  query: WKSkeleton<true, string>;
 };
 
 export type WKSaveParam = {
   wkDir: string;
-  query: WKSkeleton<WKJsonSaveCommand, WKCopyCommand>
+  query: WKSkeleton<WKJsonSaveCommand, WKCopyCommand>;
 };
 
 export interface AppApi {

@@ -1,12 +1,13 @@
-import { useState } from "react";
-import { createContainer } from "unstated-next";
+import { useState } from 'react';
+import { createContainer } from 'unstated-next';
 
 const useWorkspace = () => {
-    const [workspaceFolder, setWorkspaceFolder] = useState<string>('');
+  const [workspaceFolder, setWorkspaceFolder] = useState<string>('');
 
-    return {
-        workspaceFolder, setWorkspaceFolder
-    };
-}
+  return {
+    workspaceFolder,
+    setWorkspaceFolder,
+  };
+};
 
 export default createContainer(useWorkspace);

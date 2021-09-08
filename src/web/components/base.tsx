@@ -1,10 +1,8 @@
-import React, { FC } from "react";
+import React, { FC } from 'react';
 
-type Props = {
-
-};
+type Props = {};
 
 const Base: FC<Props> = () => {
-    return (<div />);
+  return <div />;
 };
 export default Base;

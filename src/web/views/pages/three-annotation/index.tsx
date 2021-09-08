@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) =>
       maxWidth: 'calc(100vw - 360px)',
     },
     mainContentPanel: {
-      height: '100%'
+      height: '100%',
     },
     mainContent: {
       flexGrow: 1,
@@ -70,10 +70,15 @@ const ThreeAnnotationPage: FC = () => {
     }
   }, [taskRom]);
 
-  const onClickObj = useCallback((e: any) => {
-    const selected = taskAnnotations.filter(vo => vo.id === e.eventObject.parent.name);
-    selectTaskAnnotations(selected, 'single');
-  }, [taskAnnotations, selectTaskAnnotations]);
+  const onClickObj = useCallback(
+    (e: any) => {
+      const selected = taskAnnotations.filter(
+        (vo) => vo.id === e.eventObject.parent.name
+      );
+      selectTaskAnnotations(selected, 'single');
+    },
+    [taskAnnotations, selectTaskAnnotations]
+  );
 
   const [selectingAnnotationClass, selectingTaskAnnotations] = useMemo(() => {
     if (taskEditor.editorState.mode === 'selecting_annotationClass') {
@@ -105,7 +110,12 @@ const ThreeAnnotationPage: FC = () => {
 
   const [cameraHelper, calibrationCamera] = useMemo(() => {
     const imageTopicId = topicImageDialog.currentTopicId;
-    if (topicImageDialog.open && taskRom.status === 'loaded' && imageTopicId && taskRom.calibrations[imageTopicId]) {
+    if (
+      topicImageDialog.open &&
+      taskRom.status === 'loaded' &&
+      imageTopicId &&
+      taskRom.calibrations[imageTopicId]
+    ) {
       const calibration = taskRom.calibrations[imageTopicId];
       const cameraMatrix = new Matrix4();
       const mat = calibration.cameraMat;
@@ -114,7 +124,12 @@ const ThreeAnnotationPage: FC = () => {
 
       const cameraExtrinsicMatrix = new Matrix4();
       const extrinsic = calibration.cameraExtrinsicMat;
-      cameraExtrinsicMatrix.set(...extrinsic[0], ...extrinsic[1], ...extrinsic[2], ...extrinsic[3]);
+      cameraExtrinsicMatrix.set(
+        ...extrinsic[0],
+        ...extrinsic[1],
+        ...extrinsic[2],
+        ...extrinsic[3]
+      );
       const cameraExtrinsicMatrixT = cameraExtrinsicMatrix.clone().transpose();
 
       // Flip the calibration information along with all axes.
@@ -123,23 +138,65 @@ const ThreeAnnotationPage: FC = () => {
 
       // NOTE: THREE.Matrix4.elements contains matrices in column-major order, but not row-major one.
       //       So, we need the transposed matrix to get the elements in row-major order.
-      const cameraExtrinsicMatrixFlipped = flipMatrix.premultiply(cameraExtrinsicMatrix);
-      const cameraExtrinsicMatrixFlippedT = cameraExtrinsicMatrixFlipped.clone().transpose();
-
+      const cameraExtrinsicMatrixFlipped = flipMatrix.premultiply(
+        cameraExtrinsicMatrix
+      );
+      const cameraExtrinsicMatrixFlippedT = cameraExtrinsicMatrixFlipped
+        .clone()
+        .transpose();
 
       const distance = 30;
 
       const [width, height] = calibration.imageSize;
       const imageFx = cameraMatrixT.elements[0];
-      const imageFov = 2 * Math.atan(width / (2 * imageFx)) / Math.PI * 180;
+      const imageFov = ((2 * Math.atan(width / (2 * imageFx))) / Math.PI) * 180;
 
-      const imageCamera = new PerspectiveCamera(imageFov, width / height, 1, distance);
-      const [n11, n12, n13, n14, n21, n22, n23, n24, n31, n32, n33, n34, n41, n42, n43, n44] = cameraExtrinsicMatrixFlippedT.elements;
-      imageCamera.matrix.set(n11, n12, n13, n14, n21, n22, n23, n24, n31, n32, n33, n34, n41, n42, n43, n44);
+      const imageCamera = new PerspectiveCamera(
+        imageFov,
+        width / height,
+        1,
+        distance
+      );
+      const [
+        n11,
+        n12,
+        n13,
+        n14,
+        n21,
+        n22,
+        n23,
+        n24,
+        n31,
+        n32,
+        n33,
+        n34,
+        n41,
+        n42,
+        n43,
+        n44,
+      ] = cameraExtrinsicMatrixFlippedT.elements;
+      imageCamera.matrix.set(
+        n11,
+        n12,
+        n13,
+        n14,
+        n21,
+        n22,
+        n23,
+        n24,
+        n31,
+        n32,
+        n33,
+        n34,
+        n41,
+        n42,
+        n43,
+        n44
+      );
       imageCamera.matrixWorld.copy(imageCamera.matrix);
       imageCamera.updateProjectionMatrix();
       imageCamera.matrixAutoUpdate = false;
-      return [(<cameraHelper args={[imageCamera]} />), imageCamera];
+      return [<cameraHelper args={[imageCamera]} />, imageCamera];
     }
     return [undefined, undefined];
   }, [taskRom, topicImageDialog]);
@@ -216,7 +273,7 @@ const ThreeAnnotationPage: FC = () => {
     selectingAnnotationClass,
     selectingTaskAnnotations,
     cubeGroupRef,
-    onClickObj
+    onClickObj,
   ]);
 
   // initialize Editor
@@ -267,7 +324,10 @@ const ThreeAnnotationPage: FC = () => {
         </Grid>
       </Grid>
       <ClassListDialog />
-      <ImageDialog cubeGroup={cubeGroupRef} calibrationCamera={calibrationCamera} />
+      <ImageDialog
+        cubeGroup={cubeGroupRef}
+        calibrationCamera={calibrationCamera}
+      />
     </React.Fragment>
   );
 };

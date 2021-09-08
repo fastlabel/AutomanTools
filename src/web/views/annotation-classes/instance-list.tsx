@@ -1,4 +1,11 @@
-import { Collapse, createStyles, makeStyles, Menu, MenuItem, Theme } from '@material-ui/core';
+import {
+  Collapse,
+  createStyles,
+  makeStyles,
+  Menu,
+  MenuItem,
+  Theme,
+} from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -23,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
     },
     otherFrameItem: {
-      opacity: 0.8
+      opacity: 0.8,
     },
     markCuboid: {
       marginRight: theme.spacing(1),
@@ -68,14 +75,20 @@ const InstanceList: FC<Props> = ({
   selectedItems,
   onClickItem = (f) => f,
   onClickToggleInvisible,
-  onUpdateTaskAnnotation = (f) => f
+  onUpdateTaskAnnotation = (f) => f,
 }) => {
   const styles = useStyles();
-  const [anchor, setAnchor] = React.useState<null | { element: HTMLElement, vo: TaskAnnotationVO }>(null);
+  const [anchor, setAnchor] = React.useState<null | {
+    element: HTMLElement;
+    vo: TaskAnnotationVO;
+  }>(null);
 
-  const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>, vo: TaskAnnotationVO) => {
-    setAnchor({ element: event.currentTarget, vo });
-  }, []);
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>, vo: TaskAnnotationVO) => {
+      setAnchor({ element: event.currentTarget, vo });
+    },
+    []
+  );
 
   const handleClose = useCallback(() => {
     setAnchor(null);
@@ -92,7 +105,7 @@ const InstanceList: FC<Props> = ({
         rotationZ,
         sizeX,
         sizeY,
-        sizeZ
+        sizeZ,
       ] = item.points[frameNo] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
       const data = {
         positionX,
@@ -205,9 +218,10 @@ const InstanceList: FC<Props> = ({
               button
               dense
               selected={selected}
-              onClick={hasFrame ? (event) =>
-                onClickItem(item, resolveMode(selected, event))
-                : undefined
+              onClick={
+                hasFrame
+                  ? (event) => onClickItem(item, resolveMode(selected, event))
+                  : undefined
               }>
               <span
                 style={{ backgroundColor: item.color }}
@@ -218,10 +232,12 @@ const InstanceList: FC<Props> = ({
                 secondary={`id ${FormatUtil.omitVal(item.id, 3)}`}
                 className={styles.flexGrow}
               />
-              {hasFrame ? selected ? (
-                <ExpandLess color="action" />
-              ) : (
-                <ExpandMore color="action" />
+              {hasFrame ? (
+                selected ? (
+                  <ExpandLess color="action" />
+                ) : (
+                  <ExpandMore color="action" />
+                )
               ) : undefined}
               <ListItemSecondaryAction>
                 <IconButton
@@ -253,14 +269,16 @@ const InstanceList: FC<Props> = ({
     [invisibleClasses, selectedItems]
   );
 
-  const [disabledAddFrame, disabledRemoveFrame, disabledRemoveAll] = useMemo(() => {
-    if (anchor) {
-      const disabledAddFrame = !!anchor.vo.points[frameNo];
-      const disabledRemoveFrame = !disabledAddFrame || Object.keys(anchor.vo.points).length === 1;
-      return [disabledAddFrame, disabledRemoveFrame, false];
-    }
-    return [true, true, true];
-  }, [anchor]);
+  const [disabledAddFrame, disabledRemoveFrame, disabledRemoveAll] =
+    useMemo(() => {
+      if (anchor) {
+        const disabledAddFrame = !!anchor.vo.points[frameNo];
+        const disabledRemoveFrame =
+          !disabledAddFrame || Object.keys(anchor.vo.points).length === 1;
+        return [disabledAddFrame, disabledRemoveFrame, false];
+      }
+      return [true, true, true];
+    }, [anchor]);
 
   const getClassTagStyle = (type: AnnotationType): any => {
     return styles.markCuboid;
@@ -278,27 +296,50 @@ const InstanceList: FC<Props> = ({
         anchorEl={anchor?.element}
         keepMounted
         open={Boolean(anchor)}
-        onClose={handleClose}
-      >
-        {multiFrame && <MenuItem disabled={disabledAddFrame} onClick={() => {
-          if (anchor) {
-            onUpdateTaskAnnotation({ type: 'addFrame', id: anchor.vo.id, frameNo });
-          }
-          handleClose();
-        }}>フレームに追加</MenuItem>}
-        {multiFrame && <MenuItem disabled={disabledRemoveFrame} onClick={() => {
-          if (anchor) {
-            onUpdateTaskAnnotation({ type: 'removeFrame', id: anchor.vo.id, frameNo });
-          }
-          handleClose();
-        }}>フレームから削除</MenuItem>}
-        <MenuItem disabled={disabledRemoveAll} onClick={() => {
-          if (anchor) {
-            onUpdateTaskAnnotation({ type: 'removeAll', id: anchor.vo.id });
-            onClickItem(anchor.vo, 'remove');
-          }
-          handleClose();
-        }}>全削除</MenuItem>
+        onClose={handleClose}>
+        {multiFrame && (
+          <MenuItem
+            disabled={disabledAddFrame}
+            onClick={() => {
+              if (anchor) {
+                onUpdateTaskAnnotation({
+                  type: 'addFrame',
+                  id: anchor.vo.id,
+                  frameNo,
+                });
+              }
+              handleClose();
+            }}>
+            フレームに追加
+          </MenuItem>
+        )}
+        {multiFrame && (
+          <MenuItem
+            disabled={disabledRemoveFrame}
+            onClick={() => {
+              if (anchor) {
+                onUpdateTaskAnnotation({
+                  type: 'removeFrame',
+                  id: anchor.vo.id,
+                  frameNo,
+                });
+              }
+              handleClose();
+            }}>
+            フレームから削除
+          </MenuItem>
+        )}
+        <MenuItem
+          disabled={disabledRemoveAll}
+          onClick={() => {
+            if (anchor) {
+              onUpdateTaskAnnotation({ type: 'removeAll', id: anchor.vo.id });
+              onClickItem(anchor.vo, 'remove');
+            }
+            handleClose();
+          }}>
+          全削除
+        </MenuItem>
       </Menu>
     </>
   );

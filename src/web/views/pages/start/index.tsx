@@ -4,7 +4,7 @@ import {
   Grid,
   makeStyles,
   Theme,
-  Typography
+  Typography,
 } from '@material-ui/core';
 import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import React, { FC, useCallback } from 'react';

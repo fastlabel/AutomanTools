@@ -1,7 +1,4 @@
-import {
-  createStyles, makeStyles,
-  Theme
-} from '@material-ui/core';
+import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -35,7 +32,10 @@ const ClassListDialog: FC<Props> = () => {
     dispatchAnnotationClass({ type: 'save' });
   }, []);
 
-  const handleFormSubmit = (vo: AnnotationClassVO, type: 'add' | 'update' = 'add') => {
+  const handleFormSubmit = (
+    vo: AnnotationClassVO,
+    type: 'add' | 'update' = 'add'
+  ) => {
     return new Promise<void>((resolve) => {
       dispatchAnnotationClass({ type, vo });
       resolve();

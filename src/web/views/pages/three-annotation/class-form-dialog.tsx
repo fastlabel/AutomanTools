@@ -5,7 +5,7 @@ import React, { FC, Reducer, useCallback, useEffect, useReducer } from 'react';
 import {
   FLDialogActions,
   FLDialogContent,
-  FLDialogTitle
+  FLDialogTitle,
 } from '../../../components/dialogs/fl-dialog';
 import FLTextField from '../../../components/fields/fl-text-field';
 import { FormUtil } from '../../../components/fields/form-util';
@@ -41,7 +41,7 @@ const formReducer: Reducer<FormState<AnnotationClassVO>, FormAction> = (
 const ClassFormDialog: FC<Props> = ({ open, classVo, onClose, onSubmit }) => {
   const handleClose = useCallback(() => onClose(), []);
 
-  const submitType = !!classVo ? 'update' : 'add';
+  const submitType = classVo ? 'update' : 'add';
 
   const initialForm = {
     data: classVo || AnnotationClassUtil.create(),
@@ -121,7 +121,7 @@ const ClassFormDialog: FC<Props> = ({ open, classVo, onClose, onSubmit }) => {
           保存して新規作成
         </Button>
         <Button onClick={handleClickSaveClose} variant="text" color="primary">
-          {!!classVo ? '保存' : '作成'}
+          {classVo ? '保存' : '作成'}
         </Button>
       </FLDialogActions>
     </Dialog>
