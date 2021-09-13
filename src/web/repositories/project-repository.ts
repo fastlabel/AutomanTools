@@ -12,7 +12,7 @@ export type ProjectRepository = {
     projectId: string;
     type: ProjectType;
     targets: File[];
-  }): Promise<void>;
+  }): Promise<{ projectId: string }>;
   load(
     projectId: string,
     taskId?: string,
@@ -40,7 +40,7 @@ const STUB: ProjectRepository = {
     projectId: string;
     type: ProjectType;
     targets: File[];
-  }): Promise<void> {
+  }): Promise<{ projectId: string }> {
     return new Promise((resolve, reject) => {});
   },
   load(

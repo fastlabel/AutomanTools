@@ -1,15 +1,17 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import React, { createRef, FC, useCallback, useEffect, useMemo } from 'react';
-import { useHistory } from 'react-router-dom';
-import { Group, Matrix4, PerspectiveCamera, Vector3 } from 'three';
+import { useHistory, useParams } from 'react-router-dom';
+import { Group, PerspectiveCamera, Vector3 } from 'three';
 import AnnotationClassStore from '../../../stores/annotation-class-store';
+import CameraCalibrationStore from '../../../stores/camera-calibration-store';
 import TaskStore from '../../../stores/task-store';
 import { TaskAnnotationVOPoints } from '../../../types/vo';
 import PcdUtil from '../../../utils/pcd-util';
 import FLPcd from '../../task-three/fl-pcd';
 import { TaskAnnotationUtil } from './../../../utils/task-annotation-util';
 import FLThreeEditor from './../../task-three/fl-three-editor';
+import CalibrationEditDialog from './calibration-edit-dialog';
 import ClassListDialog from './class-list-dialog';
 import ImageDialog from './image-dialog';
 import ThreeSidePanel from './side-panel';
@@ -39,6 +41,7 @@ const useStyles = makeStyles((theme: Theme) =>
 const ThreeAnnotationPage: FC = () => {
   const classes = useStyles();
   const history = useHistory();
+  const { projectId } = useParams<{ projectId: string }>();
 
   const {
     taskToolBar,
@@ -56,6 +59,9 @@ const ThreeAnnotationPage: FC = () => {
 
   const { annotationClass, dispatchAnnotationClass } =
     AnnotationClassStore.useContainer();
+
+  const { calibrationCamera, updateCalibration } =
+    CameraCalibrationStore.useContainer();
 
   const cubeGroupRef = createRef<Group>();
 
@@ -108,98 +114,17 @@ const ThreeAnnotationPage: FC = () => {
     return [undefined, undefined, undefined];
   }, [taskFrame]);
 
-  const [cameraHelper, calibrationCamera] = useMemo(() => {
-    const imageTopicId = topicImageDialog.currentTopicId;
-    if (
-      topicImageDialog.open &&
-      taskRom.status === 'loaded' &&
-      imageTopicId &&
-      taskRom.calibrations[imageTopicId]
-    ) {
-      const calibration = taskRom.calibrations[imageTopicId];
-      const cameraMatrix = new Matrix4();
-      const mat = calibration.cameraMat;
-      cameraMatrix.set(...mat[0], 0, ...mat[1], 0, ...mat[2], 0, 0, 0, 0, 1);
-      const cameraMatrixT = cameraMatrix.clone().transpose();
-
-      const cameraExtrinsicMatrix = new Matrix4();
-      const extrinsic = calibration.cameraExtrinsicMat;
-      cameraExtrinsicMatrix.set(
-        ...extrinsic[0],
-        ...extrinsic[1],
-        ...extrinsic[2],
-        ...extrinsic[3]
-      );
-      const cameraExtrinsicMatrixT = cameraExtrinsicMatrix.clone().transpose();
-
-      // Flip the calibration information along with all axes.
-      const flipMatrix = new Matrix4();
-      flipMatrix.set(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1);
-
-      // NOTE: THREE.Matrix4.elements contains matrices in column-major order, but not row-major one.
-      //       So, we need the transposed matrix to get the elements in row-major order.
-      const cameraExtrinsicMatrixFlipped = flipMatrix.premultiply(
-        cameraExtrinsicMatrix
-      );
-      const cameraExtrinsicMatrixFlippedT = cameraExtrinsicMatrixFlipped
-        .clone()
-        .transpose();
-
-      const distance = 30;
-
-      const [width, height] = calibration.imageSize;
-      const imageFx = cameraMatrixT.elements[0];
-      const imageFov = ((2 * Math.atan(width / (2 * imageFx))) / Math.PI) * 180;
-
-      const imageCamera = new PerspectiveCamera(
-        imageFov,
-        width / height,
-        1,
-        distance
-      );
-      const [
-        n11,
-        n12,
-        n13,
-        n14,
-        n21,
-        n22,
-        n23,
-        n24,
-        n31,
-        n32,
-        n33,
-        n34,
-        n41,
-        n42,
-        n43,
-        n44,
-      ] = cameraExtrinsicMatrixFlippedT.elements;
-      imageCamera.matrix.set(
-        n11,
-        n12,
-        n13,
-        n14,
-        n21,
-        n22,
-        n23,
-        n24,
-        n31,
-        n32,
-        n33,
-        n34,
-        n41,
-        n42,
-        n43,
-        n44
-      );
-      imageCamera.matrixWorld.copy(imageCamera.matrix);
-      imageCamera.updateProjectionMatrix();
-      imageCamera.matrixAutoUpdate = false;
-      return [<cameraHelper args={[imageCamera]} />, imageCamera];
-    }
-    return [undefined, undefined];
-  }, [taskRom, topicImageDialog]);
+  const resolveCameraHelper = useCallback(
+    (calibrationCamera?: PerspectiveCamera) => {
+      if (!calibrationCamera) {
+        return undefined;
+      }
+      const helperCamera = calibrationCamera.clone();
+      helperCamera.far = 30;
+      return <cameraHelper args={[helperCamera]} />;
+    },
+    []
+  );
 
   const editor = useMemo(() => {
     if (taskFrame.status !== 'none' && pcdObj) {
@@ -212,7 +137,7 @@ const ThreeAnnotationPage: FC = () => {
           cubeGroupRef={cubeGroupRef}
           bgMain={pcdObj}
           bgSub={pcdEditorObj}
-          cameraHelper={cameraHelper}
+          cameraHelper={resolveCameraHelper(calibrationCamera)}
           targets={selectingTaskAnnotations}
           position0={position0}
           preObject={selectingAnnotationClass}
@@ -267,7 +192,7 @@ const ThreeAnnotationPage: FC = () => {
   }, [
     taskFrame,
     taskAnnotations,
-    cameraHelper,
+    calibrationCamera,
     pcdObj,
     position0,
     selectingAnnotationClass,
@@ -278,10 +203,9 @@ const ThreeAnnotationPage: FC = () => {
 
   // initialize Editor
   useEffect(() => {
-    const projectId = '';
     const taskId = '';
     open(projectId, taskId);
-  }, []);
+  }, [projectId]);
 
   useEffect(() => {
     if (taskRom.status === 'loaded') {
@@ -302,6 +226,20 @@ const ThreeAnnotationPage: FC = () => {
       fetchAnnotationClasses(taskRom.projectId);
     }
   }, [taskRom, annotationClass]);
+
+  useEffect(() => {
+    const imageTopicId = topicImageDialog.currentTopicId;
+    if (
+      topicImageDialog.open &&
+      taskRom.status === 'loaded' &&
+      imageTopicId &&
+      taskRom.calibrations[imageTopicId]
+    ) {
+      updateCalibration(taskRom.calibrations[imageTopicId]);
+    } else {
+      updateCalibration(undefined);
+    }
+  }, [taskRom, topicImageDialog]);
 
   return (
     <React.Fragment>
@@ -324,10 +262,8 @@ const ThreeAnnotationPage: FC = () => {
         </Grid>
       </Grid>
       <ClassListDialog />
-      <ImageDialog
-        cubeGroup={cubeGroupRef}
-        calibrationCamera={calibrationCamera}
-      />
+      <ImageDialog calibrationCamera={calibrationCamera} />
+      <CalibrationEditDialog />
     </React.Fragment>
   );
 };

@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import React, { FC, Reducer, useReducer } from 'react';
 import { useHistory } from 'react-router-dom';
+import { v4 as uuid } from 'uuid';
 import { FormUtil } from '../../../components/fields/form-util';
 import { FormAction, FormState } from '../../../components/fields/type';
 import WorkspaceContext from '../../../context/workspace';
@@ -79,8 +80,8 @@ const WorkspacePage: FC = () => {
   const handleCreate = () => {
     // TODO should updated workspace folder
     projectRepository
-      .create(form.data as any)
-      .then(() => history.push('/threeannotation'));
+      .create({ ...form.data, projectId: uuid().toString() } as any)
+      .then(({ projectId }) => history.push(`/threeannotation/${projectId}`));
   };
 
   const handleBack = () => {

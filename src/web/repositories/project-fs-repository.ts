@@ -49,7 +49,7 @@ export const useProjectFsRepository = (
       projectId: string;
       type: ProjectType;
       targets: File[];
-    }): Promise<void> {
+    }): Promise<{ projectId: string }> {
       const calibration = new Set();
       const frames = new Set<string>();
       const topicIds = new Set();
@@ -161,7 +161,7 @@ export const useProjectFsRepository = (
               },
             },
           })
-          .then(() => resolve())
+          .then(() => resolve({ projectId: vo.projectId }))
           .catch((err) => reject(err));
       });
     },

@@ -1,43 +1,19 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
-import Popover from '@material-ui/core/Popover';
 import ArrowBackIosOutlinedIcon from '@material-ui/icons/ArrowBackIosOutlined';
 import ArrowForwardIosOutlinedIcon from '@material-ui/icons/ArrowForwardIosOutlined';
-import { Canvas } from '@react-three/fiber';
-import React, {
-  FC,
-  RefObject,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
-import {
-  Camera,
-  Euler,
-  Group,
-  PerspectiveCamera,
-  TextureLoader,
-  Vector3,
-} from 'three';
+import { Canvas, useThree } from '@react-three/fiber';
+import React, { FC, useEffect, useMemo, useState } from 'react';
+import { PerspectiveCamera, Texture, TextureLoader } from 'three';
+import DraggablePopover from '../../../components/draggable-popover';
+import ToolBar from '../../../components/tool-bar';
+import CameraCalibrationStore from '../../../stores/camera-calibration-store';
 import TaskStore from '../../../stores/task-store';
 import FLCubes from '../../task-three/fl-cubes';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    content: {
-      position: 'relative',
-    },
-    contentImage: {
-      width: 560,
-      height: 'auto',
-    },
-    popoverPaper: {
-      maxWidth: 'initial',
-      maxHeight: 'initial',
-    },
     prevButton: {
       display: 'flex',
       position: 'absolute',
@@ -57,129 +33,87 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-type Props = {
-  cubeGroup?: RefObject<Group>;
-  calibrationCamera?: PerspectiveCamera;
-};
-
-type Position = {
-  xRate: number;
-  yRate: number;
-};
-
 type LocalState = {
   open: boolean;
   width: number;
   height: number;
-  imageMesh: JSX.Element | undefined;
+  tex?: Texture;
 };
 
-const _vector = /*@__PURE__*/ new Vector3();
-const _camera = /*@__PURE__*/ new Camera();
+type SceneBackgroundProps = {
+  tex?: Texture;
+};
 
-const ImagePopover: FC<Props> = ({ cubeGroup, calibrationCamera }) => {
+const _SceneBackground: FC<SceneBackgroundProps> = ({ tex }) => {
+  const { gl, scene } = useThree();
+  useEffect(() => {
+    scene.background = tex || null;
+  }, [tex]);
+  return <></>;
+};
+
+type Props = {
+  calibrationCamera?: PerspectiveCamera;
+};
+
+const ImagePopover: FC<Props> = ({ }) => {
   const styles = useStyles();
-  const popoverRef = useRef<any>(undefined);
 
   const [state, setState] = useState<LocalState>({
     open: false,
-    width: 1,
-    height: 1,
-    imageMesh: undefined,
+    width: 0,
+    height: 0,
   });
-
-  const [currentPosition, setCurrentPosition] = useState<Position>({
-    xRate: 0,
-    yRate: 0,
-  });
-
-  const onDrag = useCallback((e: DraggableEvent, data: DraggableData) => {
-    setCurrentPosition({ xRate: data.lastX, yRate: data.lastY });
-  }, []);
 
   const { taskAnnotations, taskFrame, topicImageDialog, moveTopicImage } =
     TaskStore.useContainer();
 
+  const { open, setOpen, calibrationCamera } =
+    CameraCalibrationStore.useContainer();
+
   useEffect(() => {
-    if (
-      !topicImageDialog.currentImageData ||
-      !topicImageDialog.open ||
-      !calibrationCamera
-    ) {
-      const width = 1;
-      const height = 1;
-      setState({
-        open: false,
-        width,
-        height,
-        imageMesh: undefined,
+    if (topicImageDialog.open) {
+      new TextureLoader().load(topicImageDialog.currentImageData, (tex) => {
+        const imageAspect = tex.image ? tex.image.width / tex.image.height : 1;
+        const width = 800;
+        const height = width / imageAspect;
+        setState({ open: true, width, height, tex });
       });
       return;
     }
-    new TextureLoader().load(topicImageDialog.currentImageData, (tex) => {
-      _camera.projectionMatrixInverse.copy(
-        calibrationCamera.projectionMatrixInverse
-      );
-      _vector.set(30, 0, 0);
-      const width = 120;
-      const height = tex.image.height / (tex.image.width / width);
-      setState({
-        open: true,
-        width,
-        height,
-        imageMesh: (
-          <>
-            <mesh
-              position={_vector.clone()}
-              rotation={new Euler(0, -Math.PI / 2, -Math.PI / 2)}>
-              <planeGeometry args={[width, height]} />
-              <meshBasicMaterial args={[{ map: tex }]} />
-            </mesh>
-          </>
-        ),
-      });
+    setState({
+      open: false,
+      width: 0,
+      height: 0,
     });
-    return;
   }, [topicImageDialog]);
 
-  useEffect(() => {
-    if (popoverRef.current && state.open) {
-      popoverRef.current.style.inset = '';
-      popoverRef.current.style.top = '0px';
+  const frameNo = useMemo(() => {
+    if (taskFrame.status === 'loaded') {
+      return taskFrame.currentFrame;
     }
-  }, [popoverRef, state]);
+    return '';
+  }, [taskFrame]);
 
   return (
-    <Draggable
-      position={{
-        x: currentPosition.xRate,
-        y: currentPosition.yRate,
-      }}
-      onDrag={onDrag}>
-      <Popover
-        ref={popoverRef}
-        hideBackdrop={true}
-        disablePortal={true}
-        anchorReference="anchorPosition"
-        anchorPosition={{ top: 0, left: 0 }}
-        PaperProps={{ className: styles.popoverPaper }}
-        open={state.open}>
-        <Box className={styles.content}>
-          <Box
-            style={{ cursor: 'move' }}
-            width={800}
-            height={229.95169082125605}>
-            {state.imageMesh && (
-              <Canvas camera={calibrationCamera} resize={{ debounce: 500 }}>
-                {taskFrame.status === 'loaded' && (
-                  <FLCubes
-                    frameNo={taskFrame.currentFrame}
-                    annotations={taskAnnotations}
-                  />
-                )}
-                {state.imageMesh}
-              </Canvas>
-            )}
+    <DraggablePopover handle=".imageToolBar" open={topicImageDialog.open}>
+      <ToolBar
+        className="imageToolBar"
+        style={{ cursor: 'move', minHeight: 38 }}>
+        {/* <ToolBarButton
+          toolTip="キャリブレーション調整"
+          icon={<SettingsOutlinedIcon />}
+          onClick={() => setOpen((pre) => !pre)}
+          active={open}
+        /> */}
+      </ToolBar>
+      {topicImageDialog.open && (
+        <>
+          <Box width={state.width} height={state.height}>
+            <Canvas camera={calibrationCamera} resize={{ debounce: 500 }}>
+              <_SceneBackground tex={state.tex} />
+              <FLCubes frameNo={frameNo} annotations={taskAnnotations} />
+            </Canvas>
           </Box>
           {topicImageDialog.hasPrev && (
             <Box className={styles.prevButton} m={0}>
@@ -203,9 +137,9 @@ const ImagePopover: FC<Props> = ({ cubeGroup, calibrationCamera }) => {
               </Box>
             </Box>
           )}
-        </Box>
-      </Popover>
-    </Draggable>
+        </>
+      )}
+    </DraggablePopover>
   );
 };
 

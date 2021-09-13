@@ -103,3 +103,19 @@ export type TaskCalibrationVO = {
   distCoeff: number[][];
   imageSize: [width: number, height: number];
 };
+
+export type CameraVo = {
+  internal: CameraInternal;
+};
+
+export type CameraInternal = {
+  width: number;
+  height: number;
+  fy: number;
+  fov?: number;
+  distance: number;
+  fullWidth: number;
+  fullHeight: number;
+  offsetX: number;
+  offsetY: number;
+};

@@ -12,6 +12,7 @@ import {
 import { TaskAnnotationUtil } from './../utils/task-annotation-util';
 
 export type TaskToolbar = {
+  useOrthographicCamera: boolean;
   selectMode: 'control' | 'select';
   showLabel: boolean;
 };
@@ -144,6 +145,7 @@ const useTask = () => {
     useState<TaskAnnotationVO>();
 
   const [taskToolBar, updateTaskToolBar] = useState<TaskToolbar>({
+    useOrthographicCamera: false,
     selectMode: 'control',
     showLabel: false,
   });
@@ -216,6 +218,11 @@ const useTask = () => {
   // Task Store Event
   const open = useCallback(
     (projectId: string, taskId: string, frameNo?: string) => {
+      _updateTopicImageDialog({
+        open: false,
+        topicIds: [],
+        currentIndex: -1,
+      });
       _updateTaskRom({ status: 'loading', projectId, taskId });
       projectRepository.load(projectId, taskId).then((vo) => {
         _updateTaskRom({ ...vo.taskROM, status: 'loaded' });

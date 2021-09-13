@@ -39,10 +39,11 @@ const StartPage: FC = () => {
       if (!wkDir) return;
       workspaceStore.setWorkspaceFolder(wkDir);
       workspaceApi
-        .exist({ wkDir, query: { meta: { project: true } } })
+        .load({ wkDir, query: { meta: { project: true } } })
         .then((res) => {
           if (res.meta?.project) {
-            history.push('/threeannotation');
+            const projectId = res.meta?.project.projectId;
+            history.push(`/threeannotation/${projectId}`);
             return;
           }
           history.push('/workspace');

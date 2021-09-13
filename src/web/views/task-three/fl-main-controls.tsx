@@ -40,7 +40,6 @@ const FLMainControls: FC<Props> = ({
     if (position0 && orbit.current && orbit.current.enabled) {
       const control = orbit.current;
       control.object.position.copy(position0.clone().setZ(position0.z + 50));
-      control.target.copy(position0);
       control.saveState();
     }
   }, []);
@@ -52,7 +51,13 @@ const FLMainControls: FC<Props> = ({
         preObject={preObject}
         onPutObject={onPutObject}
       />
-      <DreiOrbitControls ref={orbit} camera={camera} enableDamping={false} />
+      <DreiOrbitControls
+        ref={orbit}
+        camera={camera}
+        enableDamping={false}
+        minDistance={0.3}
+        maxDistance={0.3 * 100}
+      />
     </>
   );
 };

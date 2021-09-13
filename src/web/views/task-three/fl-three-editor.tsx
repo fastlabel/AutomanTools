@@ -114,7 +114,7 @@ const FLThreeEditor: FC<Props> = ({
       <Box flexGrow={1} mt={2} mr={2} ml={2} mb={1}>
         <Canvas
           camera={{
-            fov: 90,
+            fov: 50,
             up: new Vector3(0, 0, 1),
             rotation: new Euler(0, 0, 0, 'ZXY'),
           }}
