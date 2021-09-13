@@ -56,7 +56,7 @@ type Props = {
   calibrationCamera?: PerspectiveCamera;
 };
 
-const ImagePopover: FC<Props> = ({ }) => {
+const ImagePopover: FC<Props> = ({}) => {
   const styles = useStyles();
 
   const [state, setState] = useState<LocalState>({

@@ -36,13 +36,16 @@ const DraggablePopover: FC<Props> = ({ handle, open, children }) => {
   });
 
   const onDrag = useCallback((e: DraggableEvent, data: DraggableData) => {
-    setCurrentPosition({ xRate: data.lastX, yRate: data.lastY });
+    const xRate = data.lastX < 0 ? 0 : data.lastX;
+    const yRate = data.lastY < -38 ? -38 : data.lastY;
+    setCurrentPosition({ xRate, yRate });
   }, []);
 
   useEffect(() => {
     if (popoverRef.current && open) {
       popoverRef.current.style.inset = '';
-      popoverRef.current.style.top = '0px';
+      popoverRef.current.style.top = '60px';
+      popoverRef.current.style.left = '-16px';
     }
   }, [popoverRef, open]);
 

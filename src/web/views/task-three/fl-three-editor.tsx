@@ -9,10 +9,12 @@ import {
 import { Canvas, ThreeEvent } from '@react-three/fiber';
 import React, { createRef, FC, useEffect, useMemo, useState } from 'react';
 import { Euler, Event, Group, Object3D, Vector3 } from 'three';
+import { PCDResult } from '../../types/labos';
 import { AnnotationClassVO, TaskAnnotationVO } from '../../types/vo';
 import FLCubes from './fl-cubes';
 import FLMainControls from './fl-main-controls';
 import FLObjectControls from './fl-object-controls';
+import FLPcd from './fl-pcd';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,10 +43,11 @@ const useStyles = makeStyles((theme: Theme) =>
 type Props = {
   frameNo: string;
   annotations: TaskAnnotationVO[];
+  useOrthographicCamera?: true | undefined;
   selectable: boolean;
   showLabel: boolean;
   cubeGroupRef?: React.RefObject<Group>;
-  bgMain?: JSX.Element;
+  pcd?: PCDResult;
   bgSub?: JSX.Element;
   cameraHelper?: JSX.Element;
   position0?: Vector3;
@@ -63,10 +66,11 @@ const C_RESIZE = { debounce: 100 };
 const FLThreeEditor: FC<Props> = ({
   frameNo,
   annotations,
+  useOrthographicCamera,
   selectable,
   showLabel,
   cubeGroupRef,
-  bgMain,
+  pcd,
   bgSub,
   position0,
   targets,
@@ -77,7 +81,7 @@ const FLThreeEditor: FC<Props> = ({
   onObjectChange = (f) => f,
 }) => {
   const styles = useStyles();
-  const [near, far, zoom] = useMemo(() => [0.01, 500, 10], []);
+  const [near, far, zoom] = useMemo(() => [0.03, 30, 10], []);
   const [target, setTarget] = useState<Object3D>();
   const rootRef = createRef<HTMLDivElement>();
   const _cubeGroupRef = cubeGroupRef || createRef<Group>();
@@ -109,10 +113,12 @@ const FLThreeEditor: FC<Props> = ({
   }, [rootRef]);
 
   const footerBoxH = 320;
+  const orthographic = !!useOrthographicCamera;
   return (
     <div className={styles.root} ref={rootRef}>
       <Box flexGrow={1} mt={2} mr={2} ml={2} mb={1}>
         <Canvas
+          orthographic={orthographic}
           camera={{
             fov: 50,
             up: new Vector3(0, 0, 1),
@@ -121,11 +127,12 @@ const FLThreeEditor: FC<Props> = ({
           style={{ backgroundColor: 'black' }}
           resize={C_RESIZE}>
           <FLMainControls
+            orthographic={orthographic}
             position0={position0}
             preObject={preObject}
             onPutObject={onPutObject}
           />
-          {bgMain}
+          {pcd && <FLPcd pcd={pcd} baseSize={orthographic ? 0.3 : 0.015} />}
           <FLCubes
             ref={_cubeGroupRef}
             selectable={selectable}

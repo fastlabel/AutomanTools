@@ -11,6 +11,7 @@ import FLAnnotationControls, {
 type Props = {
   position0?: Vector3;
   preObject?: AnnotationClassVO;
+  orthographic: boolean;
   onPutObject?: (
     evt: ThreeEvent<MouseEvent>,
     preObject: AnnotationClassVO
@@ -20,6 +21,7 @@ type Props = {
 const FLMainControls: FC<Props> = ({
   position0,
   preObject,
+  orthographic,
   onPutObject = (f) => f,
 }) => {
   const camera = useThree(({ camera }) => camera);
@@ -54,7 +56,10 @@ const FLMainControls: FC<Props> = ({
       <DreiOrbitControls
         ref={orbit}
         camera={camera}
+        enableRotate={!orthographic}
         enableDamping={false}
+        minZoom={10}
+        maxZoom={200}
         minDistance={0.3}
         maxDistance={0.3 * 100}
       />

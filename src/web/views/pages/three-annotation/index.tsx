@@ -95,15 +95,15 @@ const ThreeAnnotationPage: FC = () => {
     return [undefined, undefined];
   }, [taskEditor]);
 
-  const [pcdObj, pcdEditorObj, position0] = useMemo(() => {
+  const [pcd, pcdEditorObj, position0] = useMemo(() => {
     if (taskFrame.status !== 'none' && taskFrame.pcdResource) {
       const pcd = taskFrame.pcdResource;
       const x = PcdUtil.getMaxMin(pcd.position, 'x');
       const y = PcdUtil.getMaxMin(pcd.position, 'y');
       const z = PcdUtil.getMaxMin(pcd.position, 'z');
       return [
-        <FLPcd pcd={pcd} />,
-        <FLPcd pcd={pcd} baseSize={0.08} />,
+        pcd,
+        <FLPcd pcd={pcd} baseSize={0.3} />,
         new Vector3(
           (x.min + x.max) / 2,
           (z.min + z.max) / 2,
@@ -127,15 +127,16 @@ const ThreeAnnotationPage: FC = () => {
   );
 
   const editor = useMemo(() => {
-    if (taskFrame.status !== 'none' && pcdObj) {
+    if (taskFrame.status !== 'none' && pcd) {
       return (
         <FLThreeEditor
           frameNo={taskFrame.currentFrame}
           annotations={taskAnnotations}
+          useOrthographicCamera={taskToolBar.useOrthographicCamera || undefined}
           selectable={taskToolBar.selectMode === 'select'}
           showLabel={taskToolBar.showLabel}
           cubeGroupRef={cubeGroupRef}
-          bgMain={pcdObj}
+          pcd={pcd}
           bgSub={pcdEditorObj}
           cameraHelper={resolveCameraHelper(calibrationCamera)}
           targets={selectingTaskAnnotations}
@@ -193,7 +194,7 @@ const ThreeAnnotationPage: FC = () => {
     taskFrame,
     taskAnnotations,
     calibrationCamera,
-    pcdObj,
+    pcd,
     position0,
     selectingAnnotationClass,
     selectingTaskAnnotations,

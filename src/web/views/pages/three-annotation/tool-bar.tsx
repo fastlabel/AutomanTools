@@ -139,7 +139,7 @@ const ThreeToolbar: FC<Props> = () => {
           icon={<InputOutlinedIcon />}
           onClick={() => {
             copyFrameTaskAnnotations();
-            enqueueSnackbar('コピーしました');
+            enqueueSnackbar('表示しているフレームにコピーしました');
           }}
         />
         <Box mr={2} />

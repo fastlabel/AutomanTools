@@ -209,7 +209,7 @@ const ToolMenu: FC<ToolMenuProps> = ({ id, label, menus }) => {
         }}>
         {menus.map((item, index) => {
           if (item.separator) {
-            return <Divider style={{ margin: '4px 8px' }} />;
+            return <Divider key={index} style={{ margin: '4px 8px' }} />;
           }
           return (
             <MenuItem key={index} onClick={handleMenu(item.onClick)}>
