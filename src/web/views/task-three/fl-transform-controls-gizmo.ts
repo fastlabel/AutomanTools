@@ -53,6 +53,8 @@ export class FLTransformControlsGizmo extends Object3D {
   private object: Object3D | undefined;
   private control: ControlType;
 
+  private positions: Map<ControlKey, Vector3> = new Map();
+
   constructor(control: ControlType) {
     super();
     this.control = control;
@@ -99,19 +101,35 @@ export class FLTransformControlsGizmo extends Object3D {
     handles.forEach((handle) => {
       // hide aligned to camera
       handle.visible = true;
-      handle.rotation.set(0, 0, 0);
       handle.position.copy(this.worldPosition);
+      // Align handles to current local or world rotation
 
       if (handle.name === 'T_BOX') {
         handle.scale.copy(object.scale);
+        handle.quaternion.copy(quaternion);
       } else {
-        // TODO fix point size should fix
-        // _setupGizmo resolve position in geometry
-        handle.scale.copy(object.scale);
-      }
+        const base = this.positions.get(handle.name as any)?.clone();
+        if (base) {
+          const v = base.clone();
+          if (handle.name === 'R_POINT') {
+            if (this.control === 'top') {
+              v.multiply(object.scale.clone().setY(1));
+            } else if (this.control === 'side') {
+              v.multiply(object.scale.clone().setX(1));
+              v.multiply(new Vector3(1, 1, -1));
+              base.multiply(new Vector3(1, 1, -1));
+            }
+          } else {
+            v.multiply(object.scale);
+          }
+          v.applyQuaternion(quaternion);
+          const mesh = handle as Mesh;
+          handle.position.add(v);
 
-      // Align handles to current local or world rotation
-      handle.quaternion.copy(quaternion);
+          const scale = 75 / this.camera.zoom;
+          handle.scale.set(scale, scale, scale);
+        }
+      }
 
       // highlight selected axis
       const material = (handle as any).material;
@@ -178,18 +196,19 @@ export class FLTransformControlsGizmo extends Object3D {
       material: MeshBasicMaterial
     ): _BaseGizItemSet => {
       let mesh = null;
+      const plane = new PlaneGeometry(1, 1);
       switch (control) {
         case 'top':
           // p.x, p.y
-          mesh = new Mesh(new PlaneGeometry(1, 1), material);
+          mesh = new Mesh(plane, material);
           return [mesh, [0, 0, 0], [0, 0, 0]];
         case 'side':
           // p.y, p.z
-          mesh = new Mesh(new PlaneGeometry(1, 1), material);
+          mesh = new Mesh(plane, material);
           return [mesh, [0, 0, 0], [HALF_ANGLE, 0, 0]];
         case 'front':
           // p.x, p.z
-          mesh = new Mesh(new PlaneGeometry(1, 1), material);
+          mesh = new Mesh(plane, material);
           return [mesh, [0, 0, 0], [0, HALF_ANGLE, 0]];
       }
     };
@@ -277,6 +296,15 @@ export class FLTransformControlsGizmo extends Object3D {
     };
 
     const [points, rotation] = _renderPoints(this.control, _boxPoints());
+
+    this.positions.set('S_TL', points[0].clone());
+    this.positions.set('S_TR', points[1].clone());
+    this.positions.set('S_BL', points[2].clone());
+    this.positions.set('S_BR', points[3].clone());
+    if (points[4]) {
+      this.positions.set('R_POINT', points[4].clone());
+    }
+
     const circleGeometry = new CircleGeometry(0.1, 32);
     const _PointMesh = (
       points: Vector3,
@@ -341,12 +369,14 @@ export class FLTransformControlsGizmo extends Object3D {
           object.rotation.set(rotation[0], rotation[1], rotation[2]);
         }
         object.updateMatrix();
-        const tempGeometry = object.geometry.clone();
-        tempGeometry.applyMatrix4(object.matrix);
-        object.geometry = tempGeometry;
-        object.renderOrder = Infinity;
-        object.position.set(0, 0, 0);
-        object.rotation.set(0, 0, 0);
+        if (object.geometry.type === 'PlaneGeometry') {
+          const tempGeometry = object.geometry.clone();
+          tempGeometry.applyMatrix4(object.matrix);
+          object.geometry = tempGeometry;
+          object.renderOrder = Infinity;
+          object.position.set(0, 0, 0);
+          object.rotation.set(0, 0, 0);
+        }
         gizmo.add(object);
       });
     });

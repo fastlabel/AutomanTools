@@ -27,6 +27,7 @@ const ThreeToolbar: FC<Props> = () => {
     taskRom,
     taskFrame,
     topicImageDialog,
+    reopen,
     updateTaskToolBar,
     openImageDialog,
     changeFrame,
@@ -89,12 +90,13 @@ const ThreeToolbar: FC<Props> = () => {
           toolTip="平面図表示"
           active={taskToolBar.useOrthographicCamera}
           icon={<SettingsOverscanOutlinedIcon />}
-          onClick={() =>
+          onClick={() => {
+            reopen();
             updateTaskToolBar((pre) => ({
               ...pre,
               useOrthographicCamera: !pre.useOrthographicCamera,
-            }))
-          }
+            }));
+          }}
         />
         <Box mr={2} />
         <ToolBarButton

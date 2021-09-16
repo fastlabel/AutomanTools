@@ -1,6 +1,5 @@
 /* eslint-disable */
 import {
-  Box3,
   Camera,
   EventDispatcher,
   Group,
@@ -27,7 +26,7 @@ import { ControlType } from './fl-transform-controls-gizmo';
 const moduloWrapAround = (offset: number, capacity: number) =>
   ((offset % capacity) + capacity) % capacity;
 
-const _box = /*@__PURE__*/ new Box3();
+const HALF_ANGLE = Math.PI / 2;
 
 class FLOrbitControls extends EventDispatcher {
   object: Camera;
@@ -92,6 +91,8 @@ class FLOrbitControls extends EventDispatcher {
   // the target DOM element for key events
   _domElementKeyEvents: any = null;
 
+  editingId: string = '';
+
   getPolarAngle: () => number;
   getAzimuthalAngle: () => number;
   setPolarAngle: (x: number) => void;
@@ -104,6 +105,8 @@ class FLOrbitControls extends EventDispatcher {
   update: () => void;
   connect: (domElement: HTMLElement) => void;
   dispose: () => void;
+
+  reset0: () => void;
   set0: (object: Object3D) => void;
 
   constructor(
@@ -365,6 +368,10 @@ class FLOrbitControls extends EventDispatcher {
       //scope.dispatchEvent( { type: 'dispose' } ); // should this be added here?
     };
 
+    this.reset0 = (): void => {
+      scope.editingId = '';
+    };
+
     this.set0 = (object: Object3D): void => {
       const position = object.position;
       scope.target0.copy(position);
@@ -373,31 +380,35 @@ class FLOrbitControls extends EventDispatcher {
       const baseSize = Math.min(camera.top, camera.right) * 1;
 
       const scale = (object as Group).scale;
+      const distance = 10;
 
       let copy = position.clone();
       let zoom = camera.zoom;
-      switch (this.controlType) {
+      let azimuthalAngle = 0;
+      switch (scope.controlType) {
         case 'top':
-          copy.add(new Vector3(0, 0, 1).applyEuler(object.rotation));
+          copy.add(new Vector3(0, 0, distance).applyEuler(object.rotation));
           zoom = Math.floor(baseSize / Math.max(scale.x, scale.y));
           break;
         case 'side':
-          copy.add(new Vector3(0, -1, 0).applyEuler(object.rotation));
+          copy.add(new Vector3(0, -distance, 0).applyEuler(object.rotation));
           zoom = Math.floor(baseSize / Math.max(scale.x, scale.z));
           break;
         case 'front':
-          copy.add(new Vector3(-1, 0, 0).applyEuler(object.rotation));
+          copy.add(new Vector3(-distance, 0, 0).applyEuler(object.rotation));
           zoom = Math.floor(baseSize / Math.max(scale.y, scale.z));
           break;
       }
-      if (zoom !== camera.zoom) {
+      if (scope.editingId !== object.name) {
         camera.zoom = zoom;
         camera.updateProjectionMatrix();
+        scope.editingId = object.name;
       }
       if (!copy.equals(scope.position0)) {
-        // scope.object.up.applyEuler(object.rotation);
         scope.position0.copy(copy);
-        this.reset();
+        scope.reset();
+        // scope.object.up.applyEuler(object.rotation);
+        // scope.setAzimuthalAngle(azimuthalAngle);
       }
     };
     //
@@ -873,15 +884,18 @@ class FLOrbitControls extends EventDispatcher {
 
       switch (event.button) {
         case 0:
-          mouseAction = scope.mouseButtons.LEFT;
-          break;
+          // mouseButtons.LEFT
+          mouseAction = MOUSE.PAN;
+          // TODO should disable dragging point
+          return;
 
         case 1:
           mouseAction = scope.mouseButtons.MIDDLE;
           break;
 
         case 2:
-          mouseAction = scope.mouseButtons.RIGHT;
+          // mouseButtons.RIGHT
+          mouseAction = MOUSE.PAN;
           break;
 
         default:

@@ -97,9 +97,14 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
   private mouseUpEvent = { type: 'mouseUp' };
   private objectChangeEvent = { type: 'objectChange' };
 
-  private orbit: FLOrbitControls | null = null;
+  private orbit: FLOrbitControls;
 
-  constructor(camera: TCamera, domElement: HTMLElement, control: ControlType) {
+  constructor(
+    camera: TCamera,
+    domElement: HTMLElement,
+    control: ControlType,
+    orbit: FLOrbitControls
+  ) {
     super();
     if (domElement === undefined) {
       console.warn(
@@ -116,15 +121,7 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
     this.plane = new FLTransformControlsPlane();
     this.add(this.plane);
 
-    this.orbit = new FLOrbitControls(this.camera, this.control);
-
-    if (!(window as any).control) {
-      (window as any).control = {};
-    }
-    (window as any).control[control] = this.orbit;
-    this.orbit.enableRotate = false;
-    this.orbit.enableDamping = false;
-    this.orbit.connect(this.domElement);
+    this.orbit = orbit;
 
     // Defined getter, setter and store for a property
     const defineProperty = <TValue>(
@@ -211,7 +208,7 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
     this.object = undefined;
     this.visible = false;
     this.axis = null;
-
+    this.orbit?.reset0();
     return this;
   };
 
@@ -250,9 +247,7 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
       this.cameraQuaternion,
       this.cameraScale
     );
-
     this.eye.copy(this.cameraPosition).sub(this.worldPosition).normalize();
-
     super.updateMatrixWorld();
   };
 
@@ -371,7 +366,13 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
       );
       object.quaternion.multiply(this.quaternionStart).normalize();
 
-      // console.log({ rAngle: this.rotationAngle, rSnap: this.rotationSnap, rAxis: this.rotationAxis, tempQ: this.tempQuaternion, qStart: this.quaternionStart });
+      console.log({
+        rAngle: this.rotationAngle,
+        rSnap: this.rotationSnap,
+        rAxis: this.rotationAxis,
+        tempQ: this.tempQuaternion,
+        qStart: this.quaternionStart,
+      });
     } else {
       this.tempVector.copy(this.pointStart);
       this.tempVector2.copy(this.pointEnd);
@@ -390,6 +391,7 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
       }
       // Apply scale
       object.scale.copy(this.scaleStart).multiply(this.tempVector2);
+      const minScale = 0.0001;
       if (this.scaleSnap && this.object) {
         if (this.control === 'top') {
           object.scale.x =
@@ -413,6 +415,15 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
             Math.round(object.scale.z / this.scaleSnap) * this.scaleSnap ||
             this.scaleSnap;
         }
+      }
+      if (object.scale.x <= minScale) {
+        object.scale.x = minScale;
+      }
+      if (object.scale.y <= minScale) {
+        object.scale.y = minScale;
+      }
+      if (object.scale.z <= minScale) {
+        object.scale.z = minScale;
       }
     }
     this.dispatchEvent(this.changeEvent);
@@ -502,6 +513,10 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
     console.warn(
       'THREE.FLTransformControls: update function has no more functionality and therefore has been deprecated.'
     );
+  };
+
+  public isDragging = () => {
+    return this.dragging;
   };
 
   public dispose = (): void => {

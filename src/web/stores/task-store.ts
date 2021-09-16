@@ -241,6 +241,14 @@ const useTask = () => {
     ]
   );
 
+  const reopen = useCallback(() => {
+    _updateTaskFrame((pre) => ({ ...pre, status: 'none' }));
+    setTimeout(() => {
+      // workaround reset camera
+      _updateTaskFrame((pre: any) => ({ ...pre, status: 'loaded' }));
+    }, 50);
+  }, [_updateTaskFrame]);
+
   const fetchAnnotationClasses = useCallback(
     (projectId: string) => {
       // this way will be removed when support project.
@@ -478,6 +486,7 @@ const useTask = () => {
     moveTopicImage,
     // # Project/Task
     open,
+    reopen,
     fetchAnnotationClasses,
 
     // # Frame

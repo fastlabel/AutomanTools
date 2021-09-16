@@ -56,10 +56,11 @@ const FLMainControls: FC<Props> = ({
       <DreiOrbitControls
         ref={orbit}
         camera={camera}
-        enableRotate={!orthographic}
         enableDamping={false}
         minZoom={10}
         maxZoom={200}
+        minPolarAngle={orthographic ? 0 : undefined}
+        maxPolarAngle={orthographic ? 0 : undefined}
         minDistance={0.3}
         maxDistance={0.3 * 100}
       />

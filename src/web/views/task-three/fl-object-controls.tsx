@@ -1,39 +1,106 @@
-import { useThree } from '@react-three/fiber';
-import React, { FC, useEffect, useMemo } from 'react';
-import { Event, Object3D } from 'three';
+import { useFrame, useThree } from '@react-three/fiber';
+import React, { FC, useCallback, useMemo } from 'react';
+import { Event, Object3D, OrthographicCamera } from 'three';
+import { FLOrbitControls } from './fl-orbit-controls';
 import { FLTransformControls } from './fl-transform-controls';
+// import { FLTransformControls } from './fl-transform-controls';
 import { ControlType } from './fl-transform-controls-gizmo';
+
+const [zoom, distance] = [5, 5];
 
 const FLObjectControls: FC<{
   control: ControlType;
   target?: Object3D;
   onObjectChange?: (event: Event) => void;
 }> = ({ control, target, onObjectChange = (f) => f }) => {
-  const { gl, camera } = useThree(({ gl, camera }) => ({ gl, camera }));
-  const controls = useMemo(() => {
-    return new FLTransformControls(camera, gl.domElement, control);
+  const invalidate = useThree(({ invalidate }) => invalidate);
+  const gl = useThree(({ gl }) => gl);
+  const camera = useThree(({ camera }) => camera);
+
+  const initCamera = useCallback(
+    (orbit: FLOrbitControls) => {
+      const camera = orbit.object as OrthographicCamera;
+      camera.zoom = zoom;
+
+      orbit.target.set(0, 0, 0);
+
+      switch (control) {
+        case 'top':
+          camera.up.set(0, 0, 1);
+          camera.position.set(0, 0, distance);
+          break;
+        case 'side':
+          camera.up.set(0, 1, 0);
+          camera.position.set(0, distance, 0);
+          break;
+        case 'front':
+          camera.up.set(1, 0, 0);
+          camera.position.set(distance, 0, 0);
+          break;
+      }
+      camera.updateProjectionMatrix();
+      orbit.update();
+      orbit.setAzimuthalAngle(Math.PI);
+      orbit.saveState();
+    },
+    [control]
+  );
+
+  const [orbitControls, transformControls] = useMemo(() => {
+    const orbit = new FLOrbitControls(camera, control);
+    orbit.minZoom = zoom;
+    orbit.maxZoom = 200;
+    initCamera(orbit);
+
+    const transform = new FLTransformControls(
+      camera,
+      gl.domElement,
+      control,
+      orbit
+    );
+    return [orbit, transform];
   }, [control]);
 
-  useEffect(() => {
-    if (target) {
-      controls.attach(target);
-    } else {
-      controls.detach();
-    }
-  }, [controls, target]);
-
-  useEffect(() => {
-    controls && controls.addEventListener('objectChange', onObjectChange);
-    return () => {
-      controls && controls.removeEventListener('objectChange', onObjectChange);
+  React.useEffect(() => {
+    const callback = (e: THREE.Event) => {
+      invalidate();
     };
-  }, [controls, onObjectChange]);
+    orbitControls.connect(gl.domElement);
+    orbitControls.addEventListener('change', callback);
+    return () => {
+      orbitControls.dispose();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orbitControls, invalidate]);
 
-  return controls ? (
+  React.useEffect(() => {
+    if (target) {
+      transformControls.attach(target);
+    } else {
+      transformControls.detach();
+      initCamera(orbitControls);
+    }
+  }, [transformControls, target]);
+
+  React.useEffect(() => {
+    const old = transformControls;
+    old.addEventListener('objectChange', onObjectChange);
+    return () => {
+      old.removeEventListener('objectChange', onObjectChange);
+    };
+  }, [transformControls, onObjectChange]);
+
+  useFrame(() => {
+    if (!transformControls.isDragging() && orbitControls.enabled)
+      orbitControls.update();
+  });
+
+  return (
     <>
-      <primitive dispose={undefined} object={controls} />
+      <primitive object={orbitControls} />
+      <primitive object={transformControls} />
     </>
-  ) : null;
+  );
 };
 
 export default FLObjectControls;

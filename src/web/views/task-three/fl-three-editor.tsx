@@ -62,6 +62,7 @@ type Props = {
 };
 
 const C_RESIZE = { debounce: 100 };
+const C_DISTANCE = 5;
 
 const FLThreeEditor: FC<Props> = ({
   frameNo,
@@ -123,6 +124,7 @@ const FLThreeEditor: FC<Props> = ({
             fov: 50,
             up: new Vector3(0, 0, 1),
             rotation: new Euler(0, 0, 0, 'ZXY'),
+            zoom: orthographic ? 10 : undefined,
           }}
           style={{ backgroundColor: 'black' }}
           resize={C_RESIZE}>
@@ -132,7 +134,11 @@ const FLThreeEditor: FC<Props> = ({
             preObject={preObject}
             onPutObject={onPutObject}
           />
-          {pcd && <FLPcd pcd={pcd} baseSize={orthographic ? 0.3 : 0.015} />}
+          {pcd ? (
+            <FLPcd pcd={pcd} baseSize={orthographic ? 0.3 : 0.015} />
+          ) : (
+            bgSub
+          )}
           <FLCubes
             ref={_cubeGroupRef}
             selectable={selectable}
@@ -153,7 +159,11 @@ const FLThreeEditor: FC<Props> = ({
             <Box height={footerBoxH}>
               <Canvas
                 orthographic
-                camera={{ near, far, zoom, up: new Vector3(1, 0, 0) }}
+                camera={{
+                  near,
+                  far,
+                  rotation: new Euler(0, 0, 0, 'ZXY'),
+                }}
                 style={{ backgroundColor: 'black' }}
                 resize={C_RESIZE}>
                 {bgSub}
@@ -175,9 +185,7 @@ const FLThreeEditor: FC<Props> = ({
                 camera={{
                   near,
                   far,
-                  zoom,
-                  up: new Vector3(0, 0, 1),
-                  position: new Vector3(0, -1, 0),
+                  rotation: new Euler(0, 0, 0, 'ZXY'),
                 }}
                 style={{ backgroundColor: 'black' }}
                 resize={C_RESIZE}>
@@ -200,9 +208,7 @@ const FLThreeEditor: FC<Props> = ({
                 camera={{
                   near,
                   far,
-                  zoom,
-                  up: new Vector3(0, 0, 1),
-                  position: new Vector3(1, 0, 0),
+                  rotation: new Euler(0, 0, 0, 'ZXY'),
                 }}
                 style={{ backgroundColor: 'black' }}
                 resize={C_RESIZE}>
