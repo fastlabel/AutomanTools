@@ -83,9 +83,6 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
   private object: Object3D | undefined;
   private enabled = true;
   private axis: ControlKey | null = null;
-  private translationSnap: number | null = null;
-  private rotationSnap: number | null = null;
-  private scaleSnap: number | null = null;
   private size = 1;
   private dragging = false;
 
@@ -153,9 +150,6 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
     defineProperty('control', this.control);
     defineProperty('enabled', this.enabled);
     defineProperty('axis', this.axis);
-    defineProperty('translationSnap', this.translationSnap);
-    defineProperty('rotationSnap', this.rotationSnap);
-    defineProperty('scaleSnap', this.scaleSnap);
     defineProperty('size', this.size);
     defineProperty('dragging', this.dragging);
     defineProperty('worldPosition', this.worldPosition);
@@ -332,14 +326,6 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
         .applyQuaternion(this.parentQuaternionInv)
         .divide(this.parentScale);
       object.position.copy(this.offset).add(this.positionStart);
-
-      // Apply translation snap
-      if (this.translationSnap) {
-        object.position.applyQuaternion(
-          this.tempQuaternion.copy(this.quaternionStart).invert()
-        );
-        object.position.applyQuaternion(this.quaternionStart);
-      }
     } else if (this.axis === 'R_POINT') {
       this.rotationAxis.copy(this.eye);
       this.rotationAngle = this.pointEnd.angleTo(this.pointStart);
@@ -349,12 +335,6 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
 
       this.rotationAngle *=
         this.endNorm.cross(this.startNorm).dot(this.eye) < 0 ? 1 : -1;
-      // Apply rotation snap
-      if (this.rotationSnap) {
-        this.rotationAngle =
-          Math.round(this.rotationAngle / this.rotationSnap) *
-          this.rotationSnap;
-      }
 
       // Apply rotate
       this.rotationAxis.applyQuaternion(this.parentQuaternionInv);
@@ -366,13 +346,13 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
       );
       object.quaternion.multiply(this.quaternionStart).normalize();
 
-      console.log({
-        rAngle: this.rotationAngle,
-        rSnap: this.rotationSnap,
-        rAxis: this.rotationAxis,
-        tempQ: this.tempQuaternion,
-        qStart: this.quaternionStart,
-      });
+      // console.log({
+      //   rAngle: this.rotationAngle,
+      //   rSnap: this.rotationSnap,
+      //   rAxis: this.rotationAxis,
+      //   tempQ: this.tempQuaternion,
+      //   qStart: this.quaternionStart,
+      // });
     } else {
       this.tempVector.copy(this.pointStart);
       this.tempVector2.copy(this.pointEnd);
@@ -389,43 +369,66 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
       } else if (this.control === 'front') {
         this.tempVector2.x = 1;
       }
-      // Apply scale
-      object.scale.copy(this.scaleStart).multiply(this.tempVector2);
+      this.tempVector.copy(this.scaleStart).multiply(this.tempVector2);
       const minScale = 0.0001;
-      if (this.scaleSnap && this.object) {
-        if (this.control === 'top') {
-          object.scale.x =
-            Math.round(object.scale.x / this.scaleSnap) * this.scaleSnap ||
-            this.scaleSnap;
-          object.scale.y =
-            Math.round(object.scale.y / this.scaleSnap) * this.scaleSnap ||
-            this.scaleSnap;
-        } else if (this.control === 'side') {
-          object.scale.x =
-            Math.round(object.scale.x / this.scaleSnap) * this.scaleSnap ||
-            this.scaleSnap;
-          object.scale.z =
-            Math.round(object.scale.z / this.scaleSnap) * this.scaleSnap ||
-            this.scaleSnap;
-        } else if (this.control === 'front') {
-          object.scale.y =
-            Math.round(object.scale.y / this.scaleSnap) * this.scaleSnap ||
-            this.scaleSnap;
-          object.scale.z =
-            Math.round(object.scale.z / this.scaleSnap) * this.scaleSnap ||
-            this.scaleSnap;
-        }
+      if (this.tempVector.x <= minScale) {
+        this.tempVector.x = minScale;
       }
-      if (object.scale.x <= minScale) {
-        object.scale.x = minScale;
+      if (this.tempVector.y <= minScale) {
+        this.tempVector.y = minScale;
       }
-      if (object.scale.y <= minScale) {
-        object.scale.y = minScale;
+      if (this.tempVector.z <= minScale) {
+        this.tempVector.z = minScale;
       }
-      if (object.scale.z <= minScale) {
-        object.scale.z = minScale;
+      this.offset.copy(this.scaleStart).sub(this.tempVector).divideScalar(2);
+      switch (this.axis) {
+        case 'S_TL':
+          if (this.control === 'top') {
+            this.offset.y = -this.offset.y;
+          } else if (this.control === 'side') {
+            this.offset.z = -this.offset.z;
+          } else if (this.control === 'front') {
+            this.offset.y = -this.offset.y;
+            this.offset.z = -this.offset.z;
+          }
+          break;
+        case 'S_TR':
+          if (this.control === 'top') {
+            // O
+          } else if (this.control === 'side') {
+            // O
+          } else if (this.control === 'front') {
+            this.offset.z = -this.offset.z;
+          }
+          break;
+        case 'S_BL':
+          if (this.control === 'top') {
+            this.offset.x = -this.offset.x;
+          } else if (this.control === 'side') {
+            this.offset.x = -this.offset.x;
+            this.offset.z = -this.offset.z;
+          } else if (this.control === 'front') {
+            // O
+          }
+          break;
+        case 'S_BR':
+          if (this.control === 'top') {
+            this.offset.x = -this.offset.x;
+            this.offset.y = -this.offset.y;
+          } else if (this.control === 'side') {
+            this.offset.x = -this.offset.x;
+          } else if (this.control === 'front') {
+            this.offset.y = -this.offset.y;
+          }
+          break;
       }
+      object.position
+        .copy(this.offset.applyQuaternion(this.parentQuaternionInv))
+        .add(this.positionStart);
+      // Apply scale
+      object.scale.copy(this.tempVector);
     }
+
     this.dispatchEvent(this.changeEvent);
     this.dispatchEvent(this.objectChangeEvent);
   };
@@ -491,18 +494,6 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
     );
 
     this.pointerUp(this.getPointer(event));
-  };
-
-  public setTranslationSnap = (translationSnap: number): void => {
-    this.translationSnap = translationSnap;
-  };
-
-  public setRotationSnap = (rotationSnap: number): void => {
-    this.rotationSnap = rotationSnap;
-  };
-
-  public setScaleSnap = (scaleSnap: number): void => {
-    this.scaleSnap = scaleSnap;
   };
 
   public setSize = (size: number): void => {

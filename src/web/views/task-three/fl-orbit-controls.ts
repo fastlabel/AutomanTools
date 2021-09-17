@@ -384,31 +384,30 @@ class FLOrbitControls extends EventDispatcher {
 
       let copy = position.clone();
       let zoom = camera.zoom;
-      let azimuthalAngle = 0;
+      const quaternion = object.quaternion;
+      const rotation = object.rotation.clone();
       switch (scope.controlType) {
         case 'top':
-          copy.add(new Vector3(0, 0, distance).applyEuler(object.rotation));
+          copy.add(new Vector3(0, 0, distance).applyEuler(rotation));
           zoom = Math.floor(baseSize / Math.max(scale.x, scale.y));
           break;
         case 'side':
-          copy.add(new Vector3(0, -distance, 0).applyEuler(object.rotation));
+          copy.add(new Vector3(0, distance, 0).applyEuler(rotation));
           zoom = Math.floor(baseSize / Math.max(scale.x, scale.z));
           break;
         case 'front':
-          copy.add(new Vector3(-distance, 0, 0).applyEuler(object.rotation));
+          copy.add(new Vector3(distance, 0, 0).applyEuler(rotation));
           zoom = Math.floor(baseSize / Math.max(scale.y, scale.z));
           break;
+      }
+      if (!copy.equals(scope.position0)) {
+        scope.position0.copy(copy);
+        scope.reset();
       }
       if (scope.editingId !== object.name) {
         camera.zoom = zoom;
         camera.updateProjectionMatrix();
         scope.editingId = object.name;
-      }
-      if (!copy.equals(scope.position0)) {
-        scope.position0.copy(copy);
-        scope.reset();
-        // scope.object.up.applyEuler(object.rotation);
-        // scope.setAzimuthalAngle(azimuthalAngle);
       }
     };
     //
@@ -679,28 +678,52 @@ class FLOrbitControls extends EventDispatcher {
       scope.update();
     }
 
+    const keyR = Math.PI / 360;
+
     function handleKeyDown(event: KeyboardEvent) {
       let needsUpdate = false;
 
       switch (event.code) {
         case scope.keys.UP:
-          pan(0, scope.keyPanSpeed);
+          // pan(0, scope.keyPanSpeed);
+          scope.setPolarAngle(scope.getPolarAngle() + keyR);
           needsUpdate = true;
           break;
 
         case scope.keys.BOTTOM:
-          pan(0, -scope.keyPanSpeed);
+          // pan(0, -scope.keyPanSpeed);
+          scope.setPolarAngle(scope.getPolarAngle() - keyR);
           needsUpdate = true;
           break;
 
         case scope.keys.LEFT:
-          pan(scope.keyPanSpeed, 0);
+          // pan(scope.keyPanSpeed, 0);
+          scope.setAzimuthalAngle(scope.getAzimuthalAngle() + keyR);
           needsUpdate = true;
           break;
 
         case scope.keys.RIGHT:
-          pan(-scope.keyPanSpeed, 0);
+          // pan(-scope.keyPanSpeed, 0);
+          scope.setAzimuthalAngle(scope.getAzimuthalAngle() - keyR);
           needsUpdate = true;
+          break;
+
+        case 'KeyS':
+          console.log({
+            controlType,
+            AzimuthalAngle: scope.getAzimuthalAngle(),
+            PolarAngle: scope.getPolarAngle(),
+            spherical,
+            sphericalDelta,
+          });
+          console.log({ control: scope, controlType });
+          event.preventDefault();
+          break;
+
+        case 'KeyR':
+          scope.setAzimuthalAngle(0);
+          scope.setPolarAngle(0);
+          event.preventDefault();
           break;
       }
 

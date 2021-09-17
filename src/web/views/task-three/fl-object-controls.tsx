@@ -3,10 +3,11 @@ import React, { FC, useCallback, useMemo } from 'react';
 import { Event, Object3D, OrthographicCamera } from 'three';
 import { FLOrbitControls } from './fl-orbit-controls';
 import { FLTransformControls } from './fl-transform-controls';
-// import { FLTransformControls } from './fl-transform-controls';
 import { ControlType } from './fl-transform-controls-gizmo';
 
 const [zoom, distance] = [5, 5];
+
+let count = 0;
 
 const FLObjectControls: FC<{
   control: ControlType;
@@ -26,21 +27,20 @@ const FLObjectControls: FC<{
 
       switch (control) {
         case 'top':
-          camera.up.set(0, 0, 1);
+          camera.up.set(0, -1, 0);
           camera.position.set(0, 0, distance);
           break;
         case 'side':
-          camera.up.set(0, 1, 0);
+          camera.up.set(0, -1, 0);
           camera.position.set(0, distance, 0);
           break;
         case 'front':
-          camera.up.set(1, 0, 0);
+          camera.up.set(-1, 0, 0);
           camera.position.set(distance, 0, 0);
           break;
       }
       camera.updateProjectionMatrix();
       orbit.update();
-      orbit.setAzimuthalAngle(Math.PI);
       orbit.saveState();
     },
     [control]
@@ -48,6 +48,7 @@ const FLObjectControls: FC<{
 
   const [orbitControls, transformControls] = useMemo(() => {
     const orbit = new FLOrbitControls(camera, control);
+    console.log(`FLOrbitControls created ${count++}  ${orbit}`);
     orbit.minZoom = zoom;
     orbit.maxZoom = 200;
     initCamera(orbit);
@@ -67,6 +68,7 @@ const FLObjectControls: FC<{
     };
     orbitControls.connect(gl.domElement);
     orbitControls.addEventListener('change', callback);
+    orbitControls.listenToKeyEvents(document.body);
     return () => {
       orbitControls.dispose();
     };

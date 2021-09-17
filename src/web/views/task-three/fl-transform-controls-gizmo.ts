@@ -116,18 +116,27 @@ export class FLTransformControlsGizmo extends Object3D {
               v.multiply(object.scale.clone().setY(1));
             } else if (this.control === 'side') {
               v.multiply(object.scale.clone().setX(1));
-              v.multiply(new Vector3(1, 1, -1));
-              base.multiply(new Vector3(1, 1, -1));
             }
           } else {
             v.multiply(object.scale);
           }
           v.applyQuaternion(quaternion);
-          const mesh = handle as Mesh;
           handle.position.add(v);
 
           const scale = 75 / this.camera.zoom;
           handle.scale.set(scale, scale, scale);
+
+          if (this.control === 'top') {
+            handle.rotation.copy(object.rotation);
+          } else if (this.control === 'side') {
+            const q = new Quaternion();
+            q.setFromEuler(new Euler(HALF_ANGLE, 0, 0));
+            handle.quaternion.copy(quaternion).multiply(q);
+          } else if (this.control === 'front') {
+            const q = new Quaternion();
+            q.setFromEuler(new Euler(0, HALF_ANGLE, 0));
+            handle.quaternion.copy(quaternion).multiply(q);
+          }
         }
       }
 
@@ -321,12 +330,12 @@ export class FLTransformControlsGizmo extends Object3D {
 
     const _gizom: { [name: string]: _BaseGizItemSet[] } = {
       T_BOX: [_PlaneMeth(this.control, matWhiteTransparent.clone())],
-      S_TL: [_PointMesh(points[0], rotation, matWhiteTransparent.clone())],
-      S_TR: [_PointMesh(points[1], rotation, matWhiteTransparent.clone())],
-      S_BL: [_PointMesh(points[2], rotation, matWhiteTransparent.clone())],
-      S_BR: [_PointMesh(points[3], rotation, matWhiteTransparent.clone())],
+      S_TL: [_PointMesh(points[0], rotation, gizmoMaterial.clone())],
+      S_TR: [_PointMesh(points[1], rotation, gizmoMaterial.clone())],
+      S_BL: [_PointMesh(points[2], rotation, gizmoMaterial.clone())],
+      S_BR: [_PointMesh(points[3], rotation, gizmoMaterial.clone())],
       R_POINT: points[4]
-        ? [_PointMesh(points[4], rotation, matWhiteTransparent.clone())]
+        ? [_PointMesh(points[4], rotation, gizmoMaterial.clone())]
         : [],
     };
 
