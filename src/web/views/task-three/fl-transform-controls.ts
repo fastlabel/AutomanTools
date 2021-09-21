@@ -13,6 +13,7 @@ import {
   Raycaster,
   Vector3,
 } from 'three';
+import { FlCubeUtil } from '../../utils/fl-cube-util';
 import { FLOrbitControls } from './fl-orbit-controls';
 import {
   ControlKey,
@@ -281,7 +282,7 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
         }
         this.positionStart.copy(this.object.position);
         this.quaternionStart.copy(this.object.quaternion);
-        this.scaleStart.copy(this.object.scale);
+        this.scaleStart.copy(FlCubeUtil.getScale(this.object));
 
         this.object.matrixWorld.decompose(
           this.worldPositionStart,
@@ -360,7 +361,7 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
       this.tempVector.applyQuaternion(this.worldQuaternionInv);
       this.tempVector2.applyQuaternion(this.worldQuaternionInv);
 
-      this.tempVector2.divide(this.tempVector);
+      this.tempVector2.sub(this.tempVector);
 
       if (this.control === 'top') {
         this.tempVector2.z = 1;
@@ -369,17 +370,8 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
       } else if (this.control === 'front') {
         this.tempVector2.x = 1;
       }
-      this.tempVector.copy(this.scaleStart).multiply(this.tempVector2);
-      const minScale = 0.0001;
-      if (this.tempVector.x <= minScale) {
-        this.tempVector.x = minScale;
-      }
-      if (this.tempVector.y <= minScale) {
-        this.tempVector.y = minScale;
-      }
-      if (this.tempVector.z <= minScale) {
-        this.tempVector.z = minScale;
-      }
+      this.tempVector.copy(this.scaleStart).add(this.tempVector2);
+
       this.offset.copy(this.scaleStart).sub(this.tempVector).divideScalar(2);
       switch (this.axis) {
         case 'S_TL':
@@ -426,7 +418,7 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
         .copy(this.offset.applyQuaternion(this.parentQuaternionInv))
         .add(this.positionStart);
       // Apply scale
-      object.scale.copy(this.tempVector);
+      FlCubeUtil.setScale(object, this.tempVector);
     }
 
     this.dispatchEvent(this.changeEvent);

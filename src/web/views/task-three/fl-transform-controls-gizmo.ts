@@ -1,5 +1,4 @@
 import {
-  BoxGeometry,
   CircleGeometry,
   Color,
   DoubleSide,
@@ -13,6 +12,7 @@ import {
   Quaternion,
   Vector3,
 } from 'three';
+import { FlCubeUtil } from '../../utils/fl-cube-util';
 
 type _BaseGizItemSet = [
   base: any,
@@ -92,6 +92,7 @@ export class FLTransformControlsGizmo extends Object3D {
     // temp
     const item = this.item;
     const object = this.object;
+    const objectScale = FlCubeUtil.getScale(object);
 
     // Show only gizmos for current transform mode
     let handles: Array<Object3D & { tag?: string }> = [];
@@ -105,7 +106,7 @@ export class FLTransformControlsGizmo extends Object3D {
       // Align handles to current local or world rotation
 
       if (handle.name === 'T_BOX') {
-        handle.scale.copy(object.scale);
+        handle.scale.copy(objectScale);
         handle.quaternion.copy(quaternion);
       } else {
         const base = this.positions.get(handle.name as any)?.clone();
@@ -113,12 +114,12 @@ export class FLTransformControlsGizmo extends Object3D {
           const v = base.clone();
           if (handle.name === 'R_POINT') {
             if (this.control === 'top') {
-              v.multiply(object.scale.clone().setY(1));
+              v.multiply(objectScale.clone().setY(1));
             } else if (this.control === 'side') {
-              v.multiply(object.scale.clone().setX(1));
+              v.multiply(objectScale.clone().setX(1));
             }
           } else {
-            v.multiply(object.scale);
+            v.multiply(objectScale);
           }
           v.applyQuaternion(quaternion);
           handle.position.add(v);
@@ -166,9 +167,6 @@ export class FLTransformControlsGizmo extends Object3D {
   private _init = (object: Object3D): void => {
     this.object = object;
 
-    // TODO move util
-    const cube = object.children[1] as Mesh<BoxGeometry, MeshBasicMaterial>;
-
     const gizmoMaterial = new MeshBasicMaterial({
       depthTest: false,
       depthWrite: false,
@@ -176,7 +174,7 @@ export class FLTransformControlsGizmo extends Object3D {
       side: DoubleSide,
       fog: false,
       toneMapped: false,
-      color: cube.material.color,
+      color: FlCubeUtil.getColor(object),
     });
 
     const gizmoLineMaterial = new LineBasicMaterial({

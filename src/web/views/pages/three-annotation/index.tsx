@@ -6,9 +6,9 @@ import { Group, PerspectiveCamera, Vector3 } from 'three';
 import AnnotationClassStore from '../../../stores/annotation-class-store';
 import CameraCalibrationStore from '../../../stores/camera-calibration-store';
 import TaskStore from '../../../stores/task-store';
-import { TaskAnnotationVOPoints } from '../../../types/vo';
 import PcdUtil from '../../../utils/pcd-util';
 import FLPcd from '../../task-three/fl-pcd';
+import { FlCubeUtil } from './../../../utils/fl-cube-util';
 import { TaskAnnotationUtil } from './../../../utils/task-annotation-util';
 import FLThreeEditor from './../../task-three/fl-three-editor';
 import CalibrationEditDialog from './calibration-edit-dialog';
@@ -78,9 +78,9 @@ const ThreeAnnotationPage: FC = () => {
 
   const onClickObj = useCallback(
     (e: any) => {
-      const selected = taskAnnotations.filter(
-        (vo) => vo.id === e.eventObject.parent.name
-      );
+      const clickedObj = FlCubeUtil.resolveByOnClick(e);
+      const id = FlCubeUtil.getId(clickedObj);
+      const selected = taskAnnotations.filter((vo) => vo.id === id);
       selectTaskAnnotations(selected, 'single');
     },
     [taskAnnotations, selectTaskAnnotations]
@@ -148,7 +148,7 @@ const ThreeAnnotationPage: FC = () => {
               annotationClass,
               taskFrame.currentFrame
             );
-            const cubeMesh = e.eventObject.parent as Group;
+            const cubeMesh = FlCubeUtil.resolveByOnClick(e);
             const p = cubeMesh.position;
             const r = cubeMesh.rotation;
             const { defaultSize } = annotationClass;
@@ -168,22 +168,13 @@ const ThreeAnnotationPage: FC = () => {
             selectTaskAnnotations([vo], 'single');
           }}
           onObjectChange={(e) => {
-            const boxMesh = e.target.object as Group;
-            const points: TaskAnnotationVOPoints = [
-              boxMesh.position.x,
-              boxMesh.position.y,
-              boxMesh.position.z,
-              boxMesh.rotation.x,
-              boxMesh.rotation.y,
-              boxMesh.rotation.z,
-              boxMesh.scale.x,
-              boxMesh.scale.y,
-              boxMesh.scale.z,
-            ];
+            const changedObj = e.target.object;
+            const id = FlCubeUtil.getId(changedObj);
+            const points = FlCubeUtil.getPointsVo(changedObj);
             updateTaskAnnotations({
               type: 'objectTransForm',
               frameNo: taskFrame.currentFrame,
-              changes: { [boxMesh.name]: { points } },
+              changes: { [id]: { points } },
             });
           }}
         />

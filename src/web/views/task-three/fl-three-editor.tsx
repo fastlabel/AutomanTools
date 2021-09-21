@@ -82,7 +82,7 @@ const FLThreeEditor: FC<Props> = ({
   onObjectChange = (f) => f,
 }) => {
   const styles = useStyles();
-  const [near, far, zoom] = useMemo(() => [0.03, 30, 10], []);
+  const [near, far, zoom] = useMemo(() => [0.03, 20, 10], []);
   const [target, setTarget] = useState<Object3D>();
   const rootRef = createRef<HTMLDivElement>();
   const _cubeGroupRef = cubeGroupRef || createRef<Group>();

@@ -103,40 +103,41 @@ const FLCube = React.forwardRef<Group, Props>(
         userData={{ type: 'cube' }}
         ref={ref}
         rotation={[ax, ay, az]}
-        position={[px, py, pz]}
-        scale={[sx, sy, sz]}>
-        <mesh
-          position={dAssistancePosition}
-          userData={{ type: 'cube-direction' }}>
-          <boxGeometry args={dAssistanceSize} />
-          {material}
-        </mesh>
-        <mesh
-          ref={boxRef}
-          userData={{ type: 'cube-box' }}
-          onPointerEnter={(e) => {
-            e.stopPropagation();
-            setHovered(true);
-          }}
-          onPointerLeave={(e) => {
-            e.stopPropagation();
-            setHovered(false);
-          }}
-          onClick={selectable ? onClick : undefined}>
-          <boxGeometry args={[1, 1, 1]} />
-          <meshBasicMaterial color={color} opacity={0.5} transparent />
-          {showLabel && !!id && (
-            <Html ref={htmlRef} visible={showLabel} zIndexRange={[1300, 0]}>
-              <div className={styles.tooltip} title={id}>
-                <div className={styles.tooltipLabel}>id</div>
-                <div className={styles.tooltipContent} style={{ color }}>
-                  {FormatUtil.omitVal(id, 3)}
+        position={[px, py, pz]}>
+        <group scale={[sx, sy, sz]}>
+          <mesh
+            position={dAssistancePosition}
+            userData={{ type: 'cube-direction' }}>
+            <boxGeometry args={dAssistanceSize} />
+            {material}
+          </mesh>
+          <mesh
+            ref={boxRef}
+            userData={{ type: 'cube-box' }}
+            onPointerEnter={(e) => {
+              e.stopPropagation();
+              setHovered(true);
+            }}
+            onPointerLeave={(e) => {
+              e.stopPropagation();
+              setHovered(false);
+            }}
+            onClick={selectable ? onClick : undefined}>
+            <boxGeometry args={[1, 1, 1]} />
+            <meshBasicMaterial color={color} opacity={0.5} transparent />
+            {showLabel && !!id && (
+              <Html ref={htmlRef} visible={showLabel} zIndexRange={[1300, 0]}>
+                <div className={styles.tooltip} title={id}>
+                  <div className={styles.tooltipLabel}>id</div>
+                  <div className={styles.tooltipContent} style={{ color }}>
+                    {FormatUtil.omitVal(id, 3)}
+                  </div>
                 </div>
-              </div>
-            </Html>
-          )}
-        </mesh>
-        <primitive object={lineSegments} />
+              </Html>
+            )}
+          </mesh>
+          <primitive object={lineSegments} />
+        </group>
       </group>
     );
   }

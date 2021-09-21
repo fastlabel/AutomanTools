@@ -7,8 +7,6 @@ import { ControlType } from './fl-transform-controls-gizmo';
 
 const [zoom, distance] = [5, 5];
 
-let count = 0;
-
 const FLObjectControls: FC<{
   control: ControlType;
   target?: Object3D;
@@ -27,7 +25,7 @@ const FLObjectControls: FC<{
 
       switch (control) {
         case 'top':
-          camera.up.set(0, -1, 0);
+          camera.up.set(0, 0, -1);
           camera.position.set(0, 0, distance);
           break;
         case 'side':
@@ -39,6 +37,7 @@ const FLObjectControls: FC<{
           camera.position.set(distance, 0, 0);
           break;
       }
+      camera.lookAt(orbit.target);
       camera.updateProjectionMatrix();
       orbit.update();
       orbit.saveState();
@@ -48,7 +47,6 @@ const FLObjectControls: FC<{
 
   const [orbitControls, transformControls] = useMemo(() => {
     const orbit = new FLOrbitControls(camera, control);
-    console.log(`FLOrbitControls created ${count++}  ${orbit}`);
     orbit.minZoom = zoom;
     orbit.maxZoom = 200;
     initCamera(orbit);

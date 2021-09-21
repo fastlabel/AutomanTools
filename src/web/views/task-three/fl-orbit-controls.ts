@@ -2,7 +2,6 @@
 import {
   Camera,
   EventDispatcher,
-  Group,
   Matrix4,
   MOUSE,
   Object3D,
@@ -14,6 +13,7 @@ import {
   Vector2,
   Vector3,
 } from 'three';
+import { FlCubeUtil } from '../../utils/fl-cube-util';
 import { ControlType } from './fl-transform-controls-gizmo';
 
 // This set of controls performs orbiting, dollying (zooming), and panning.
@@ -221,112 +221,113 @@ class FLOrbitControls extends EventDispatcher {
       const twoPI = 2 * Math.PI;
 
       return function update(): boolean {
-        const position = scope.object.position;
+        // const position = scope.object.position;
 
-        offset.copy(position).sub(scope.target);
+        // offset.copy(position).sub(scope.target);
 
-        // rotate offset to "y-axis-is-up" space
-        offset.applyQuaternion(quat);
+        // // rotate offset to "y-axis-is-up" space
+        // offset.applyQuaternion(quat);
 
-        // angle from z-axis around y-axis
-        spherical.setFromVector3(offset);
+        // // angle from z-axis around y-axis
+        // spherical.setFromVector3(offset);
 
-        if (scope.autoRotate && state === STATE.NONE) {
-          rotateLeft(getAutoRotationAngle());
-        }
+        // if (scope.autoRotate && state === STATE.NONE) {
+        //   rotateLeft(getAutoRotationAngle());
+        // }
 
-        if (scope.enableDamping) {
-          spherical.theta += sphericalDelta.theta * scope.dampingFactor;
-          spherical.phi += sphericalDelta.phi * scope.dampingFactor;
-        } else {
-          spherical.theta += sphericalDelta.theta;
-          spherical.phi += sphericalDelta.phi;
-        }
+        // if (scope.enableDamping) {
+        //   spherical.theta += sphericalDelta.theta * scope.dampingFactor;
+        //   spherical.phi += sphericalDelta.phi * scope.dampingFactor;
+        // } else {
+        //   spherical.theta += sphericalDelta.theta;
+        //   spherical.phi += sphericalDelta.phi;
+        // }
 
-        // restrict theta to be between desired limits
+        // // restrict theta to be between desired limits
 
-        let min = scope.minAzimuthAngle;
-        let max = scope.maxAzimuthAngle;
+        // let min = scope.minAzimuthAngle;
+        // let max = scope.maxAzimuthAngle;
 
-        if (isFinite(min) && isFinite(max)) {
-          if (min < -Math.PI) min += twoPI;
-          else if (min > Math.PI) min -= twoPI;
+        // if (isFinite(min) && isFinite(max)) {
+        //   if (min < -Math.PI) min += twoPI;
+        //   else if (min > Math.PI) min -= twoPI;
 
-          if (max < -Math.PI) max += twoPI;
-          else if (max > Math.PI) max -= twoPI;
+        //   if (max < -Math.PI) max += twoPI;
+        //   else if (max > Math.PI) max -= twoPI;
 
-          if (min <= max) {
-            spherical.theta = Math.max(min, Math.min(max, spherical.theta));
-          } else {
-            spherical.theta =
-              spherical.theta > (min + max) / 2
-                ? Math.max(min, spherical.theta)
-                : Math.min(max, spherical.theta);
-          }
-        }
+        //   if (min <= max) {
+        //     spherical.theta = Math.max(min, Math.min(max, spherical.theta));
+        //   } else {
+        //     spherical.theta =
+        //       spherical.theta > (min + max) / 2
+        //         ? Math.max(min, spherical.theta)
+        //         : Math.min(max, spherical.theta);
+        //   }
+        // }
 
-        // restrict phi to be between desired limits
-        spherical.phi = Math.max(
-          scope.minPolarAngle,
-          Math.min(scope.maxPolarAngle, spherical.phi)
-        );
-        spherical.makeSafe();
-        spherical.radius *= scale;
+        // // restrict phi to be between desired limits
+        // spherical.phi = Math.max(
+        //   scope.minPolarAngle,
+        //   Math.min(scope.maxPolarAngle, spherical.phi)
+        // );
+        // spherical.makeSafe();
+        // spherical.radius *= scale;
 
-        // restrict radius to be between desired limits
-        spherical.radius = Math.max(
-          scope.minDistance,
-          Math.min(scope.maxDistance, spherical.radius)
-        );
+        // // restrict radius to be between desired limits
+        // spherical.radius = Math.max(
+        //   scope.minDistance,
+        //   Math.min(scope.maxDistance, spherical.radius)
+        // );
 
-        // move target to panned location
+        // // move target to panned location
 
-        if (scope.enableDamping === true) {
-          scope.target.addScaledVector(panOffset, scope.dampingFactor);
-        } else {
-          scope.target.add(panOffset);
-        }
+        // if (scope.enableDamping === true) {
+        //   scope.target.addScaledVector(panOffset, scope.dampingFactor);
+        // } else {
+        //   scope.target.add(panOffset);
+        // }
 
-        offset.setFromSpherical(spherical);
+        // offset.setFromSpherical(spherical);
 
-        // rotate offset back to "camera-up-vector-is-up" space
-        offset.applyQuaternion(quatInverse);
+        // // rotate offset back to "camera-up-vector-is-up" space
+        // offset.applyQuaternion(quatInverse);
 
-        position.copy(scope.target).add(offset);
+        // position.copy(scope.target).add(offset);
 
-        scope.object.lookAt(scope.target);
+        // scope.object.lookAt(scope.target);
 
-        if (scope.enableDamping === true) {
-          sphericalDelta.theta *= 1 - scope.dampingFactor;
-          sphericalDelta.phi *= 1 - scope.dampingFactor;
+        // if (scope.enableDamping === true) {
+        //   sphericalDelta.theta *= 1 - scope.dampingFactor;
+        //   sphericalDelta.phi *= 1 - scope.dampingFactor;
 
-          panOffset.multiplyScalar(1 - scope.dampingFactor);
-        } else {
-          sphericalDelta.set(0, 0, 0);
+        //   panOffset.multiplyScalar(1 - scope.dampingFactor);
+        // } else {
+        //   sphericalDelta.set(0, 0, 0);
 
-          panOffset.set(0, 0, 0);
-        }
+        //   panOffset.set(0, 0, 0);
+        // }
 
-        scale = 1;
+        // scale = 1;
 
-        // update condition is:
-        // min(camera displacement, camera rotation in radians)^2 > EPS
-        // using small-angle approximation cos(x/2) = 1 - x^2 / 8
+        // // update condition is:
+        // // min(camera displacement, camera rotation in radians)^2 > EPS
+        // // using small-angle approximation cos(x/2) = 1 - x^2 / 8
 
-        if (
-          zoomChanged ||
-          lastPosition.distanceToSquared(scope.object.position) > EPS ||
-          8 * (1 - lastQuaternion.dot(scope.object.quaternion)) > EPS
-        ) {
-          scope.dispatchEvent(changeEvent);
+        // if (
+        //   zoomChanged ||
+        //   lastPosition.distanceToSquared(scope.object.position) > EPS ||
+        //   8 * (1 - lastQuaternion.dot(scope.object.quaternion)) > EPS
+        // ) {
+        //   scope.dispatchEvent(changeEvent);
 
-          lastPosition.copy(scope.object.position);
-          lastQuaternion.copy(scope.object.quaternion);
-          zoomChanged = false;
+        //   lastPosition.copy(scope.object.position);
+        //   lastQuaternion.copy(scope.object.quaternion);
+        //   zoomChanged = false;
 
-          return true;
-        }
+        //   return true;
+        // }
 
+        // return false;
         return false;
       };
     })();
@@ -370,6 +371,9 @@ class FLOrbitControls extends EventDispatcher {
 
     this.reset0 = (): void => {
       scope.editingId = '';
+      if (scope.object.parent) {
+        scope.object.parent.remove(scope.object);
+      }
     };
 
     this.set0 = (object: Object3D): void => {
@@ -379,35 +383,44 @@ class FLOrbitControls extends EventDispatcher {
       const camera = scope.object as OrthographicCamera;
       const baseSize = Math.min(camera.top, camera.right) * 1;
 
-      const scale = (object as Group).scale;
+      const scale = FlCubeUtil.getScale(object);
       const distance = 10;
 
       let copy = position.clone();
       let zoom = camera.zoom;
-      const quaternion = object.quaternion;
       const rotation = object.rotation.clone();
+      const changeTarget = scope.editingId !== object.name;
+      if (changeTarget) {
+        object.add(scope.object);
+        scope.editingId = object.name;
+      }
       switch (scope.controlType) {
         case 'top':
+          camera.position.set(0, 0, distance);
           copy.add(new Vector3(0, 0, distance).applyEuler(rotation));
           zoom = Math.floor(baseSize / Math.max(scale.x, scale.y));
           break;
         case 'side':
+          camera.position.set(0, distance, 0);
           copy.add(new Vector3(0, distance, 0).applyEuler(rotation));
           zoom = Math.floor(baseSize / Math.max(scale.x, scale.z));
           break;
         case 'front':
+          camera.position.set(distance, 0, 0);
           copy.add(new Vector3(distance, 0, 0).applyEuler(rotation));
           zoom = Math.floor(baseSize / Math.max(scale.y, scale.z));
           break;
       }
       if (!copy.equals(scope.position0)) {
-        scope.position0.copy(copy);
-        scope.reset();
+        // scope.position0.copy(copy);
+        // scope.reset();
+        // camera.rotation.copy(object.rotation);
+        // camera.position.copy(copy);
+        // camera.lookAt(object.position);
       }
-      if (scope.editingId !== object.name) {
+      if (changeTarget) {
         camera.zoom = zoom;
         camera.updateProjectionMatrix();
-        scope.editingId = object.name;
       }
     };
     //
