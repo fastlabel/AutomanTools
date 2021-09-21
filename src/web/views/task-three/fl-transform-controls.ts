@@ -364,14 +364,51 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
       this.tempVector2.sub(this.tempVector);
 
       if (this.control === 'top') {
-        this.tempVector2.z = 1;
+        this.tempVector2.z = 0;
       } else if (this.control === 'side') {
-        this.tempVector2.y = 1;
+        this.tempVector2.y = 0;
       } else if (this.control === 'front') {
-        this.tempVector2.x = 1;
+        this.tempVector2.x = 0;
+      }
+      switch (this.axis) {
+        case 'S_TL':
+          if (this.control === 'top') {
+            this.tempVector2.x = -this.tempVector2.x;
+          } else if (this.control === 'side') {
+            this.tempVector2.x = -this.tempVector2.x;
+          } else if (this.control === 'front') {
+          }
+          break;
+        case 'S_TR':
+          if (this.control === 'top') {
+            this.tempVector2.x = -this.tempVector2.x;
+            this.tempVector2.y = -this.tempVector2.y;
+          } else if (this.control === 'side') {
+            this.tempVector2.x = -this.tempVector2.x;
+            this.tempVector2.z = -this.tempVector2.z;
+          } else if (this.control === 'front') {
+            this.tempVector2.y = -this.tempVector2.y;
+          }
+          break;
+        case 'S_BL':
+          if (this.control === 'top') {
+            this.tempVector2.y = -this.tempVector2.y;
+          } else if (this.control === 'side') {
+          } else if (this.control === 'front') {
+            this.tempVector2.y = -this.tempVector2.y;
+            this.tempVector2.z = -this.tempVector2.z;
+          }
+          break;
+        case 'S_BR':
+          if (this.control === 'top') {
+          } else if (this.control === 'side') {
+            this.tempVector2.z = -this.tempVector2.z;
+          } else if (this.control === 'front') {
+            this.tempVector2.z = -this.tempVector2.z;
+          }
+          break;
       }
       this.tempVector.copy(this.scaleStart).add(this.tempVector2);
-
       this.offset.copy(this.scaleStart).sub(this.tempVector).divideScalar(2);
       switch (this.axis) {
         case 'S_TL':
