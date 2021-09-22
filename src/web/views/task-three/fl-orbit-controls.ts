@@ -8,7 +8,6 @@ import {
   OrthographicCamera,
   PerspectiveCamera,
   Quaternion,
-  Spherical,
   TOUCH,
   Vector2,
   Vector3,
@@ -26,8 +25,6 @@ import { ControlType } from './fl-transform-controls-gizmo';
 const moduloWrapAround = (offset: number, capacity: number) =>
   ((offset % capacity) + capacity) % capacity;
 
-const HALF_ANGLE = Math.PI / 2;
-
 class FLOrbitControls extends EventDispatcher {
   object: Camera;
   controlType: ControlType;
@@ -43,24 +40,10 @@ class FLOrbitControls extends EventDispatcher {
   minZoom = 0;
   maxZoom = Infinity;
   // How far you can orbit vertically, upper and lower limits.
-  // Range is 0 to Math.PI radians.
-  minPolarAngle = 0; // radians
-  maxPolarAngle = Math.PI; // radians
-  // How far you can orbit horizontally, upper and lower limits.
-  // If set, the interval [ min, max ] must be a sub-interval of [ - 2 PI, 2 PI ], with ( max - min < 2 PI )
-  minAzimuthAngle = -Infinity; // radians
-  maxAzimuthAngle = Infinity; // radians
-  // Set to true to enable damping (inertia)
-  // If damping is enabled, you must call controls.update() in your animation loop
-  enableDamping = false;
-  dampingFactor = 0.05;
   // This option actually enables dollying in and out; left as "zoom" for backwards compatibility.
   // Set to false to disable zooming
   enableZoom = true;
   zoomSpeed = 1.0;
-  // Set to false to disable rotating
-  enableRotate = true;
-  rotateSpeed = 1.0;
   // Set to false to disable panning
   enablePan = true;
   panSpeed = 1.0;
@@ -68,8 +51,6 @@ class FLOrbitControls extends EventDispatcher {
   keyPanSpeed = 7.0; // pixels moved per arrow key push
   // Set to true to automatically rotate around the target
   // If auto-rotate is enabled, you must call controls.update() in your animation loop
-  autoRotate = false;
-  autoRotateSpeed = 2.0; // 30 seconds per orbit when fps is 60
   // The four arrow keys
   keys = {
     LEFT: 'ArrowLeft',
@@ -93,10 +74,6 @@ class FLOrbitControls extends EventDispatcher {
 
   editingId: string = '';
 
-  getPolarAngle: () => number;
-  getAzimuthalAngle: () => number;
-  setPolarAngle: (x: number) => void;
-  setAzimuthalAngle: (x: number) => void;
   getDistance: () => number;
 
   listenToKeyEvents: (domElement: HTMLElement) => void;
@@ -129,51 +106,6 @@ class FLOrbitControls extends EventDispatcher {
     //
     // public methods
     //
-
-    this.getPolarAngle = (): number => spherical.phi;
-
-    this.getAzimuthalAngle = (): number => spherical.theta;
-
-    this.setPolarAngle = (value: number): void => {
-      // use modulo wrapping to safeguard value
-      let phi = moduloWrapAround(value, 2 * Math.PI);
-      let currentPhi = spherical.phi;
-
-      // convert to the equivalent shortest angle
-      if (currentPhi < 0) currentPhi += 2 * Math.PI;
-      if (phi < 0) phi += 2 * Math.PI;
-      let phiDist = Math.abs(phi - currentPhi);
-      if (2 * Math.PI - phiDist < phiDist) {
-        if (phi < currentPhi) {
-          phi += 2 * Math.PI;
-        } else {
-          currentPhi += 2 * Math.PI;
-        }
-      }
-      sphericalDelta.phi = phi - currentPhi;
-      scope.update();
-    };
-
-    this.setAzimuthalAngle = (value: number): void => {
-      // use modulo wrapping to safeguard value
-      let theta = moduloWrapAround(value, 2 * Math.PI);
-      let currentTheta = spherical.theta;
-
-      // convert to the equivalent shortest angle
-      if (currentTheta < 0) currentTheta += 2 * Math.PI;
-      if (theta < 0) theta += 2 * Math.PI;
-      let thetaDist = Math.abs(theta - currentTheta);
-      if (2 * Math.PI - thetaDist < thetaDist) {
-        if (theta < currentTheta) {
-          theta += 2 * Math.PI;
-        } else {
-          currentTheta += 2 * Math.PI;
-        }
-      }
-      sphericalDelta.theta = theta - currentTheta;
-      scope.update();
-    };
-
     this.getDistance = (): number =>
       scope.object.position.distanceTo(scope.target);
 
@@ -221,113 +153,29 @@ class FLOrbitControls extends EventDispatcher {
       const twoPI = 2 * Math.PI;
 
       return function update(): boolean {
-        // const position = scope.object.position;
-
-        // offset.copy(position).sub(scope.target);
-
-        // // rotate offset to "y-axis-is-up" space
-        // offset.applyQuaternion(quat);
-
-        // // angle from z-axis around y-axis
-        // spherical.setFromVector3(offset);
-
-        // if (scope.autoRotate && state === STATE.NONE) {
-        //   rotateLeft(getAutoRotationAngle());
-        // }
-
-        // if (scope.enableDamping) {
-        //   spherical.theta += sphericalDelta.theta * scope.dampingFactor;
-        //   spherical.phi += sphericalDelta.phi * scope.dampingFactor;
-        // } else {
-        //   spherical.theta += sphericalDelta.theta;
-        //   spherical.phi += sphericalDelta.phi;
-        // }
-
-        // // restrict theta to be between desired limits
-
-        // let min = scope.minAzimuthAngle;
-        // let max = scope.maxAzimuthAngle;
-
-        // if (isFinite(min) && isFinite(max)) {
-        //   if (min < -Math.PI) min += twoPI;
-        //   else if (min > Math.PI) min -= twoPI;
-
-        //   if (max < -Math.PI) max += twoPI;
-        //   else if (max > Math.PI) max -= twoPI;
-
-        //   if (min <= max) {
-        //     spherical.theta = Math.max(min, Math.min(max, spherical.theta));
-        //   } else {
-        //     spherical.theta =
-        //       spherical.theta > (min + max) / 2
-        //         ? Math.max(min, spherical.theta)
-        //         : Math.min(max, spherical.theta);
-        //   }
-        // }
-
-        // // restrict phi to be between desired limits
-        // spherical.phi = Math.max(
-        //   scope.minPolarAngle,
-        //   Math.min(scope.maxPolarAngle, spherical.phi)
-        // );
-        // spherical.makeSafe();
-        // spherical.radius *= scale;
-
-        // // restrict radius to be between desired limits
-        // spherical.radius = Math.max(
-        //   scope.minDistance,
-        //   Math.min(scope.maxDistance, spherical.radius)
-        // );
-
-        // // move target to panned location
-
-        // if (scope.enableDamping === true) {
-        //   scope.target.addScaledVector(panOffset, scope.dampingFactor);
-        // } else {
-        //   scope.target.add(panOffset);
-        // }
-
-        // offset.setFromSpherical(spherical);
-
-        // // rotate offset back to "camera-up-vector-is-up" space
-        // offset.applyQuaternion(quatInverse);
-
-        // position.copy(scope.target).add(offset);
-
+        const position = scope.object.position;
+        offset.copy(position).sub(scope.target);
+        // move target to panned location
+        scope.target.add(panOffset);
+        position.copy(scope.target).add(offset);
         // scope.object.lookAt(scope.target);
 
-        // if (scope.enableDamping === true) {
-        //   sphericalDelta.theta *= 1 - scope.dampingFactor;
-        //   sphericalDelta.phi *= 1 - scope.dampingFactor;
+        panOffset.set(0, 0, 0);
 
-        //   panOffset.multiplyScalar(1 - scope.dampingFactor);
-        // } else {
-        //   sphericalDelta.set(0, 0, 0);
-
-        //   panOffset.set(0, 0, 0);
-        // }
-
-        // scale = 1;
-
-        // // update condition is:
-        // // min(camera displacement, camera rotation in radians)^2 > EPS
-        // // using small-angle approximation cos(x/2) = 1 - x^2 / 8
-
-        // if (
-        //   zoomChanged ||
-        //   lastPosition.distanceToSquared(scope.object.position) > EPS ||
-        //   8 * (1 - lastQuaternion.dot(scope.object.quaternion)) > EPS
-        // ) {
-        //   scope.dispatchEvent(changeEvent);
-
-        //   lastPosition.copy(scope.object.position);
-        //   lastQuaternion.copy(scope.object.quaternion);
-        //   zoomChanged = false;
-
-        //   return true;
-        // }
-
-        // return false;
+        scale = 1;
+        // update condition is:
+        // min(camera displacement, camera rotation in radians)^2 > EPS
+        // using small-angle approximation cos(x/2) = 1 - x^2 / 8
+        if (
+          zoomChanged ||
+          lastPosition.distanceToSquared(scope.object.position) > EPS // ||
+          // 8 * (1 - lastQuaternion.dot(scope.object.quaternion)) > EPS
+        ) {
+          scope.dispatchEvent(changeEvent);
+          lastPosition.copy(scope.object.position);
+          zoomChanged = false;
+          return true;
+        }
         return false;
       };
     })();
@@ -371,55 +219,36 @@ class FLOrbitControls extends EventDispatcher {
 
     this.reset0 = (): void => {
       scope.editingId = '';
+      scope.target.set(0, 0, 0);
       if (scope.object.parent) {
         scope.object.parent.remove(scope.object);
       }
     };
 
     this.set0 = (object: Object3D): void => {
-      const position = object.position;
-      scope.target0.copy(position);
-
       const camera = scope.object as OrthographicCamera;
       const baseSize = Math.min(camera.top, camera.right) * 1;
-
       const scale = FlCubeUtil.getScale(object);
       const distance = 10;
-
-      let copy = position.clone();
-      let zoom = camera.zoom;
-      const rotation = object.rotation.clone();
       const changeTarget = scope.editingId !== object.name;
       if (changeTarget) {
+        scope.target.set(0, 0, 0);
         object.add(scope.object);
         scope.editingId = object.name;
-      }
-      switch (scope.controlType) {
-        case 'top':
-          camera.position.set(0, 0, distance);
-          copy.add(new Vector3(0, 0, distance).applyEuler(rotation));
-          zoom = Math.floor(baseSize / Math.max(scale.x, scale.y));
-          break;
-        case 'side':
-          camera.position.set(0, distance, 0);
-          copy.add(new Vector3(0, distance, 0).applyEuler(rotation));
-          zoom = Math.floor(baseSize / Math.max(scale.x, scale.z));
-          break;
-        case 'front':
-          camera.position.set(distance, 0, 0);
-          copy.add(new Vector3(distance, 0, 0).applyEuler(rotation));
-          zoom = Math.floor(baseSize / Math.max(scale.y, scale.z));
-          break;
-      }
-      if (!copy.equals(scope.position0)) {
-        // scope.position0.copy(copy);
-        // scope.reset();
-        // camera.rotation.copy(object.rotation);
-        // camera.position.copy(copy);
-        // camera.lookAt(object.position);
-      }
-      if (changeTarget) {
-        camera.zoom = zoom;
+        switch (scope.controlType) {
+          case 'top':
+            camera.position.set(0, 0, distance);
+            camera.zoom = Math.floor(baseSize / Math.max(scale.x, scale.y));
+            break;
+          case 'side':
+            camera.position.set(0, distance, 0);
+            camera.zoom = Math.floor(baseSize / Math.max(scale.x, scale.z));
+            break;
+          case 'front':
+            camera.position.set(distance, 0, 0);
+            camera.zoom = Math.floor(baseSize / Math.max(scale.y, scale.z));
+            break;
+        }
         camera.updateProjectionMatrix();
       }
     };
@@ -435,31 +264,19 @@ class FLOrbitControls extends EventDispatcher {
 
     const STATE = {
       NONE: -1,
-      ROTATE: 0,
       DOLLY: 1,
       PAN: 2,
-      TOUCH_ROTATE: 3,
       TOUCH_PAN: 4,
       TOUCH_DOLLY_PAN: 5,
-      TOUCH_DOLLY_ROTATE: 6,
     };
 
     let state = STATE.NONE;
 
     const EPS = 0.000001;
 
-    // current position in spherical coordinates
-    const spherical = new Spherical();
-
-    const sphericalDelta = new Spherical();
-
     let scale = 1;
     const panOffset = new Vector3();
     let zoomChanged = false;
-
-    const rotateStart = new Vector2();
-    const rotateEnd = new Vector2();
-    const rotateDelta = new Vector2();
 
     const panStart = new Vector2();
     const panEnd = new Vector2();
@@ -472,20 +289,8 @@ class FLOrbitControls extends EventDispatcher {
     const pointers: PointerEvent[] = [];
     const pointerPositions: { [key: string]: Vector2 } = {};
 
-    function getAutoRotationAngle(): number {
-      return ((2 * Math.PI) / 60 / 60) * scope.autoRotateSpeed;
-    }
-
     function getZoomScale(): number {
       return Math.pow(0.95, scope.zoomSpeed);
-    }
-
-    function rotateLeft(angle: number): void {
-      sphericalDelta.theta -= angle;
-    }
-
-    function rotateUp(angle: number): void {
-      sphericalDelta.phi -= angle;
     }
 
     const panLeft = (() => {
@@ -627,32 +432,12 @@ class FLOrbitControls extends EventDispatcher {
     // event callbacks - update the object state
     //
 
-    function handleMouseDownRotate(event: MouseEvent) {
-      rotateStart.set(event.clientX, event.clientY);
-    }
-
     function handleMouseDownDolly(event: MouseEvent) {
       dollyStart.set(event.clientX, event.clientY);
     }
 
     function handleMouseDownPan(event: MouseEvent) {
       panStart.set(event.clientX, event.clientY);
-    }
-
-    function handleMouseMoveRotate(event: MouseEvent) {
-      rotateEnd.set(event.clientX, event.clientY);
-      rotateDelta
-        .subVectors(rotateEnd, rotateStart)
-        .multiplyScalar(scope.rotateSpeed);
-
-      const element = scope.domElement;
-
-      if (element) {
-        rotateLeft((2 * Math.PI * rotateDelta.x) / element.clientHeight); // yes, height
-        rotateUp((2 * Math.PI * rotateDelta.y) / element.clientHeight);
-      }
-      rotateStart.copy(rotateEnd);
-      scope.update();
     }
 
     function handleMouseMoveDolly(event: MouseEvent) {
@@ -699,44 +484,22 @@ class FLOrbitControls extends EventDispatcher {
       switch (event.code) {
         case scope.keys.UP:
           // pan(0, scope.keyPanSpeed);
-          scope.setPolarAngle(scope.getPolarAngle() + keyR);
           needsUpdate = true;
           break;
 
         case scope.keys.BOTTOM:
           // pan(0, -scope.keyPanSpeed);
-          scope.setPolarAngle(scope.getPolarAngle() - keyR);
           needsUpdate = true;
           break;
 
         case scope.keys.LEFT:
           // pan(scope.keyPanSpeed, 0);
-          scope.setAzimuthalAngle(scope.getAzimuthalAngle() + keyR);
           needsUpdate = true;
           break;
 
         case scope.keys.RIGHT:
           // pan(-scope.keyPanSpeed, 0);
-          scope.setAzimuthalAngle(scope.getAzimuthalAngle() - keyR);
           needsUpdate = true;
-          break;
-
-        case 'KeyS':
-          console.log({
-            controlType,
-            AzimuthalAngle: scope.getAzimuthalAngle(),
-            PolarAngle: scope.getPolarAngle(),
-            spherical,
-            sphericalDelta,
-          });
-          console.log({ control: scope, controlType });
-          event.preventDefault();
-          break;
-
-        case 'KeyR':
-          scope.setAzimuthalAngle(0);
-          scope.setPolarAngle(0);
-          event.preventDefault();
           break;
       }
 
@@ -744,17 +507,6 @@ class FLOrbitControls extends EventDispatcher {
         // prevent the browser from scrolling on cursor keys
         event.preventDefault();
         scope.update();
-      }
-    }
-
-    function handleTouchStartRotate() {
-      if (pointers.length == 1) {
-        rotateStart.set(pointers[0].pageX, pointers[0].pageY);
-      } else {
-        const x = 0.5 * (pointers[0].pageX + pointers[1].pageX);
-        const y = 0.5 * (pointers[0].pageY + pointers[1].pageY);
-
-        rotateStart.set(x, y);
       }
     }
 
@@ -780,34 +532,6 @@ class FLOrbitControls extends EventDispatcher {
     function handleTouchStartDollyPan() {
       if (scope.enableZoom) handleTouchStartDolly();
       if (scope.enablePan) handleTouchStartPan();
-    }
-
-    function handleTouchStartDollyRotate() {
-      if (scope.enableZoom) handleTouchStartDolly();
-      if (scope.enableRotate) handleTouchStartRotate();
-    }
-
-    function handleTouchMoveRotate(event: PointerEvent) {
-      if (pointers.length == 1) {
-        rotateEnd.set(event.pageX, event.pageY);
-      } else {
-        const position = getSecondPointerPosition(event);
-        const x = 0.5 * (event.pageX + position.x);
-        const y = 0.5 * (event.pageY + position.y);
-        rotateEnd.set(x, y);
-      }
-
-      rotateDelta
-        .subVectors(rotateEnd, rotateStart)
-        .multiplyScalar(scope.rotateSpeed);
-
-      const element = scope.domElement;
-
-      if (element) {
-        rotateLeft((2 * Math.PI * rotateDelta.x) / element.clientHeight); // yes, height
-        rotateUp((2 * Math.PI * rotateDelta.y) / element.clientHeight);
-      }
-      rotateStart.copy(rotateEnd);
     }
 
     function handleTouchMovePan(event: PointerEvent) {
@@ -840,11 +564,6 @@ class FLOrbitControls extends EventDispatcher {
     function handleTouchMoveDollyPan(event: PointerEvent) {
       if (scope.enableZoom) handleTouchMoveDolly(event);
       if (scope.enablePan) handleTouchMovePan(event);
-    }
-
-    function handleTouchMoveDollyRotate(event: PointerEvent) {
-      if (scope.enableZoom) handleTouchMoveDolly(event);
-      if (scope.enableRotate) handleTouchMoveRotate(event);
     }
 
     function handleTouchEnd(/*event*/) {
@@ -950,18 +669,11 @@ class FLOrbitControls extends EventDispatcher {
             if (scope.enablePan === false) return;
             handleMouseDownPan(event);
             state = STATE.PAN;
-          } else {
-            if (scope.enableRotate === false) return;
-            handleMouseDownRotate(event);
-            state = STATE.ROTATE;
           }
           break;
 
         case MOUSE.PAN:
           if (event.ctrlKey || event.metaKey || event.shiftKey) {
-            if (scope.enableRotate === false) return;
-            handleMouseDownRotate(event);
-            state = STATE.ROTATE;
           } else {
             if (scope.enablePan === false) return;
             handleMouseDownPan(event);
@@ -981,11 +693,6 @@ class FLOrbitControls extends EventDispatcher {
     function onMouseMove(event: MouseEvent) {
       if (scope.enabled === false) return;
       switch (state) {
-        case STATE.ROTATE:
-          if (scope.enableRotate === false) return;
-          handleMouseMoveRotate(event);
-          break;
-
         case STATE.DOLLY:
           if (scope.enableZoom === false) return;
           handleMouseMoveDolly(event);
@@ -1008,7 +715,7 @@ class FLOrbitControls extends EventDispatcher {
       if (
         scope.enabled === false ||
         scope.enableZoom === false ||
-        (state !== STATE.NONE && state !== STATE.ROTATE)
+        state !== STATE.NONE
       ) {
         return;
       }
@@ -1033,24 +740,15 @@ class FLOrbitControls extends EventDispatcher {
       switch (pointers.length) {
         case 1:
           switch (scope.touches.ONE) {
-            case TOUCH.ROTATE:
-              if (scope.enableRotate === false) return;
-              handleTouchStartRotate();
-              state = STATE.TOUCH_ROTATE;
-              break;
-
             case TOUCH.PAN:
               if (scope.enablePan === false) return;
               handleTouchStartPan();
               state = STATE.TOUCH_PAN;
               break;
-
             default:
               state = STATE.NONE;
           }
-
           break;
-
         case 2:
           switch (scope.touches.TWO) {
             case TOUCH.DOLLY_PAN:
@@ -1059,20 +757,10 @@ class FLOrbitControls extends EventDispatcher {
               handleTouchStartDollyPan();
               state = STATE.TOUCH_DOLLY_PAN;
               break;
-
-            case TOUCH.DOLLY_ROTATE:
-              if (scope.enableZoom === false && scope.enableRotate === false)
-                return;
-              handleTouchStartDollyRotate();
-              state = STATE.TOUCH_DOLLY_ROTATE;
-              break;
-
             default:
               state = STATE.NONE;
           }
-
           break;
-
         default:
           state = STATE.NONE;
       }
@@ -1086,31 +774,16 @@ class FLOrbitControls extends EventDispatcher {
       trackPointer(event);
 
       switch (state) {
-        case STATE.TOUCH_ROTATE:
-          if (scope.enableRotate === false) return;
-          handleTouchMoveRotate(event);
-          scope.update();
-          break;
-
         case STATE.TOUCH_PAN:
           if (scope.enablePan === false) return;
           handleTouchMovePan(event);
           scope.update();
           break;
-
         case STATE.TOUCH_DOLLY_PAN:
           if (scope.enableZoom === false && scope.enablePan === false) return;
           handleTouchMoveDollyPan(event);
           scope.update();
           break;
-
-        case STATE.TOUCH_DOLLY_ROTATE:
-          if (scope.enableZoom === false && scope.enableRotate === false)
-            return;
-          handleTouchMoveDollyRotate(event);
-          scope.update();
-          break;
-
         default:
           state = STATE.NONE;
       }
