@@ -14,7 +14,7 @@ import {
   Vector3,
 } from 'three';
 import { FlCubeUtil } from '../../utils/fl-cube-util';
-import { FLOrbitControls } from './fl-orbit-controls';
+import { FLObjectCameraControls } from './fl-object-camera-controls';
 import {
   ControlKey,
   ControlType,
@@ -95,13 +95,13 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
   private mouseUpEvent = { type: 'mouseUp' };
   private objectChangeEvent = { type: 'objectChange' };
 
-  private orbit: FLOrbitControls;
+  private orbit: FLObjectCameraControls;
 
   constructor(
     camera: TCamera,
     domElement: HTMLElement,
     control: ControlType,
-    orbit: FLOrbitControls
+    orbit: FLObjectCameraControls
   ) {
     super();
     if (domElement === undefined) {

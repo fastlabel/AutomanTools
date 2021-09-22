@@ -1,7 +1,7 @@
 import { useFrame, useThree } from '@react-three/fiber';
 import React, { FC, useCallback, useMemo } from 'react';
 import { Event, Object3D, OrthographicCamera } from 'three';
-import { FLOrbitControls } from './fl-orbit-controls';
+import { FLObjectCameraControls } from './fl-object-camera-controls';
 import { FLTransformControls } from './fl-transform-controls';
 import { ControlType } from './fl-transform-controls-gizmo';
 
@@ -17,7 +17,7 @@ const FLObjectControls: FC<{
   const camera = useThree(({ camera }) => camera);
 
   const initCamera = useCallback(
-    (orbit: FLOrbitControls) => {
+    (orbit: FLObjectCameraControls) => {
       const camera = orbit.object as OrthographicCamera;
       camera.zoom = zoom;
 
@@ -46,7 +46,7 @@ const FLObjectControls: FC<{
   );
 
   const [orbitControls, transformControls] = useMemo(() => {
-    const orbit = new FLOrbitControls(camera, control);
+    const orbit = new FLObjectCameraControls(camera, control);
     orbit.minZoom = zoom;
     orbit.maxZoom = 200;
     initCamera(orbit);

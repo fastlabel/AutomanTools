@@ -7,12 +7,14 @@ import AnnotationClassStore from '../../../stores/annotation-class-store';
 import CameraCalibrationStore from '../../../stores/camera-calibration-store';
 import TaskStore from '../../../stores/task-store';
 import PcdUtil from '../../../utils/pcd-util';
+import { FlMainCameraControls } from '../../task-three/fl-main-camera-controls';
 import FLPcd from '../../task-three/fl-pcd';
 import { FlCubeUtil } from './../../../utils/fl-cube-util';
 import { TaskAnnotationUtil } from './../../../utils/task-annotation-util';
 import FLThreeEditor from './../../task-three/fl-three-editor';
 import CalibrationEditDialog from './calibration-edit-dialog';
 import ClassListDialog from './class-list-dialog';
+import HotKey from './hot-key';
 import ImageDialog from './image-dialog';
 import ThreeSidePanel from './side-panel';
 import ThreeToolbar from './tool-bar';
@@ -42,6 +44,7 @@ const ThreeAnnotationPage: FC = () => {
   const classes = useStyles();
   const history = useHistory();
   const { projectId } = useParams<{ projectId: string }>();
+  const mainControlsRef = createRef<FlMainCameraControls>();
 
   const {
     taskToolBar,
@@ -55,6 +58,7 @@ const ThreeAnnotationPage: FC = () => {
     addTaskAnnotations,
     updateTaskAnnotations,
     selectTaskAnnotations,
+    changePageMode,
   } = TaskStore.useContainer();
 
   const { annotationClass, dispatchAnnotationClass } =
@@ -68,6 +72,7 @@ const ThreeAnnotationPage: FC = () => {
   const openClassListDialog = useCallback(() => {
     if (taskRom.status === 'loaded') {
       const { status, projectId, annotationClasses } = taskRom;
+      changePageMode('classesList');
       dispatchAnnotationClass({
         type: 'init',
         projectId,
@@ -130,6 +135,7 @@ const ThreeAnnotationPage: FC = () => {
     if (taskFrame.status !== 'none' && pcd) {
       return (
         <FLThreeEditor
+          mainControlsRef={mainControlsRef}
           frameNo={taskFrame.currentFrame}
           annotations={taskAnnotations}
           useOrthographicCamera={taskToolBar.useOrthographicCamera || undefined}
@@ -216,6 +222,7 @@ const ThreeAnnotationPage: FC = () => {
     if (taskRom.status === 'loaded' && annotationClass.status === 'saved') {
       dispatchAnnotationClass({ type: 'end' });
       fetchAnnotationClasses(taskRom.projectId);
+      changePageMode('threeEdit');
     }
   }, [taskRom, annotationClass]);
 
@@ -256,6 +263,7 @@ const ThreeAnnotationPage: FC = () => {
       <ClassListDialog />
       <ImageDialog calibrationCamera={calibrationCamera} />
       <CalibrationEditDialog />
+      <HotKey mainControlsRef={mainControlsRef} />
     </React.Fragment>
   );
 };

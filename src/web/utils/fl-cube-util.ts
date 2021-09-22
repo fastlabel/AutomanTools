@@ -6,6 +6,14 @@ import { TaskAnnotationVOPoints } from '../types/vo';
  * Cube
  */
 export const FlCubeUtil = {
+  valid: (object: Object3D) => {
+    const scaleGrp = object.children[0];
+    if (!scaleGrp) {
+      return false;
+    }
+    // TODO add condition
+    return true;
+  },
   getId: (object: Object3D) => {
     return object.name;
   },

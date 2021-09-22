@@ -12,6 +12,7 @@ import { Euler, Event, Group, Object3D, Vector3 } from 'three';
 import { PCDResult } from '../../types/labos';
 import { AnnotationClassVO, TaskAnnotationVO } from '../../types/vo';
 import FLCubes from './fl-cubes';
+import { FlMainCameraControls } from './fl-main-camera-controls';
 import FLMainControls from './fl-main-controls';
 import FLObjectControls from './fl-object-controls';
 import FLPcd from './fl-pcd';
@@ -46,6 +47,7 @@ type Props = {
   useOrthographicCamera?: true | undefined;
   selectable: boolean;
   showLabel: boolean;
+  mainControlsRef?: React.RefObject<FlMainCameraControls>;
   cubeGroupRef?: React.RefObject<Group>;
   pcd?: PCDResult;
   bgSub?: JSX.Element;
@@ -70,6 +72,7 @@ const FLThreeEditor: FC<Props> = ({
   useOrthographicCamera,
   selectable,
   showLabel,
+  mainControlsRef,
   cubeGroupRef,
   pcd,
   bgSub,
@@ -132,6 +135,7 @@ const FLThreeEditor: FC<Props> = ({
             orthographic={orthographic}
             position0={position0}
             preObject={preObject}
+            mainControlsRef={mainControlsRef}
             onPutObject={onPutObject}
           />
           {pcd ? (

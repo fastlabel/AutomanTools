@@ -81,7 +81,9 @@ export class FLTransformControlsGizmo extends Object3D {
 
   // updateMatrixWorld will update transformations and appearance of individual handles
   public updateMatrixWorld = (): void => {
-    if (!this.object || !this.item) return;
+    if (!this.object || !this.item || !FlCubeUtil.valid(this.object)) {
+      return;
+    }
 
     if (!this.camera.isOrthographicCamera) {
       throw new Error('only supported OrthographicCamera!!');

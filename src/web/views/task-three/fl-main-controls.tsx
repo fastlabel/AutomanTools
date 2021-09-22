@@ -1,17 +1,17 @@
-import { OrbitControls as DreiOrbitControls } from '@react-three/drei';
-import { ThreeEvent, useThree } from '@react-three/fiber';
+import { ThreeEvent, useFrame, useThree } from '@react-three/fiber';
 import React, { createRef, FC, useEffect } from 'react';
 import { Vector3 } from 'three';
-import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { AnnotationClassVO } from '../../types/vo';
 import FLAnnotationControls, {
   FLAnnotationControlsImpl,
 } from './fl-annotation-controls';
+import { FlMainCameraControls } from './fl-main-camera-controls';
 
 type Props = {
+  orthographic: boolean;
   position0?: Vector3;
   preObject?: AnnotationClassVO;
-  orthographic: boolean;
+  mainControlsRef?: React.RefObject<FlMainCameraControls>;
   onPutObject?: (
     evt: ThreeEvent<MouseEvent>,
     preObject: AnnotationClassVO
@@ -19,16 +19,25 @@ type Props = {
 };
 
 const FLMainControls: FC<Props> = ({
+  orthographic,
   position0,
   preObject,
-  orthographic,
+  mainControlsRef,
   onPutObject = (f) => f,
 }) => {
+  const gl = useThree(({ gl }) => gl);
   const camera = useThree(({ camera }) => camera);
-  const orbit = createRef<OrbitControlsImpl>();
+  const mainControls = React.useMemo(
+    () => new FlMainCameraControls(camera),
+    [camera]
+  );
+
   const annotation = createRef<FLAnnotationControlsImpl>();
 
   // TODO adjust  position only first time
+  useFrame(() => {
+    if (mainControls.enabled) mainControls.update();
+  });
 
   useEffect(() => {
     const putMode = !!preObject;
@@ -39,12 +48,14 @@ const FLMainControls: FC<Props> = ({
   }, [annotation]);
 
   useEffect(() => {
-    if (position0 && orbit.current && orbit.current.enabled) {
-      const control = orbit.current;
-      control.object.position.copy(position0.clone().setZ(position0.z + 50));
-      control.saveState();
+    mainControls.connect(gl.domElement);
+    if (position0 && mainControls.enabled) {
+      mainControls.object.position.copy(
+        position0.clone().setZ(position0.z + 50)
+      );
+      mainControls.saveState();
     }
-  }, []);
+  }, [mainControls]);
   return (
     <>
       <FLAnnotationControls
@@ -53,10 +64,9 @@ const FLMainControls: FC<Props> = ({
         preObject={preObject}
         onPutObject={onPutObject}
       />
-      <DreiOrbitControls
-        ref={orbit}
-        camera={camera}
-        enableDamping={false}
+      <primitive
+        ref={mainControlsRef}
+        object={mainControls}
         minZoom={10}
         maxZoom={200}
         minPolarAngle={orthographic ? 0 : undefined}

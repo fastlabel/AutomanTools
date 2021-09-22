@@ -25,7 +25,7 @@ import { ControlType } from './fl-transform-controls-gizmo';
 const moduloWrapAround = (offset: number, capacity: number) =>
   ((offset % capacity) + capacity) % capacity;
 
-class FLOrbitControls extends EventDispatcher {
+class FLObjectCameraControls extends EventDispatcher {
   object: Camera;
   controlType: ControlType;
   domElement: HTMLElement | undefined;
@@ -228,6 +228,9 @@ class FLOrbitControls extends EventDispatcher {
     this.set0 = (object: Object3D): void => {
       const camera = scope.object as OrthographicCamera;
       const baseSize = Math.min(camera.top, camera.right) * 1;
+      if (!FlCubeUtil.valid(object)) {
+        return;
+      }
       const scale = FlCubeUtil.getScale(object);
       const distance = 10;
       const changeTarget = scope.editingId !== object.name;
@@ -838,4 +841,4 @@ class FLOrbitControls extends EventDispatcher {
     this.update();
   }
 }
-export { FLOrbitControls };
+export { FLObjectCameraControls };

@@ -57,7 +57,7 @@ export type TopicImageDialogState = {
 };
 
 export type TaskEditorState = {
-  pageMode: 'threeEdit' | 'classesList' | 'classesForm';
+  pageMode: 'threeEdit' | 'classesList';
 
   editorState:
     | {
@@ -214,6 +214,19 @@ const useTask = () => {
       dist: taskRom.frames[currentFrameNo - 1],
     };
   }, [taskRom, taskFrame]);
+
+  const resetSelectMode = useCallback(() => {
+    _updateTaskEditor((prev) => {
+      return {
+        ...prev,
+        editorState: {
+          mode: 'neutral',
+          selectingAnnotationClass: undefined,
+          selectingTaskAnnotations: [],
+        },
+      };
+    });
+  }, [_updateTaskEditor]);
 
   // Task Store Event
   const open = useCallback(
@@ -378,20 +391,28 @@ const useTask = () => {
           })
         );
       } else if (param.type === 'removeFrame') {
-        _updateTaskAnnotations((prev) =>
-          prev.map((vo) => {
-            if (vo.id !== param.id) {
-              return vo;
-            }
-            delete vo.points[param.frameNo];
-            return vo;
-          })
+        _updateTaskAnnotations(
+          (prev) =>
+            prev
+              .map((vo) => {
+                if (vo.id !== param.id) {
+                  return vo;
+                }
+                delete vo.points[param.frameNo];
+                if (Object.keys(vo.points).length === 0) {
+                  resetSelectMode();
+                  return undefined;
+                }
+                return vo;
+              })
+              .filter((vo) => !!vo) as TaskAnnotationVO[]
         );
       } else if (param.type === 'removeAll') {
+        resetSelectMode();
         _updateTaskAnnotations((prev) => prev.filter((i) => i.id !== param.id));
       }
     },
-    [_updateTaskAnnotations]
+    [_updateTaskAnnotations, resetSelectMode]
   );
 
   const addTaskAnnotations = useCallback(
@@ -418,6 +439,18 @@ const useTask = () => {
 
   // ${changeVisibleLabel}
   // ${changePointerMode}
+
+  const changePageMode = useCallback(
+    (pageMode: 'threeEdit' | 'classesList') => {
+      _updateTaskEditor((prev) => {
+        return {
+          ...prev,
+          pageMode,
+        };
+      });
+    },
+    [_updateTaskEditor]
+  );
 
   const selectAnnotationClass = useCallback(
     (vo: AnnotationClassVO) => {
@@ -498,8 +531,10 @@ const useTask = () => {
     updateTaskAnnotations,
     copyFrameTaskAnnotations,
 
+    changePageMode,
     selectAnnotationClass,
     selectTaskAnnotations,
+    resetSelectMode,
   };
 };
 
