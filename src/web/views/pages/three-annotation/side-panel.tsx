@@ -103,7 +103,7 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
   }, [taskFrame]);
 
   const taskAnnotationHeight = useMemo(() => {
-    return height + 62;
+    return height + 62 + 39;
   }, [height]);
 
   const filteredTaskAnnotations = useMemo(() => {

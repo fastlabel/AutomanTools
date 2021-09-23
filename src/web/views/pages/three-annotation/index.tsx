@@ -59,6 +59,7 @@ const ThreeAnnotationPage: FC = () => {
     updateTaskAnnotations,
     selectTaskAnnotations,
     changePageMode,
+    resetSelectMode,
   } = TaskStore.useContainer();
 
   const { annotationClass, dispatchAnnotationClass } =
@@ -72,6 +73,7 @@ const ThreeAnnotationPage: FC = () => {
   const openClassListDialog = useCallback(() => {
     if (taskRom.status === 'loaded') {
       const { status, projectId, annotationClasses } = taskRom;
+      resetSelectMode();
       changePageMode('classesList');
       dispatchAnnotationClass({
         type: 'init',
@@ -166,9 +168,10 @@ const ThreeAnnotationPage: FC = () => {
               r.x,
               r.y,
               r.z,
-              x,
-              y,
-              z,
+              // prevent NaN with decimal value
+              Number(x),
+              Number(y),
+              Number(z),
             ];
             addTaskAnnotations([vo]);
             selectTaskAnnotations([vo], 'single');

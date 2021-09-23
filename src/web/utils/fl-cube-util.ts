@@ -34,16 +34,20 @@ export const FlCubeUtil = {
   },
   getPointsVo: (object: Object3D): TaskAnnotationVOPoints => {
     const scale = FlCubeUtil.getScale(object);
+    // prevent NaN with decimal value
+    // to Number prevent Nan in editing.
+    // Basically it should prevent make annotation class.
+    // It's for preventive measures.
     return [
-      object.position.x,
-      object.position.y,
-      object.position.z,
-      object.rotation.x,
-      object.rotation.y,
-      object.rotation.z,
-      scale.x,
-      scale.y,
-      scale.z,
+      Number(object.position.x),
+      Number(object.position.y),
+      Number(object.position.z),
+      Number(object.rotation.x),
+      Number(object.rotation.y),
+      Number(object.rotation.z),
+      Number(scale.x),
+      Number(scale.y),
+      Number(scale.z),
     ];
   },
   resolveByOnClick: (event: ThreeEvent<MouseEvent>) => {

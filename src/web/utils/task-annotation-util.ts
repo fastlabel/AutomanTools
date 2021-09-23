@@ -33,7 +33,8 @@ export const TaskAnnotationUtil = {
         code: '',
       },
       points: {
-        [frameNo]: [0, 0, 0, x, y, z, 0, 0, 0],
+        // prevent NaN with decimal value
+        [frameNo]: [0, 0, 0, Number(x), Number(y), Number(z), 0, 0, 0],
       },
       createdAt: now.toISOString(),
       updatedAt: now.toISOString(),

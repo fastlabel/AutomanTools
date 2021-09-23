@@ -13,6 +13,7 @@ import {
   Vector3,
 } from 'three';
 import { FlCubeUtil } from '../../utils/fl-cube-util';
+import { ControlKey, ControlType } from '../../utils/fl-object-camera-util';
 
 type _BaseGizItemSet = [
   base: any,
@@ -21,16 +22,6 @@ type _BaseGizItemSet = [
 ];
 
 type _Item = { gizmo: Object3D; picker: Object3D };
-
-export type ControlKey =
-  | 'T_BOX'
-  | 'S_TL'
-  | 'S_TR'
-  | 'S_BL'
-  | 'S_BR'
-  | 'R_POINT';
-
-export type ControlType = 'top' | 'side' | 'front';
 
 const HALF_ANGLE = Math.PI / 2;
 

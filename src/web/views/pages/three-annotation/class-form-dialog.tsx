@@ -1,7 +1,14 @@
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import Grid from '@material-ui/core/Grid';
-import React, { FC, Reducer, useCallback, useEffect, useReducer } from 'react';
+import React, {
+  FC,
+  Reducer,
+  useCallback,
+  useEffect,
+  useReducer,
+  useState,
+} from 'react';
 import {
   FLDialogActions,
   FLDialogContent,
@@ -41,7 +48,9 @@ const formReducer: Reducer<FormState<AnnotationClassVO>, FormAction> = (
 const ClassFormDialog: FC<Props> = ({ open, classVo, onClose, onSubmit }) => {
   const handleClose = useCallback(() => onClose(), []);
 
-  const submitType = classVo ? 'update' : 'add';
+  const [submitType, setSubmitType] = useState<'add' | 'update'>(
+    classVo ? 'update' : 'add'
+  );
 
   const initialForm = {
     data: classVo || AnnotationClassUtil.create(),
@@ -51,6 +60,7 @@ const ClassFormDialog: FC<Props> = ({ open, classVo, onClose, onSubmit }) => {
   const [form, dispatchForm] = useReducer(formReducer, initialForm);
 
   useEffect(() => {
+    setSubmitType(classVo ? 'update' : 'add');
     dispatchForm({
       type: 'init',
       data: classVo || AnnotationClassUtil.create(),
@@ -59,6 +69,7 @@ const ClassFormDialog: FC<Props> = ({ open, classVo, onClose, onSubmit }) => {
 
   const handleClickSaveCreate = () => {
     onSubmit(form.data, submitType).then(() => {
+      setSubmitType('add');
       dispatchForm({ type: 'init', data: AnnotationClassUtil.create() });
     });
   };
@@ -121,7 +132,7 @@ const ClassFormDialog: FC<Props> = ({ open, classVo, onClose, onSubmit }) => {
           保存して新規作成
         </Button>
         <Button onClick={handleClickSaveClose} variant="text" color="primary">
-          {classVo ? '保存' : '作成'}
+          {submitType === 'update' ? '保存' : '作成'}
         </Button>
       </FLDialogActions>
     </Dialog>

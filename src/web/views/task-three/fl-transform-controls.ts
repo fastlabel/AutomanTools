@@ -14,12 +14,13 @@ import {
   Vector3,
 } from 'three';
 import { FlCubeUtil } from '../../utils/fl-cube-util';
-import { FLObjectCameraControls } from './fl-object-camera-controls';
 import {
   ControlKey,
   ControlType,
-  FLTransformControlsGizmo,
-} from './fl-transform-controls-gizmo';
+  FlObjectCameraUtil,
+} from '../../utils/fl-object-camera-util';
+import { FLObjectCameraControls } from './fl-object-camera-controls';
+import { FLTransformControlsGizmo } from './fl-transform-controls-gizmo';
 
 export interface FLTransformControlsPointerObject {
   x: number;
@@ -323,9 +324,16 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
     if (this.axis === 'T_BOX') {
       // Apply translate
       this.offset.copy(this.pointEnd).sub(this.pointStart);
+      this.camera.position
+        .set(0, 0, 0)
+        .sub(this.offset.applyQuaternion(object.quaternion.clone().invert()));
+      FlObjectCameraUtil.adjustOffset(this.control, this.camera.position);
+
+      this.offset.copy(this.pointEnd).sub(this.pointStart);
       this.offset
         .applyQuaternion(this.parentQuaternionInv)
         .divide(this.parentScale);
+
       object.position.copy(this.offset).add(this.positionStart);
     } else if (this.axis === 'R_POINT') {
       this.rotationAxis.copy(this.eye);
@@ -346,14 +354,6 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
         )
       );
       object.quaternion.multiply(this.quaternionStart).normalize();
-
-      // console.log({
-      //   rAngle: this.rotationAngle,
-      //   rSnap: this.rotationSnap,
-      //   rAxis: this.rotationAxis,
-      //   tempQ: this.tempQuaternion,
-      //   qStart: this.quaternionStart,
-      // });
     } else {
       this.tempVector.copy(this.pointStart);
       this.tempVector2.copy(this.pointEnd);
@@ -452,7 +452,7 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
           break;
       }
       object.position
-        .copy(this.offset.applyQuaternion(this.parentQuaternionInv))
+        .copy(this.offset.applyQuaternion(object.quaternion))
         .add(this.positionStart);
       // Apply scale
       FlCubeUtil.setScale(object, this.tempVector);

@@ -13,7 +13,7 @@ import {
   Vector3,
 } from 'three';
 import { FlCubeUtil } from '../../utils/fl-cube-util';
-import { ControlType } from './fl-transform-controls-gizmo';
+import { ControlType } from '../../utils/fl-object-camera-util';
 
 // This set of controls performs orbiting, dollying (zooming), and panning.
 // Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
