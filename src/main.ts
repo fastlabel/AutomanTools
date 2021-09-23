@@ -70,6 +70,13 @@ const createWindow = () => {
     return result;
   });
 
+  ipcMain.handle('workspace/checkWorkspace', async (event, param) => {
+    const result = await WorkSpaceDriver.checkWorkspace(param)
+      .then((r) => r)
+      .catch((error) => console.log(error));
+    return result;
+  });
+
   ipcMain.handle('minimize', () => mainWindow.minimize());
   ipcMain.handle('maximize', () => mainWindow.maximize());
   ipcMain.handle('restore', () => mainWindow.unmaximize());

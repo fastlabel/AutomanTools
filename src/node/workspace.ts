@@ -1,5 +1,7 @@
 import fs from 'fs';
 import {
+  WKCheckParam,
+  WKCheckResult,
   WKLoadParam,
   WKSaveCommand,
   WKSaveParam,
@@ -155,6 +157,16 @@ export const WorkSpaceDriver = {
         .catch((err) => {
           reject(err);
         });
+    });
+  },
+  checkWorkspace: (param: WKCheckParam): Promise<WKCheckResult> => {
+    return new Promise(async (resolve, reject) => {
+      if (await FileDriver.emptyDir(param.wkDir)) {
+        // can create new workspace
+        resolve({ code: 'valid_new_wk', valid: true });
+        return;
+      }
+      resolve({ code: 'invalid_folder_not_empty', valid: false });
     });
   },
 };

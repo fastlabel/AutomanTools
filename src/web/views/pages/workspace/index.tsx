@@ -2,8 +2,9 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import React, { FC, Reducer, useReducer } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
+import React, { FC, Reducer, useEffect, useReducer } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import { FormUtil } from '../../../components/fields/form-util';
 import { FormAction, FormState } from '../../../components/fields/type';
@@ -64,6 +65,12 @@ const formReducer: Reducer<FormState<WorkspaceFormState>, FormAction> = (
 const WorkspacePage: FC = () => {
   const classes = useStyles();
   const history = useHistory();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const search = useLocation().search;
+  const queryParam = new URLSearchParams(search);
+  const formStartPage = queryParam.get('from') === '';
+
   const workspace = WorkspaceContext.useContainer();
   const projectRepository = React.useContext(ProjectRepositoryContext);
 
@@ -78,15 +85,45 @@ const WorkspacePage: FC = () => {
   const [form, dispatchForm] = useReducer(formReducer, initialForm);
 
   const handleCreate = () => {
-    // TODO should updated workspace folder
     projectRepository
       .create({ ...form.data, projectId: uuid().toString() } as any)
-      .then(({ projectId }) => history.push(`/threeannotation/${projectId}`));
+      .then(({ projectId, errorCode }) => {
+        if (errorCode) {
+          switch (errorCode) {
+            case 'invalid_folder_not_empty':
+              enqueueSnackbar(
+                `ワークスペースを新規作成する場合は空のフォルダを選択してください`,
+                { variant: 'error' }
+              );
+              return;
+            default:
+              enqueueSnackbar(errorCode, { variant: 'error' });
+              return;
+          }
+        }
+        history.push(`/threeannotation/${projectId}`);
+      })
+      .catch((err) => enqueueSnackbar(err, { variant: 'error' }));
   };
 
   const handleBack = () => {
     history.push('/');
   };
+
+  useEffect(() => {
+    workspace.setWorkspaceFolder(form.data.workspaceFolder || '');
+  }, [form]);
+
+  useEffect(() => {
+    if (workspace.forceUpdate) {
+      dispatchForm({
+        type: 'change',
+        name: 'workspaceFolder',
+        value: workspace.workspaceFolder,
+      });
+      workspace.setForceUpdate(false);
+    }
+  }, [workspace.forceUpdate]);
 
   return (
     <Grid
@@ -113,7 +150,7 @@ const WorkspacePage: FC = () => {
           <Grid item className={classes.item}>
             <Grid container justifyContent="space-between">
               <Grid item>
-                <Button onClick={handleBack}>戻る</Button>
+                {formStartPage && <Button onClick={handleBack}>戻る</Button>}
               </Grid>
               <Grid item>
                 <Button

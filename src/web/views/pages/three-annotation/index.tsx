@@ -1,6 +1,13 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
-import React, { createRef, FC, useCallback, useEffect, useMemo } from 'react';
+import React, {
+  createRef,
+  FC,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { Group, PerspectiveCamera, Vector3 } from 'three';
 import AnnotationClassStore from '../../../stores/annotation-class-store';
@@ -45,6 +52,8 @@ const ThreeAnnotationPage: FC = () => {
   const history = useHistory();
   const { projectId } = useParams<{ projectId: string }>();
   const mainControlsRef = createRef<FlMainCameraControls>();
+
+  const [initialed, setInitialed] = useState(false);
 
   const {
     taskToolBar,
@@ -205,19 +214,21 @@ const ThreeAnnotationPage: FC = () => {
   // initialize Editor
   useEffect(() => {
     const taskId = '';
+    setInitialed(false);
     open(projectId, taskId);
   }, [projectId]);
 
   useEffect(() => {
     if (taskRom.status === 'loaded') {
       const { status, projectId, annotationClasses } = taskRom;
-      if (annotationClasses.length === 0) {
+      if (annotationClasses.length === 0 && !initialed) {
         dispatchAnnotationClass({
           type: 'init',
           projectId,
           data: annotationClasses,
         });
       }
+      setInitialed(true);
     }
   }, [taskRom]);
 

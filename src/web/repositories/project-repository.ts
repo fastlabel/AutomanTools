@@ -12,7 +12,7 @@ export type ProjectRepository = {
     projectId: string;
     type: ProjectType;
     targets: File[];
-  }): Promise<{ projectId: string }>;
+  }): Promise<{ projectId: string; errorCode?: string }>;
   load(
     projectId: string,
     taskId?: string,

@@ -46,11 +46,11 @@ const StartPage: FC = () => {
             history.push(`/threeannotation/${projectId}`);
             return;
           }
-          history.push('/workspace');
+          history.push('/workspace?from=');
         })
         .catch((err) => {
           // not exist meta/project.json
-          history.push('/workspace');
+          history.push('/workspace?from=');
         });
     });
   }, []);

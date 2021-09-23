@@ -49,7 +49,7 @@ export const useProjectFsRepository = (
       projectId: string;
       type: ProjectType;
       targets: File[];
-    }): Promise<{ projectId: string }> {
+    }): Promise<{ projectId: string; errorCode?: string }> {
       const calibration = new Set();
       const frames = new Set<string>();
       const topicIds = new Set();
@@ -142,26 +142,36 @@ export const useProjectFsRepository = (
       return new Promise((resolve, reject) => {
         const wkDir = workspaceContext.workspaceFolder;
         workspaceApi
-          .save({
-            wkDir,
-            query: {
-              meta: {
-                project: {
-                  method: 'json',
-                  resource: {
-                    projectId: vo.projectId,
-                    version: ApplicationConst.version,
+          .checkWorkspace({ wkDir })
+          .then((res) => {
+            if (!res.valid) {
+              resolve({ projectId: vo.projectId, errorCode: res.code });
+              return;
+            }
+            // should save before check dir
+            workspaceApi
+              .save({
+                wkDir,
+                query: {
+                  meta: {
+                    project: {
+                      method: 'json',
+                      resource: {
+                        projectId: vo.projectId,
+                        version: ApplicationConst.version,
+                      },
+                    },
+                    annotation_classes: { method: 'json', resource: [] },
+                  },
+                  target: targetQuery,
+                  output: {
+                    annotation_data: { method: 'json', resource: [] },
                   },
                 },
-                annotation_classes: { method: 'json', resource: [] },
-              },
-              target: targetQuery,
-              output: {
-                annotation_data: { method: 'json', resource: [] },
-              },
-            },
+              })
+              .then(() => resolve({ projectId: vo.projectId }))
+              .catch((err) => reject(err));
           })
-          .then(() => resolve({ projectId: vo.projectId }))
           .catch((err) => reject(err));
       });
     },

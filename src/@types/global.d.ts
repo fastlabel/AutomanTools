@@ -10,6 +10,7 @@ export interface Workspace {
   save: (param: WKSaveParam) => Promise<void>;
   load: (param: WKLoadParam) => Promise<WKSkeleton<any, ArrayBuffer>>;
   exist: (param: WKLoadParam) => Promise<WKSkeleton<boolean, boolean>>;
+  checkWorkspace: (param: WKCheckParam) => Promise<WKCheckResult>;
 }
 
 export type WKJsonSaveCommand = {
@@ -37,6 +38,20 @@ export type WKSkeleton<J, R> = {
   output?: {
     annotation_data: J;
   };
+};
+
+export type WKCheckResult =
+  | {
+      code: 'valid_new_wk';
+      valid: true;
+    }
+  | {
+      code: 'invalid_folder_not_empty';
+      valid: false;
+    };
+
+export type WKCheckParam = {
+  wkDir: string;
 };
 
 export type WKLoadParam = {

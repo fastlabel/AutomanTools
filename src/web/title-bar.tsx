@@ -342,10 +342,12 @@ const TitleBar: FC<Props> = () => {
                               history.push(`/threeannotation/${projectId}`);
                               return;
                             }
+                            workspaceStore.setForceUpdate(true);
                             history.push('/workspace');
                           })
                           .catch((err) => {
                             // not exist meta/project.json
+                            workspaceStore.setForceUpdate(true);
                             history.push('/workspace');
                           });
                       });

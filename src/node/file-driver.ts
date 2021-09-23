@@ -91,6 +91,14 @@ export const FileDriver = {
       });
     });
   },
+  emptyDir: (pathStr: string): Promise<boolean> => {
+    return new Promise((resolver, reject) => {
+      fs.readdir(pathStr, (err, files) => {
+        if (err) reject(err);
+        resolver(files.length === 0);
+      });
+    });
+  },
   load: (pathStr: string): Promise<ArrayBuffer> => {
     console.debug('load :' + pathStr);
     return new Promise((resolver, reject) => {
