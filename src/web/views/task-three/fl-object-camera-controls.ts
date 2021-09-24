@@ -7,13 +7,15 @@ import {
   Object3D,
   OrthographicCamera,
   PerspectiveCamera,
-  Quaternion,
   TOUCH,
   Vector2,
   Vector3,
 } from 'three';
 import { FlCubeUtil } from '../../utils/fl-cube-util';
-import { ControlType } from '../../utils/fl-object-camera-util';
+import {
+  ControlType,
+  FlObjectCameraUtil,
+} from '../../utils/fl-object-camera-util';
 
 // This set of controls performs orbiting, dollying (zooming), and panning.
 // Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
@@ -21,9 +23,6 @@ import { ControlType } from '../../utils/fl-object-camera-util';
 //    Orbit - left mouse / touch: one-finger move
 //    Zoom - middle mouse, or mousewheel / touch: two-finger spread or squish
 //    Pan - right mouse, or left mouse + ctrl/meta/shiftKey, or arrow keys / touch: two-finger move
-
-const moduloWrapAround = (offset: number, capacity: number) =>
-  ((offset % capacity) + capacity) % capacity;
 
 class FLObjectCameraControls extends EventDispatcher {
   object: Camera;
@@ -141,16 +140,7 @@ class FLObjectCameraControls extends EventDispatcher {
       const offset = new Vector3();
 
       // so camera.up is the orbit axis
-      const quat = new Quaternion().setFromUnitVectors(
-        object.up,
-        new Vector3(0, 1, 0)
-      );
-      const quatInverse = quat.clone().invert();
-
       const lastPosition = new Vector3();
-      const lastQuaternion = new Quaternion();
-
-      const twoPI = 2 * Math.PI;
 
       return function update(): boolean {
         const position = scope.object.position;
@@ -232,7 +222,6 @@ class FLObjectCameraControls extends EventDispatcher {
         return;
       }
       const scale = FlCubeUtil.getScale(object);
-      const distance = 10;
       const changeTarget = scope.editingId !== object.name;
       if (changeTarget) {
         scope.target.set(0, 0, 0);
@@ -240,19 +229,19 @@ class FLObjectCameraControls extends EventDispatcher {
         scope.editingId = object.name;
         switch (scope.controlType) {
           case 'top':
-            camera.position.set(0, 0, distance);
             camera.zoom = Math.floor(baseSize / Math.max(scale.x, scale.y));
             break;
           case 'side':
-            camera.position.set(0, distance, 0);
             camera.zoom = Math.floor(baseSize / Math.max(scale.x, scale.z));
             break;
           case 'front':
-            camera.position.set(distance, 0, 0);
             camera.zoom = Math.floor(baseSize / Math.max(scale.y, scale.z));
             break;
         }
-        camera.updateProjectionMatrix();
+        // updateProjectionMatrix called in below
+        FlObjectCameraUtil.adjust(scope.controlType, camera, scale);
+      } else {
+        FlObjectCameraUtil.adjustFar(scope.controlType, camera, scale);
       }
     };
     //

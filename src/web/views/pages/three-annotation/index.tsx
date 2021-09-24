@@ -222,6 +222,7 @@ const ThreeAnnotationPage: FC = () => {
     if (taskRom.status === 'loaded') {
       const { status, projectId, annotationClasses } = taskRom;
       if (annotationClasses.length === 0 && !initialed) {
+        changePageMode('classesList');
         dispatchAnnotationClass({
           type: 'init',
           projectId,
@@ -236,6 +237,7 @@ const ThreeAnnotationPage: FC = () => {
     if (taskRom.status === 'loaded' && annotationClass.status === 'saved') {
       dispatchAnnotationClass({ type: 'end' });
       fetchAnnotationClasses(taskRom.projectId);
+      // TODO this mode using hot-key control should consider more smart way
       changePageMode('threeEdit');
     }
   }, [taskRom, annotationClass]);
@@ -246,6 +248,7 @@ const ThreeAnnotationPage: FC = () => {
       topicImageDialog.open &&
       taskRom.status === 'loaded' &&
       imageTopicId &&
+      taskRom.calibrations &&
       taskRom.calibrations[imageTopicId]
     ) {
       updateCalibration(taskRom.calibrations[imageTopicId]);

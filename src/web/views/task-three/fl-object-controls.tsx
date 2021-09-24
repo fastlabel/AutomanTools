@@ -37,7 +37,7 @@ const FLObjectControls: FC<{
           camera.up.set(-1, 0, 0);
           break;
       }
-      FlObjectCameraUtil.copyOffset(control, camera.position);
+      FlObjectCameraUtil.reset(control, camera);
       camera.lookAt(orbit.target);
       camera.updateProjectionMatrix();
       orbit.update();

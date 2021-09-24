@@ -126,7 +126,11 @@ export const FileDriver = {
     return new Promise((resolver, reject) => {
       fs.readFile(pathStr, 'utf8', (err, data) => {
         if (err) reject(err);
-        resolver(JSON.parse(data));
+        if (data) {
+          resolver(JSON.parse(data));
+        } else {
+          resolver({} as any);
+        }
       });
     });
   },

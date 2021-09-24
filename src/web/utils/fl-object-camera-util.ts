@@ -1,6 +1,6 @@
-import { Vector3 } from 'three';
+import { OrthographicCamera, Vector3 } from 'three';
 
-const DISTANCE = 10;
+const DISTANCE = 0.1;
 
 export type ControlKey =
   | 'T_BOX'
@@ -13,30 +13,60 @@ export type ControlKey =
 export type ControlType = 'top' | 'side' | 'front';
 
 export const FlObjectCameraUtil = {
-  adjustOffset: (controlType: ControlType, position: Vector3) => {
+  reset: (controlType: ControlType, camera: OrthographicCamera) => {
     switch (controlType) {
       case 'top':
-        position.z = DISTANCE;
+        camera.position.set(0, 0, 10);
         break;
       case 'side':
-        position.y = DISTANCE;
+        camera.position.set(0, 10, 0);
         break;
       case 'front':
-        position.x = DISTANCE;
+        camera.position.set(10, 0, 0);
         break;
     }
+    camera.far = 20;
   },
-  copyOffset: (controlType: ControlType, position: Vector3) => {
+  adjust: (
+    controlType: ControlType,
+    camera: OrthographicCamera,
+    objectScale: Vector3
+  ) => {
     switch (controlType) {
       case 'top':
-        position.set(0, 0, DISTANCE);
+        camera.position.set(0, 0, objectScale.z / 2);
+        camera.far = objectScale.z + DISTANCE;
         break;
       case 'side':
-        position.set(0, DISTANCE, 0);
+        camera.position.set(0, objectScale.y / 2, 0);
+        camera.far = objectScale.y + DISTANCE;
         break;
       case 'front':
-        position.set(DISTANCE, 0, 0);
+        camera.position.set(objectScale.x / 2, 0, 0);
+        camera.far = objectScale.x + DISTANCE;
         break;
     }
+    camera.updateProjectionMatrix();
+  },
+  adjustFar: (
+    controlType: ControlType,
+    camera: OrthographicCamera,
+    objectScale: Vector3
+  ) => {
+    switch (controlType) {
+      case 'top':
+        camera.position.z = objectScale.z / 2;
+        camera.far = objectScale.z + DISTANCE;
+        break;
+      case 'side':
+        camera.position.y = objectScale.y / 2;
+        camera.far = objectScale.y + DISTANCE;
+        break;
+      case 'front':
+        camera.position.x = objectScale.x / 2;
+        camera.far = objectScale.x + DISTANCE;
+        break;
+    }
+    camera.updateProjectionMatrix();
   },
 };

@@ -195,7 +195,8 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
     this.visible = true;
     this.orbit?.set0(this.object);
     this.gizmo.attach(object);
-
+    const scale = FlCubeUtil.getScale(object);
+    FlObjectCameraUtil.adjust(this.control, this.camera as any, scale);
     return this;
   };
 
@@ -327,7 +328,12 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
       this.camera.position
         .set(0, 0, 0)
         .sub(this.offset.applyQuaternion(object.quaternion.clone().invert()));
-      FlObjectCameraUtil.adjustOffset(this.control, this.camera.position);
+      const objectScale = FlCubeUtil.getScale(object);
+      FlObjectCameraUtil.adjustFar(
+        this.control,
+        this.camera as any,
+        objectScale
+      );
 
       this.offset.copy(this.pointEnd).sub(this.pointStart);
       this.offset
@@ -466,6 +472,14 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
     if (pointer.button !== 0) return;
     if (this.dragging && this.axis !== null) {
       this.dispatchEvent(this.mouseUpEvent);
+      if (this.object) {
+        const objectScale = FlCubeUtil.getScale(this.object);
+        FlObjectCameraUtil.adjust(
+          this.control,
+          this.camera as any,
+          objectScale
+        );
+      }
     }
     this.dragging = false;
     this.axis = null;
