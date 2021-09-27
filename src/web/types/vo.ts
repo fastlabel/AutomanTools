@@ -51,9 +51,6 @@ export type TaskAnnotationVOPoints = [
 export type TaskAnnotationOriginVO = {
   id: string;
   annotationClassId: string;
-  attributes: {
-    code: string;
-  };
   points: { [frameNo: string]: TaskAnnotationVOPoints };
   createdAt: string;
   updatedAt: string;

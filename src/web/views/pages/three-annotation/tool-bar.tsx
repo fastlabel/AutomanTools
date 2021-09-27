@@ -3,6 +3,7 @@ import Box from '@material-ui/core/Box';
 import ArrowBackIosOutlinedIcon from '@material-ui/icons/ArrowBackIosOutlined';
 import ArrowForwardIosOutlinedIcon from '@material-ui/icons/ArrowForwardIosOutlined';
 import FormatShapesOutlinedIcon from '@material-ui/icons/FormatShapesOutlined';
+import GetAppOutlinedIcon from '@material-ui/icons/GetAppOutlined';
 import InputOutlinedIcon from '@material-ui/icons/InputOutlined';
 import OpenWithOutlinedIcon from '@material-ui/icons/OpenWithOutlined';
 import PhotoLibraryOutlinedIcon from '@material-ui/icons/PhotoLibraryOutlined';
@@ -15,18 +16,23 @@ import ToolBar from '../../../components/tool-bar';
 import ToolBarButton, {
   ToolBarBoxButtonThemeProvider,
 } from '../../../components/tool-bar-button';
+import WorkspaceContext from '../../../context/workspace';
 import TaskStore from '../../../stores/task-store';
+
+const workspaceApi = window.workspace;
 
 type Props = {};
 
 const ThreeToolbar: FC<Props> = () => {
   const { enqueueSnackbar } = useSnackbar();
+  const workspaceStore = WorkspaceContext.useContainer();
 
   const {
     taskToolBar,
     taskRom,
     taskFrame,
     topicImageDialog,
+    taskAnnotations,
     reopen,
     updateTaskToolBar,
     openImageDialog,
@@ -151,6 +157,36 @@ const ThreeToolbar: FC<Props> = () => {
           onClick={() => {
             saveFrameTaskAnnotations();
             enqueueSnackbar('保存しました');
+          }}
+        />
+        <Box mr={2} />
+        <ToolBarButton
+          toolTip="出力"
+          icon={<GetAppOutlinedIcon />}
+          onClick={() => {
+            saveFrameTaskAnnotations();
+            const date = new Date();
+            const yyyy = `${date.getFullYear()}`;
+            const MM = `0${date.getMonth() + 1}`.slice(-2);
+            const dd = `0${date.getDate()}`.slice(-2);
+            const HH = `0${date.getHours()}`.slice(-2);
+            const mm = `0${date.getMinutes()}`.slice(-2);
+            const ss = `0${date.getSeconds()}`.slice(-2);
+            const ms = `00${date.getMilliseconds()}`.slice(-3);
+            const fileName = `${workspaceStore.folderName}_${yyyy}${MM}${dd}${HH}${mm}${ss}${ms}.json`;
+            workspaceApi
+              .export({ fileName, dataJson: taskAnnotations })
+              .then((res) => {
+                if (res.status === undefined) {
+                  // clicked cancel
+                  return;
+                }
+                if (res.status) {
+                  enqueueSnackbar(`${res.path}に出力しました。`);
+                } else {
+                  enqueueSnackbar(res.message, { variant: 'error' });
+                }
+              });
           }}
         />
       </ToolBarBoxButtonThemeProvider>

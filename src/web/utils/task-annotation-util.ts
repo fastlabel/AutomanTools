@@ -8,7 +8,6 @@ import {
 const STORE_KEY = [
   'id',
   'annotationClassId',
-  'attributes',
   'points',
   'createdAt',
   'updatedAt',
@@ -29,9 +28,6 @@ export const TaskAnnotationUtil = {
       title,
       value,
       color,
-      attributes: {
-        code: '',
-      },
       points: {
         // prevent NaN with decimal value
         [frameNo]: [0, 0, 0, Number(x), Number(y), Number(z), 0, 0, 0],

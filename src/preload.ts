@@ -1,5 +1,10 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { WKCheckParam, WKLoadParam, WKSaveParam } from './@types/global';
+import {
+  WKCheckParam,
+  WKExportPram,
+  WKLoadParam,
+  WKSaveParam,
+} from './@types/global';
 
 contextBridge.exposeInMainWorld('workspace', {
   openFolderDialog: async (): Promise<string> =>
@@ -12,6 +17,8 @@ contextBridge.exposeInMainWorld('workspace', {
     ipcRenderer.invoke('workspace/exist', param),
   checkWorkspace: async (param: WKCheckParam) =>
     ipcRenderer.invoke('workspace/checkWorkspace', param),
+  export: async (param: WKExportPram) =>
+    await ipcRenderer.invoke('workspace/export', param),
 });
 
 contextBridge.exposeInMainWorld('appApi', {

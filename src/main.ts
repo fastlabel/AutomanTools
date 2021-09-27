@@ -1,6 +1,8 @@
 import { app, BrowserWindow, dialog, ipcMain, session } from 'electron';
 import { searchDevtools } from 'electron-search-devtools';
+import fs from 'fs';
 import path from 'path';
+import { WKExportPram } from './@types/global';
 import { WorkSpaceDriver } from './node/workspace';
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -40,7 +42,9 @@ const createWindow = () => {
 
   ipcMain.handle('workspace/openFolderDialog', async () => {
     const dirPath = await dialog
-      .showOpenDialog(mainWindow, { properties: ['openDirectory'] })
+      .showOpenDialog(mainWindow, {
+        properties: ['openDirectory', 'createDirectory'],
+      })
       .then((result) => {
         if (result.canceled) return;
         return result.filePaths[0];
@@ -75,6 +79,27 @@ const createWindow = () => {
       .then((r) => r)
       .catch((error) => console.log(error));
     return result;
+  });
+
+  ipcMain.handle('workspace/export', async (event, param: WKExportPram) => {
+    const path = dialog.showSaveDialogSync(mainWindow, {
+      buttonLabel: '保存',
+      defaultPath: param.fileName,
+      filters: [{ name: '*', extensions: ['json'] }],
+      properties: ['createDirectory'],
+    });
+    // キャンセルで閉じた場合
+    if (path === undefined) {
+      return { status: undefined };
+    }
+
+    // ファイルの内容を返却
+    try {
+      fs.writeFileSync(path, JSON.stringify(param.dataJson, null, 2));
+      return { status: true, path: path };
+    } catch (error: any) {
+      return { status: false, message: error.message };
+    }
   });
 
   ipcMain.handle('minimize', () => mainWindow.minimize());

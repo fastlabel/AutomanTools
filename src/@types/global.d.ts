@@ -11,6 +11,7 @@ export interface Workspace {
   load: (param: WKLoadParam) => Promise<WKSkeleton<any, ArrayBuffer>>;
   exist: (param: WKLoadParam) => Promise<WKSkeleton<boolean, boolean>>;
   checkWorkspace: (param: WKCheckParam) => Promise<WKCheckResult>;
+  export: (param: WKExportPram) => Promise<WKExportResult>;
 }
 
 export type WKJsonSaveCommand = {
@@ -63,6 +64,20 @@ export type WKSaveParam = {
   wkDir: string;
   query: WKSkeleton<WKJsonSaveCommand, WKCopyCommand>;
 };
+export type WKExportPram = {
+  fileName: string;
+  dataJson: any;
+};
+
+export type WKExportResult =
+  | {
+      status: true;
+      path: string;
+    }
+  | {
+      status: false;
+      message: message;
+    };
 
 export interface AppApi {
   contextMenu: () => void;
