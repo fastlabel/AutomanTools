@@ -1,3 +1,7 @@
+import { FormUtil } from '@fl-three-editor/components/fields/form-util';
+import { FormAction, FormState } from '@fl-three-editor/components/fields/type';
+import { ProjectRepositoryContext } from '@fl-three-editor/repositories/project-repository';
+import { ProjectType } from '@fl-three-editor/types/const';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
@@ -6,11 +10,6 @@ import { useSnackbar } from 'notistack';
 import React, { FC, Reducer, useEffect, useReducer } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
-import { FormUtil } from '../../../components/fields/form-util';
-import { FormAction, FormState } from '../../../components/fields/type';
-import WorkspaceContext from '../../../context/workspace';
-import { ProjectRepositoryContext } from '../../../repositories/project-repository';
-import { ProjectType } from '../../../types/const';
 import WorkspaceForm, { WorkspaceFormState } from './form';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -46,12 +45,7 @@ const formReducer: Reducer<FormState<WorkspaceFormState>, FormAction> = (
       }
       const helper = { validState: 'valid' };
 
-      if (
-        newState.workspaceFolder &&
-        newState.type &&
-        newState.targets &&
-        newState.targets.length > 0
-      ) {
+      if (newState.type && newState.targets && newState.targets.length > 0) {
         helper.validState = 'valid';
       } else {
         helper.validState = 'error';
@@ -62,7 +56,7 @@ const formReducer: Reducer<FormState<WorkspaceFormState>, FormAction> = (
   }
 };
 
-const WorkspacePage: FC = () => {
+const StartPage: FC = () => {
   const classes = useStyles();
   const history = useHistory();
   const { enqueueSnackbar } = useSnackbar();
@@ -71,12 +65,11 @@ const WorkspacePage: FC = () => {
   const queryParam = new URLSearchParams(search);
   const formStartPage = queryParam.get('from') === '';
 
-  const workspace = WorkspaceContext.useContainer();
   const projectRepository = React.useContext(ProjectRepositoryContext);
 
   const initialForm = {
     data: {
-      workspaceFolder: workspace.workspaceFolder,
+      workspaceFolder: '',
       type: ProjectType.pcd_only,
     },
     helper: {},
@@ -110,20 +103,7 @@ const WorkspacePage: FC = () => {
     history.push('/');
   };
 
-  useEffect(() => {
-    workspace.setWorkspaceFolder(form.data.workspaceFolder || '');
-  }, [form]);
-
-  useEffect(() => {
-    if (workspace.forceUpdate) {
-      dispatchForm({
-        type: 'change',
-        name: 'workspaceFolder',
-        value: workspace.workspaceFolder,
-      });
-      workspace.setForceUpdate(false);
-    }
-  }, [workspace.forceUpdate]);
+  useEffect(() => {}, [form]);
 
   return (
     <Grid
@@ -169,4 +149,4 @@ const WorkspacePage: FC = () => {
   );
 };
 
-export default WorkspacePage;
+export default StartPage;

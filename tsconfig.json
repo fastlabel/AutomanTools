@@ -4,6 +4,11 @@
     "module": "ES2020",
     "moduleResolution": "Node",
     "esModuleInterop": true,
+    "baseUrl": "./",
+    "paths": {
+      "@fl-three-editor/*": ["src/editor-module/*"],
+      "@fl-file/*": ["src/file-module/*"]
+    },
     "lib": ["DOM", "ES2020"],
     "jsx": "react",
     "strict": true,

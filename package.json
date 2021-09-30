@@ -6,6 +6,9 @@
   "license": "Apache License 2.0",
   "main": "dist/main.js",
   "scripts": {
+    "webdev": "run-p webdev:*",
+    "webdev:webpack": "webpack --config webpack.config.web-dev.ts --watch",
+    "webdev:start": " wait-on ./public/index.html && cross-env NODE_ENV=\"development\" webpack-dev-server --config webpack.config.web-dev.ts",
     "start": "run-s build serve",
     "predev": "rimraf dist",
     "dev": "run-p dev:*",
@@ -68,7 +71,8 @@
     "ts-node": "^10.1.0",
     "typescript": "^4.3.5",
     "webpack": "^5.45.1",
-    "webpack-cli": "^4.7.2"
+    "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^4.3.0"
   },
   "optionalDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.28.4",

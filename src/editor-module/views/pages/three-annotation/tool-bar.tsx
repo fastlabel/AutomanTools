@@ -11,12 +11,12 @@ import SaveOutlinedIcon from '@material-ui/icons/SaveOutlined';
 import SettingsOverscanOutlinedIcon from '@material-ui/icons/SettingsOverscanOutlined';
 import TouchAppOutlinedIcon from '@material-ui/icons/TouchAppOutlined';
 import { useSnackbar } from 'notistack';
-import React, { FC, useMemo } from 'react';
+import React, { FC, useContext, useMemo } from 'react';
 import ToolBar from '../../../components/tool-bar';
 import ToolBarButton, {
   ToolBarBoxButtonThemeProvider,
 } from '../../../components/tool-bar-button';
-import WorkspaceContext from '../../../context/workspace';
+import { ProjectRepositoryContext } from '../../../repositories/project-repository';
 import TaskStore from '../../../stores/task-store';
 
 const workspaceApi = window.workspace;
@@ -25,7 +25,7 @@ type Props = {};
 
 const ThreeToolbar: FC<Props> = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const workspaceStore = WorkspaceContext.useContainer();
+  const projectRepository = useContext(ProjectRepositoryContext);
 
   const {
     taskToolBar,
@@ -164,18 +164,8 @@ const ThreeToolbar: FC<Props> = () => {
           toolTip="出力"
           icon={<GetAppOutlinedIcon />}
           onClick={() => {
-            saveFrameTaskAnnotations();
-            const date = new Date();
-            const yyyy = `${date.getFullYear()}`;
-            const MM = `0${date.getMonth() + 1}`.slice(-2);
-            const dd = `0${date.getDate()}`.slice(-2);
-            const HH = `0${date.getHours()}`.slice(-2);
-            const mm = `0${date.getMinutes()}`.slice(-2);
-            const ss = `0${date.getSeconds()}`.slice(-2);
-            const ms = `00${date.getMilliseconds()}`.slice(-3);
-            const fileName = `${workspaceStore.folderName}_${yyyy}${MM}${dd}${HH}${mm}${ss}${ms}.json`;
-            workspaceApi
-              .export({ fileName, dataJson: taskAnnotations })
+            projectRepository
+              .exportTaskAnnotations(taskAnnotations)
               .then((res) => {
                 if (res.status === undefined) {
                   // clicked cancel

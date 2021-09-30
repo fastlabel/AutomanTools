@@ -80,8 +80,6 @@ export type WKExportResult =
     };
 
 export interface AppApi {
-  contextMenu: () => void;
-
   close: () => Promise<void>;
   restore: () => Promise<void>;
   maximize: () => Promise<void>;

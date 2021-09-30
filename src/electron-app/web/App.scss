@@ -1,0 +1,43 @@
+$titlebar-height: 36px;
+
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: #1e1e1e;
+    color: #ffffff;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .container {
+    background: #ffffff;
+    color: #1e1e1e;
+  }
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+.container {
+  height: 100%;
+
+  .content {
+    height: calc(100% - #{$titlebar-height});
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .content-darwin {
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    -webkit-app-region: drag;
+  }
+}

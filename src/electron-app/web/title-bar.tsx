@@ -1,3 +1,4 @@
+import { ApplicationConst } from '@fl-three-editor/application/const';
 import { Button, Divider, Menu, MenuItem } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
@@ -12,7 +13,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import React, { FC, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { ApplicationConst } from './application/const';
 import favicon from './asset/favicon-200.png';
 import WorkspaceContext from './context/workspace';
 

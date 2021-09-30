@@ -22,8 +22,6 @@ contextBridge.exposeInMainWorld('workspace', {
 });
 
 contextBridge.exposeInMainWorld('appApi', {
-  contextMenu: () => ipcRenderer.send('show-context-menu'),
-
   close: async () => ipcRenderer.invoke('close'),
   minimize: async () => ipcRenderer.invoke('minimize'),
   maximize: async () => ipcRenderer.invoke('maximize'),

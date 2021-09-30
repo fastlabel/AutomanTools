@@ -33,6 +33,9 @@ export type ProjectRepository = {
     imageTopics?: { [topicId: string]: string }
   ): Promise<TaskFrameVO>;
   saveFrameTaskAnnotations(vo: TaskAnnotationVO[]): Promise<void>;
+  exportTaskAnnotations(
+    vo: TaskAnnotationVO[]
+  ): Promise<{ status?: boolean; path?: string; message?: string }>;
 };
 
 const STUB: ProjectRepository = {
@@ -70,6 +73,11 @@ const STUB: ProjectRepository = {
     return new Promise((resolve, reject) => {});
   },
   saveFrameTaskAnnotations(vo: TaskAnnotationVO[]): Promise<void> {
+    return new Promise((resolve, reject) => {});
+  },
+  exportTaskAnnotations(
+    vo: TaskAnnotationVO[]
+  ): Promise<{ status?: boolean; path?: string; message?: string }> {
     return new Promise((resolve, reject) => {});
   },
 };

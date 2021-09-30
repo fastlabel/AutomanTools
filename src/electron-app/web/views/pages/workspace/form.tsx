@@ -1,12 +1,12 @@
+import FLFileField from '@fl-three-editor/components/fields/fl-file-field';
+import FLFolderContentsField from '@fl-three-editor/components/fields/fl-folder-contents-field';
+import FLSelectField from '@fl-three-editor/components/fields/fl-select-field';
+import { FormUtil } from '@fl-three-editor/components/fields/form-util';
+import { FormAction, FormState } from '@fl-three-editor/components/fields/type';
+import { ProjectType } from '@fl-three-editor/types/const';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import React, { FC } from 'react';
-import FLFileField from '../../../components/fields/fl-file-field';
-import FLFolderContentsField from '../../../components/fields/fl-folder-contents-field';
-import FLSelectField from '../../../components/fields/fl-select-field';
-import { FormUtil } from '../../../components/fields/form-util';
-import { FormAction, FormState } from '../../../components/fields/type';
-import { ProjectType } from '../../../types/const';
 
 const TargetItemTypes = [
   { key: ProjectType.pcd_only, label: 'PCD' },

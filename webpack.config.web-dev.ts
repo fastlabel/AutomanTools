@@ -18,10 +18,10 @@ const config: Configuration = {
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.json'],
   },
   entry: {
-    app: './src/electron-app/web/index.tsx',
+    app: './src/web-app/index.tsx',
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'public'),
     publicPath: './',
     filename: '[name].js',
     assetModuleFilename: 'assets/[name][ext]',
@@ -65,7 +65,7 @@ const config: Configuration = {
   plugins: [
     new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({
-      template: './src/electron-app/web/index.html',
+      template: './src/web-app/index.html',
       filename: 'index.html',
       scriptLoading: 'blocking',
       inject: 'body',

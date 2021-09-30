@@ -1,32 +1,19 @@
-import { LoaderUtils } from 'three';
-import { ApplicationConst } from '../application/const';
-import { ProjectType } from '../types/const';
+import { ReferenceTargetUtil } from '@fl-file/reference-target-util';
+import { ApplicationConst } from '@fl-three-editor/application/const';
+import { ProjectRepository } from '@fl-three-editor/repositories/project-repository';
+import { ProjectType } from '@fl-three-editor/types/const';
 import {
   AnnotationClassVO,
   TaskAnnotationVO,
   TaskFrameVO,
-  TaskImageTopicVO,
   TaskROMVO,
-} from '../types/vo';
-import PcdUtil from '../utils/pcd-util';
-import { CalibrationUtil } from './../utils/calibration-util';
-import { TaskAnnotationUtil } from './../utils/task-annotation-util';
-import { ProjectRepository } from './project-repository';
+} from '@fl-three-editor/types/vo';
+import { CalibrationUtil } from '@fl-three-editor/utils/calibration-util';
+import PcdUtil from '@fl-three-editor/utils/pcd-util';
+import { TaskAnnotationUtil } from '@fl-three-editor/utils/task-annotation-util';
+import { LoaderUtils } from 'three';
 
 const workspaceApi = window.workspace;
-
-const IMAGE_EXTENSION = [
-  'jpg',
-  'jpeg',
-  'JPG',
-  'JPEG',
-  'jpe',
-  'jfif',
-  'pjpeg',
-  'pjp',
-  'png',
-  'PNG',
-];
 
 const arrayBufferToDataUrl = (extension: string, buffer: ArrayBuffer) => {
   let binary = '';
@@ -44,101 +31,42 @@ const arrayBufferToDataUrl = (extension: string, buffer: ArrayBuffer) => {
 export const useProjectFsRepository = (
   workspaceContext: any
 ): ProjectRepository => {
+  const saveFrameTaskAnnotations = (vo: TaskAnnotationVO[]): Promise<void> => {
+    const originVos = vo.map(TaskAnnotationUtil.formSaveJson);
+    return new Promise((resolve, reject) => {
+      const wkDir = workspaceContext.workspaceFolder;
+      workspaceApi
+        .save({
+          wkDir,
+          query: {
+            output: {
+              annotation_data: { method: 'json', resource: originVos },
+            },
+          },
+        })
+        .then(() => resolve())
+        .catch((err) => reject(err));
+    });
+  };
   return {
     create(vo: {
       projectId: string;
       type: ProjectType;
       targets: File[];
     }): Promise<{ projectId: string; errorCode?: string }> {
-      const calibration = new Set();
-      const frames = new Set<string>();
-      const topicIds = new Set();
-
-      const targetQuery = vo.targets.reduce<any>(
-        (res, f) => {
-          const [topicId, extension] = f.name.split('.');
-          const targetInfo = res.target_info.resource;
-
-          const delimiter = f.path.includes('\\') ? '\\' : '/';
-          const paths = f.path.split(delimiter);
-          let parent = paths[paths.length - 2];
-          const cFrameNo = Number(parent);
-          if (
-            !(
-              parent === 'calibration' ||
-              (!Number.isNaN(cFrameNo) && Number.isInteger(cFrameNo))
-            )
-          ) {
-            if (vo.type === ProjectType.pcd_image_frames) {
-              throw new Error(
-                'folder structure is not supported !! path:' + f.path
-              );
-            }
-            parent =
-              extension === 'yaml' || extension === 'yml'
-                ? 'calibration'
-                : '0001';
-          }
-
-          if (!res[parent]) {
-            res[parent] = {};
-            if (parent !== 'calibration') {
-              frames.add(parent);
-            }
-          }
-          if (extension === 'pcd') {
-            res[parent][topicId] = {
-              method: 'copy',
-              fromPath: f.path,
-              extension,
-            };
-            targetInfo.pcdTopicId = topicId;
-            return res;
-          } else if (IMAGE_EXTENSION.includes(extension)) {
-            res[parent][topicId] = {
-              method: 'copy',
-              fromPath: f.path,
-              extension,
-            };
-            if (!topicIds.has(topicId)) {
-              topicIds.add(topicId);
-              targetInfo.imageTopics.push({
-                topicId,
-                extension,
-              } as TaskImageTopicVO);
-            }
-            return res;
-          } else if (extension === 'yaml' || extension === 'yml') {
-            res[parent][topicId] = {
-              method: 'copy',
-              fromPath: f.path,
-              extension,
-            };
-            calibration.add(topicId);
-            return res;
-          }
-          throw new Error('Non supported file !');
-        },
-        {
-          target_info: {
-            method: 'json',
-            resource: {
-              frames: [],
-              pcdTopicId: '',
-              imageTopics: [],
-            },
-          },
-        }
+      const targetQuery = ReferenceTargetUtil.reduceFiles(
+        vo.type,
+        vo.targets,
+        (file, extension) => ({
+          method: 'copy',
+          fromPath: file.path,
+          extension,
+        }),
+        (jsonObj) => ({
+          method: 'json',
+          resource: jsonObj,
+        })
       );
-      targetQuery.target_info.resource.frames = Array.from<string>(
-        frames.values()
-      ).sort();
-      targetQuery.target_info.resource.imageTopics.forEach(
-        (t: TaskImageTopicVO) => {
-          t.calibration = calibration.has(t.topicId);
-        }
-      );
-
       return new Promise((resolve, reject) => {
         const wkDir = workspaceContext.workspaceFolder;
         workspaceApi
@@ -304,22 +232,21 @@ export const useProjectFsRepository = (
           .catch((err) => reject(err));
       });
     },
-    saveFrameTaskAnnotations(vo: TaskAnnotationVO[]): Promise<void> {
-      const originVos = vo.map(TaskAnnotationUtil.formSaveJson);
-      return new Promise((resolve, reject) => {
-        const wkDir = workspaceContext.workspaceFolder;
-        workspaceApi
-          .save({
-            wkDir,
-            query: {
-              output: {
-                annotation_data: { method: 'json', resource: originVos },
-              },
-            },
-          })
-          .then(() => resolve())
-          .catch((err) => reject(err));
-      });
+    saveFrameTaskAnnotations,
+    exportTaskAnnotations(
+      vo: TaskAnnotationVO[]
+    ): Promise<{ status?: boolean; path?: string; message?: string }> {
+      saveFrameTaskAnnotations(vo);
+      const date = new Date();
+      const yyyy = `${date.getFullYear()}`;
+      const MM = `0${date.getMonth() + 1}`.slice(-2);
+      const dd = `0${date.getDate()}`.slice(-2);
+      const HH = `0${date.getHours()}`.slice(-2);
+      const mm = `0${date.getMinutes()}`.slice(-2);
+      const ss = `0${date.getSeconds()}`.slice(-2);
+      const ms = `00${date.getMilliseconds()}`.slice(-3);
+      const fileName = `${workspaceContext.folderName}_${yyyy}${MM}${dd}${HH}${mm}${ss}${ms}.json`;
+      return workspaceApi.export({ fileName, dataJson: vo });
     },
   };
 };

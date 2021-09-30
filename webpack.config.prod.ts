@@ -10,6 +10,10 @@ const base: Configuration = {
     __filename: false,
   },
   resolve: {
+    alias: {
+      '@fl-three-editor': path.resolve(__dirname, 'src/editor-module/'),
+      '@fl-file': path.resolve(__dirname, 'src/file-module/'),
+    },
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.json'],
   },
   output: {
@@ -67,7 +71,7 @@ const main: Configuration = {
   ...base,
   target: 'electron-main',
   entry: {
-    main: './src/main.ts',
+    main: './src/electron-app/main.ts',
   },
 };
 
@@ -75,7 +79,7 @@ const preload: Configuration = {
   ...base,
   target: 'electron-preload',
   entry: {
-    preload: './src/preload.ts',
+    preload: './src/electron-app/preload.ts',
   },
 };
 
@@ -83,12 +87,12 @@ const renderer: Configuration = {
   ...base,
   target: 'web',
   entry: {
-    index: './src/web/index.tsx',
+    index: './src/electron-app/web/index.tsx',
   },
   plugins: [
     new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({
-      template: './src/web/index.html',
+      template: './src/electron-app//web/index.html',
       minify: true,
       inject: 'body',
       filename: 'index.html',

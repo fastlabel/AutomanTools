@@ -1,3 +1,4 @@
+import { ApplicationConst } from '@fl-three-editor/application/const';
 import {
   Button,
   createStyles,
@@ -9,7 +10,6 @@ import {
 import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import React, { FC, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
-import { ApplicationConst } from '../../../application/const';
 import WorkspaceContext from '../../../context/workspace';
 
 const useStyles = makeStyles((theme: Theme) =>

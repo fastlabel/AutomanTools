@@ -1,3 +1,8 @@
+import muiTheme from '@fl-three-editor/config/mui-theme';
+import editorEnJson from '@fl-three-editor/locales/en.json';
+import editorJaJson from '@fl-three-editor/locales/ja.json';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { ThemeProvider } from '@material-ui/core/styles';
 import i18n from 'i18next';
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
@@ -7,14 +12,11 @@ import WorkspaceContext from './context/workspace';
 import './index.scss';
 import enJson from './locales/en.json';
 import jaJson from './locales/ja.json';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import muiTheme from './config/mui-theme';
-import { ThemeProvider } from '@material-ui/core/styles';
 
 i18n.use(initReactI18next).init({
   resources: {
-    en: { translation: enJson },
-    ja: { translation: jaJson },
+    en: { translation: { ...editorEnJson, ...enJson } },
+    ja: { translation: { ...editorJaJson, ...jaJson } },
   },
   lng: 'ja',
   fallbackLng: 'ja',
