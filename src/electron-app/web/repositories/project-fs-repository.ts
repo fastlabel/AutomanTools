@@ -237,15 +237,8 @@ export const useProjectFsRepository = (
       vo: TaskAnnotationVO[]
     ): Promise<{ status?: boolean; path?: string; message?: string }> {
       saveFrameTaskAnnotations(vo);
-      const date = new Date();
-      const yyyy = `${date.getFullYear()}`;
-      const MM = `0${date.getMonth() + 1}`.slice(-2);
-      const dd = `0${date.getDate()}`.slice(-2);
-      const HH = `0${date.getHours()}`.slice(-2);
-      const mm = `0${date.getMinutes()}`.slice(-2);
-      const ss = `0${date.getSeconds()}`.slice(-2);
-      const ms = `00${date.getMilliseconds()}`.slice(-3);
-      const fileName = `${workspaceContext.folderName}_${yyyy}${MM}${dd}${HH}${mm}${ss}${ms}.json`;
+      const timestamp = ReferenceTargetUtil.timestamp();
+      const fileName = `${workspaceContext.folderName}_${timestamp}.json`;
       return workspaceApi.export({ fileName, dataJson: vo });
     },
   };

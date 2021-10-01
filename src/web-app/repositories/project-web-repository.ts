@@ -9,6 +9,7 @@ import {
 } from '@fl-three-editor/types/vo';
 import { CalibrationUtil } from '@fl-three-editor/utils/calibration-util';
 import PcdUtil from '@fl-three-editor/utils/pcd-util';
+import { TaskAnnotationUtil } from '@fl-three-editor/utils/task-annotation-util';
 import { useState } from 'react';
 import { LoaderUtils } from 'three';
 import YAML from 'yaml';
@@ -47,6 +48,14 @@ const readFileAsText = (file: File) => {
     };
     reader.readAsText(file);
   });
+};
+
+const handleDownload = (name: string, content: Blob) => {
+  const link = document.createElement('a');
+  link.download = name;
+  link.href = URL.createObjectURL(content);
+  link.click();
+  URL.revokeObjectURL(link.href);
 };
 
 export const useProjectWebRepository = (): ProjectRepository => {
@@ -174,6 +183,20 @@ export const useProjectWebRepository = (): ProjectRepository => {
     saveFrameTaskAnnotations(vo: TaskAnnotationVO[]): Promise<void> {
       return new Promise((resolve, reject) => {
         // download file [annotation and classes].
+        const timestamp = ReferenceTargetUtil.timestamp();
+        const originVos = vo.map(TaskAnnotationUtil.formSaveJson);
+        handleDownload(
+          `${timestamp}_annotationClasses.json`,
+          new Blob([JSON.stringify(annotationClasses, null, 2)], {
+            type: 'application/json',
+          })
+        );
+        handleDownload(
+          `${timestamp}_taskAnnotations.json`,
+          new Blob([JSON.stringify(originVos, null, 2)], {
+            type: 'application/json',
+          })
+        );
       });
     },
     exportTaskAnnotations(
@@ -181,6 +204,11 @@ export const useProjectWebRepository = (): ProjectRepository => {
     ): Promise<{ status?: boolean; path?: string; message?: string }> {
       return new Promise((resolve, reject) => {
         // download file [annotation] it same with app-ver.
+        const timestamp = ReferenceTargetUtil.timestamp();
+        handleDownload(
+          `${timestamp}_exportTaskAnnotations.json`,
+          new Blob([JSON.stringify(vo, null, 2)], { type: 'application/json' })
+        );
       });
     },
   };

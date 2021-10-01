@@ -101,4 +101,15 @@ export const ReferenceTargetUtil = {
     }
     return targetQuery;
   },
+  timestamp: () => {
+    const date = new Date();
+    const yyyy = `${date.getFullYear()}`;
+    const MM = `0${date.getMonth() + 1}`.slice(-2);
+    const dd = `0${date.getDate()}`.slice(-2);
+    const HH = `0${date.getHours()}`.slice(-2);
+    const mm = `0${date.getMinutes()}`.slice(-2);
+    const ss = `0${date.getSeconds()}`.slice(-2);
+    const ms = `00${date.getMilliseconds()}`.slice(-3);
+    return `${yyyy}${MM}${dd}${HH}${mm}${ss}${ms}`;
+  },
 };

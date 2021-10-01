@@ -73,7 +73,7 @@ const WorkspaceForm: FC<Props> = ({ form, dispatchForm }) => {
       </Grid>
       <Grid item>
         <FLFolderContentsField
-          label="対象"
+          label="参照リソース"
           form={['targets', form, dispatchForm]}
           {...folderContentsProps}
         />
