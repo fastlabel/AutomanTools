@@ -10,7 +10,7 @@ const TitleBar: FC<Props> = () => {
     <AppBar position="static">
       <Toolbar variant="dense">
         <Typography variant="h6" color="inherit">
-          Automan
+          FastLabel 3D Annotation
         </Typography>
       </Toolbar>
     </AppBar>

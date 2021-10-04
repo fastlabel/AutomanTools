@@ -52,6 +52,7 @@ type Props = {
 };
 
 export type WorkspaceFormState = {
+  editTargets?: File[];
   type?: ProjectType;
   targets?: File[];
 };
@@ -67,7 +68,7 @@ const WorkspaceForm: FC<Props> = ({ form, dispatchForm }) => {
       <Grid item>
         <FLFolderContentsField
           label="編集対象"
-          form={['targets_2', form, dispatchForm]}
+          form={['editTargets', form, dispatchForm]}
           description={{
             main: '編集するファイルをドラッグ&ドロップしてください',
             sub: 'ツールで出力したJSONファイルのみをサポートしています',

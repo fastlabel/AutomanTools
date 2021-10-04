@@ -3,6 +3,7 @@ import { ProjectRepository } from '@fl-three-editor/repositories/project-reposit
 import { ProjectType } from '@fl-three-editor/types/const';
 import {
   AnnotationClassVO,
+  TaskAnnotationOriginVO,
   TaskAnnotationVO,
   TaskFrameVO,
   TaskROMVO,
@@ -58,11 +59,21 @@ const handleDownload = (name: string, content: Blob) => {
   URL.revokeObjectURL(link.href);
 };
 
-export const useProjectWebRepository = (): ProjectRepository => {
+export type ProjectWebRepository = ProjectRepository & {
+  setEditTarget(
+    annotationClasses: AnnotationClassVO[],
+    taskAnnotations: TaskAnnotationOriginVO[]
+  ): void;
+};
+
+export const useProjectWebRepository = (): ProjectWebRepository => {
   const [local, setLocal] = useState<LocalWorkspace>();
   const [annotationClasses, setAnnotationClasses] = useState<
     AnnotationClassVO[]
   >([]);
+  const [taskAnnotations, setTaskAnnotations] = useState<TaskAnnotationVO[]>(
+    []
+  );
   return {
     create(vo: {
       projectId: string;
@@ -92,7 +103,7 @@ export const useProjectWebRepository = (): ProjectRepository => {
             taskId: '',
             ...local.target.target_info,
           };
-          const taskAnnotations: TaskAnnotationVO[] = [];
+          taskROM.annotationClasses = annotationClasses;
           const calibrationYamlObjs = local.target.calibration;
           if (!calibrationYamlObjs) {
             resolve({ taskROM, taskAnnotations });
@@ -197,6 +208,7 @@ export const useProjectWebRepository = (): ProjectRepository => {
             type: 'application/json',
           })
         );
+        resolve();
       });
     },
     exportTaskAnnotations(
@@ -209,7 +221,30 @@ export const useProjectWebRepository = (): ProjectRepository => {
           `${timestamp}_exportTaskAnnotations.json`,
           new Blob([JSON.stringify(vo, null, 2)], { type: 'application/json' })
         );
+        resolve({ status: true, path: '' });
       });
+    },
+    setEditTarget(
+      annotationClasses: AnnotationClassVO[],
+      taskAnnotations: TaskAnnotationOriginVO[]
+    ) {
+      setAnnotationClasses(annotationClasses);
+      const annotationMap = annotationClasses.reduce((r, a) => {
+        r.set(a.id, a);
+        return r;
+      }, new Map());
+      setTaskAnnotations(
+        taskAnnotations.map((t) => {
+          const annotationClass = annotationMap.get(t.annotationClassId);
+          if (!annotationClass) {
+            throw new Error(
+              `can't find annotationClass by ${t.annotationClassId}`
+            );
+          }
+          const { type, title, value, color } = annotationClass;
+          return { type, title, value, color, ...t };
+        })
+      );
     },
   };
 };

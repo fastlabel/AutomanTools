@@ -1,3 +1,4 @@
+import { ApplicationConst } from '@fl-three-editor/application/const';
 import {
   Button,
   createStyles,
@@ -8,6 +9,7 @@ import {
 } from '@material-ui/core';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import React, { FC, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -24,6 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const StartPage: FC = () => {
+  const [t] = useTranslation();
   const classes = useStyles();
   const history = useHistory();
 
@@ -49,7 +52,7 @@ const StartPage: FC = () => {
               color="textSecondary"
               variant="h3"
               style={{ minWidth: 572 }}>
-              Automan
+              {ApplicationConst.name}
             </Typography>
             <Typography color="textSecondary" variant="h4"></Typography>
           </Grid>
@@ -59,7 +62,7 @@ const StartPage: FC = () => {
                 <Grid container direction="column" spacing={1}>
                   <Grid item>
                     <Typography color="textSecondary" variant="h6">
-                      開始
+                      {t('page_start_subtitle')}
                     </Typography>
                   </Grid>
                   <Grid item>
