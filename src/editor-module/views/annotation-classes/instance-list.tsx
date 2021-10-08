@@ -17,6 +17,7 @@ import MoreVertOutlinedIcon from '@material-ui/icons/MoreVertOutlined';
 import VisibilityOffOutlinedIcon from '@material-ui/icons/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import React, { FC, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import FLTextField from '../../components/fields/fl-text-field';
 import { FormState } from '../../components/fields/type';
 import { UpdateTaskAnnotationCommand } from '../../stores/task-store';
@@ -78,6 +79,8 @@ const InstanceList: FC<Props> = ({
   onUpdateTaskAnnotation = (f) => f,
 }) => {
   const styles = useStyles();
+  const [t] = useTranslation();
+
   const [anchor, setAnchor] = React.useState<null | {
     element: HTMLElement;
     vo: TaskAnnotationVO;
@@ -126,7 +129,7 @@ const InstanceList: FC<Props> = ({
               <FLTextField
                 mode="list"
                 readonly={true}
-                label={'座標 X'}
+                label={t('instanceList-label__positionX')}
                 form={['positionX', formObj]}
               />
             </ListItem>
@@ -134,7 +137,7 @@ const InstanceList: FC<Props> = ({
               <FLTextField
                 mode="list"
                 readonly={true}
-                label={'座標 Y'}
+                label={t('instanceList-label__positionY')}
                 form={['positionY', formObj]}
               />
             </ListItem>
@@ -142,7 +145,7 @@ const InstanceList: FC<Props> = ({
               <FLTextField
                 mode="list"
                 readonly={true}
-                label={'座標 Z'}
+                label={t('instanceList-label__positionZ')}
                 form={['positionZ', formObj]}
               />
             </ListItem>
@@ -150,7 +153,7 @@ const InstanceList: FC<Props> = ({
               <FLTextField
                 mode="list"
                 readonly={true}
-                label={'回転 X'}
+                label={t('instanceList-label__rotationX')}
                 form={['rotationX', formObj]}
               />
             </ListItem>
@@ -158,7 +161,7 @@ const InstanceList: FC<Props> = ({
               <FLTextField
                 mode="list"
                 readonly={true}
-                label={'回転 Y'}
+                label={t('instanceList-label__rotationY')}
                 form={['rotationY', formObj]}
               />
             </ListItem>
@@ -166,7 +169,7 @@ const InstanceList: FC<Props> = ({
               <FLTextField
                 mode="list"
                 readonly={true}
-                label={'回転 Z'}
+                label={t('instanceList-label__rotationZ')}
                 form={['rotationZ', formObj]}
               />
             </ListItem>
@@ -174,7 +177,7 @@ const InstanceList: FC<Props> = ({
               <FLTextField
                 mode="list"
                 readonly={true}
-                label={'全長 X'}
+                label={t('instanceList-label__sizeX')}
                 form={['sizeX', formObj]}
               />
             </ListItem>
@@ -182,7 +185,7 @@ const InstanceList: FC<Props> = ({
               <FLTextField
                 mode="list"
                 readonly={true}
-                label={'全幅 Y'}
+                label={t('instanceList-label__sizeY')}
                 form={['sizeY', formObj]}
               />
             </ListItem>
@@ -190,7 +193,7 @@ const InstanceList: FC<Props> = ({
               <FLTextField
                 mode="list"
                 readonly={true}
-                label={'全高 Z'}
+                label={t('instanceList-label__sizeZ')}
                 form={['sizeZ', formObj]}
               />
             </ListItem>
@@ -310,7 +313,7 @@ const InstanceList: FC<Props> = ({
               }
               handleClose();
             }}>
-            フレームに追加
+            {t('menu_item-label__addFromFrame')}
           </MenuItem>
         )}
         {multiFrame && (
@@ -326,7 +329,7 @@ const InstanceList: FC<Props> = ({
               }
               handleClose();
             }}>
-            フレームから削除
+            {t('menu_item-label__removeFromFrame')}
           </MenuItem>
         )}
         <MenuItem
@@ -338,7 +341,7 @@ const InstanceList: FC<Props> = ({
             }
             handleClose();
           }}>
-          全削除
+          {t('menu_item-label__removeAll')}
         </MenuItem>
       </Menu>
     </>

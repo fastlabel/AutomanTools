@@ -12,6 +12,7 @@ import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import React, { FC, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import favicon from './asset/favicon-200.png';
 import WorkspaceContext from './context/workspace';
@@ -229,6 +230,7 @@ type Props = {};
 const TitleBar: FC<Props> = () => {
   const classes = useStyles();
   const history = useHistory();
+  const [t] = useTranslation();
   const workspaceStore = WorkspaceContext.useContainer();
 
   const [maximized, setMaximized] = useState(false);
@@ -310,7 +312,7 @@ const TitleBar: FC<Props> = () => {
             <Box className={classes.menu} height={38}>
               <ToolMenu
                 id="toolbar-file"
-                label="ファイル"
+                label={t('titleBar-menu_label__file')}
                 menus={[
                   // {
                   //   label: '新しいウインドウ',
@@ -322,13 +324,13 @@ const TitleBar: FC<Props> = () => {
                   //   separator: true
                   // },
                   {
-                    label: '新規ワークスペースを開く',
+                    label: t('titleBar-menu_item_label__createWorkspace'),
                     onClick: () => {
                       history.push('/workspace');
                     },
                   },
                   {
-                    label: 'ワークスペースを開く',
+                    label: t('titleBar-menu_item_label__openWorkspace'),
                     onClick: () => {
                       const selectFolder = workspace.openFolderDialog();
                       selectFolder.then((wkDir) => {
@@ -357,7 +359,7 @@ const TitleBar: FC<Props> = () => {
                     separator: true,
                   },
                   {
-                    label: 'ウインドウを閉じる',
+                    label: t('titleBar-menu_item_label__close'),
                     onClick: () => {
                       window.close();
                     },

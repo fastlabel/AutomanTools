@@ -12,6 +12,7 @@ import SettingsOverscanOutlinedIcon from '@material-ui/icons/SettingsOverscanOut
 import TouchAppOutlinedIcon from '@material-ui/icons/TouchAppOutlined';
 import { useSnackbar } from 'notistack';
 import React, { FC, useContext, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import ToolBar from '../../../components/tool-bar';
 import ToolBarButton, {
   ToolBarBoxButtonThemeProvider,
@@ -25,6 +26,7 @@ type Props = {};
 
 const ThreeToolbar: FC<Props> = () => {
   const { enqueueSnackbar } = useSnackbar();
+  const [t] = useTranslation();
   const projectRepository = useContext(ProjectRepositoryContext);
 
   const {
@@ -93,7 +95,7 @@ const ThreeToolbar: FC<Props> = () => {
     <ToolBar>
       <ToolBarBoxButtonThemeProvider>
         <ToolBarButton
-          toolTip="平面図表示"
+          toolTip={t('toolBar-label__planView')}
           active={taskToolBar.useOrthographicCamera}
           icon={<SettingsOverscanOutlinedIcon />}
           onClick={() => {
@@ -106,7 +108,7 @@ const ThreeToolbar: FC<Props> = () => {
         />
         <Box mr={2} />
         <ToolBarButton
-          toolTip="カメラのズーム・移動"
+          toolTip={t('toolBar-label__selectMode_control')}
           active={taskToolBar.selectMode === 'control'}
           icon={<OpenWithOutlinedIcon />}
           onClick={() =>
@@ -114,7 +116,7 @@ const ThreeToolbar: FC<Props> = () => {
           }
         />
         <ToolBarButton
-          toolTip="オブジェクトの選択"
+          toolTip={t('toolBar-label__selectMode_select')}
           active={taskToolBar.selectMode === 'select'}
           icon={<TouchAppOutlinedIcon />}
           onClick={() =>
@@ -123,7 +125,7 @@ const ThreeToolbar: FC<Props> = () => {
         />
         <Box mr={2} />
         <ToolBarButton
-          toolTip="ラベル表示"
+          toolTip={t('toolBar-label__showLabel')}
           active={taskToolBar.showLabel}
           icon={<FormatShapesOutlinedIcon />}
           onClick={() =>
@@ -134,7 +136,7 @@ const ThreeToolbar: FC<Props> = () => {
           }
         />
         <ToolBarButton
-          toolTip="画像表示"
+          toolTip={t('toolBar-label__showImage')}
           disabled={disabledShowTopicImageDialog}
           active={topicImageDialog.open}
           icon={<PhotoLibraryOutlinedIcon />}
@@ -142,26 +144,26 @@ const ThreeToolbar: FC<Props> = () => {
         />
         <Box mr={2} />
         <ToolBarButton
-          toolTip="前のフレームのオブジェクトをコピー"
+          toolTip={t('toolBar-label__copyPrevFrameObject')}
           disabled={!multiFrame}
           icon={<InputOutlinedIcon />}
           onClick={() => {
             copyFrameTaskAnnotations();
-            enqueueSnackbar('表示しているフレームにコピーしました');
+            enqueueSnackbar(t('toolBar-message__copyPrevFrame'));
           }}
         />
         <Box mr={2} />
         <ToolBarButton
-          toolTip="保存"
+          toolTip={t('toolBar-label__save')}
           icon={<SaveOutlinedIcon />}
           onClick={() => {
             saveFrameTaskAnnotations();
-            enqueueSnackbar('保存しました');
+            enqueueSnackbar(t('toolBar-message__save'));
           }}
         />
         <Box mr={2} />
         <ToolBarButton
-          toolTip="出力"
+          toolTip={t('toolBar-label__export')}
           icon={<GetAppOutlinedIcon />}
           onClick={() => {
             projectRepository
@@ -172,7 +174,9 @@ const ThreeToolbar: FC<Props> = () => {
                   return;
                 }
                 if (res.status) {
-                  enqueueSnackbar(`${res.path}に出力しました。`);
+                  enqueueSnackbar(
+                    t('toolBar-message__export', { exportPath: res.path })
+                  );
                 } else {
                   enqueueSnackbar(res.message, { variant: 'error' });
                 }
@@ -184,7 +188,7 @@ const ThreeToolbar: FC<Props> = () => {
       {showFramePaging && (
         <>
           <ToolBarButton
-            toolTip="前のフレームへ移動"
+            toolTip={t('toolBar-label__movePrevFrame')}
             disabled={!onClickBackFrame}
             icon={<ArrowBackIosOutlinedIcon />}
             onClick={onClickBackFrame}
@@ -195,7 +199,7 @@ const ThreeToolbar: FC<Props> = () => {
             </Typography>
           </Box>
           <ToolBarButton
-            toolTip="次のフレームへ移動"
+            toolTip={t('toolBar-label__moveNextFrame')}
             disabled={!onClickNextFrame}
             icon={<ArrowForwardIosOutlinedIcon />}
             onClick={onClickNextFrame}

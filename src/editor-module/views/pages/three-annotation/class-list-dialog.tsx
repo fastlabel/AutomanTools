@@ -4,6 +4,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import React, { FC, useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FLDialogTitle } from '../../../components/dialogs/fl-dialog';
 import AnnotationClassStore from '../../../stores/annotation-class-store';
 import { AnnotationClassVO } from '../../../types/vo';
@@ -16,6 +17,7 @@ type Props = {};
 
 const ClassListDialog: FC<Props> = () => {
   const [open, setOpen] = React.useState(false);
+  const [t] = useTranslation();
   const [formDialog, setFormDialog] = React.useState<{
     open: boolean;
     classVo?: AnnotationClassVO;
@@ -51,7 +53,7 @@ const ClassListDialog: FC<Props> = () => {
         onClose={handleClose}
         aria-labelledby={componentCode}>
         <FLDialogTitle id={componentCode} onClose={handleClose}>
-          アノテーションクラス
+          {t('classList-header_label')}
         </FLDialogTitle>
         <DialogContent>
           {annotationClass.status === 'ready' ? (
@@ -67,13 +69,13 @@ const ClassListDialog: FC<Props> = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} variant="text">
-            閉じる
+            {t('classList-action_label__close')}
           </Button>
           <Button
             onClick={() => setFormDialog({ open: true })}
             variant="text"
             color="primary">
-            新規作成
+            {t('classList-action_label__create')}
           </Button>
         </DialogActions>
       </Dialog>

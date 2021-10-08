@@ -1,3 +1,21 @@
 {
-  "page_start_subtitle": "開く"
+  "$pages/start/index": "#Comment#",
+  "web_start-header_label": "開く",
+  "web_start-action_label__new": "新しく始める",
+  "web_start-action_label__edit": "編集する",
+  "$pages/common/workspaceForm": "#Comment#",
+  "web_workspaceForm-label__type": "タイプ",
+  "web_workspaceForm-label__targets": "参照リソース",
+  "web_workspaceForm-action_label__back": "戻る",
+  "$pages/edit/*": "#Comment#",
+  "web_edit-label__editTargets": "編集対象",
+  "web_edit-description_main__editTargets": "編集するファイルをドラッグ&ドロップしてください",
+  "web_edit-description_sub__editTargets": "ツールで出力したJSONファイルのみをサポートしています",
+  "web_edit-description_btn__editTargets": "ファイルをアップロード",
+  "web_edit-header_label": "アノテーションを編集する",
+  "web_edit-action_label_edit": "編集",
+  "web_edit-message_empty_edit_target": "編集対象が設定されてません",
+  "$pages/new/*": "#Comment#",
+  "web_new-header_label": "新しくアノテーションを始める",
+  "web_new-action_label_new": "開始"
 }

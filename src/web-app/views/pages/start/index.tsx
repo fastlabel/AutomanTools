@@ -62,7 +62,7 @@ const StartPage: FC = () => {
                 <Grid container direction="column" spacing={1}>
                   <Grid item>
                     <Typography color="textSecondary" variant="h6">
-                      {t('page_start_subtitle')}
+                      {t('web_start-header_label')}
                     </Typography>
                   </Grid>
                   <Grid item>
@@ -70,7 +70,7 @@ const StartPage: FC = () => {
                       color="primary"
                       onClick={onClickStartButton}
                       style={{ minWidth: 140 }}>
-                      新しく始める
+                      {t('web_start-action_label__new')}
                     </Button>
                   </Grid>
                   <Grid item>
@@ -79,16 +79,11 @@ const StartPage: FC = () => {
                       startIcon={<EditOutlinedIcon />}
                       onClick={onClickEditButton}
                       style={{ minWidth: 140 }}>
-                      編集する
+                      {t('web_start-action_label__edit')}
                     </Button>
                   </Grid>
                 </Grid>
               </Grid>
-              {/* <Grid item xs={6}>
-                <Typography color="textSecondary" variant="h6">
-                  最近
-                </Typography>
-              </Grid> */}
             </Grid>
           </Grid>
         </Grid>

@@ -8,6 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { useSnackbar } from 'notistack';
 import React, { FC, Reducer, useEffect, useReducer } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import WorkspaceForm, { WorkspaceFormState } from './form';
@@ -59,6 +60,7 @@ const formReducer: Reducer<FormState<WorkspaceFormState>, FormAction> = (
 const NewPage: FC = () => {
   const classes = useStyles();
   const history = useHistory();
+  const [t] = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
   const search = useLocation().search;
@@ -115,7 +117,7 @@ const NewPage: FC = () => {
           className={classes.main}>
           <Grid item className={classes.item}>
             <Typography color="textSecondary" variant="h4">
-              新しくアノテーションを始める
+              {t('web_new-header_label')}
             </Typography>
           </Grid>
           <Grid item className={classes.item}>
@@ -124,7 +126,11 @@ const NewPage: FC = () => {
           <Grid item className={classes.item}>
             <Grid container justifyContent="space-between">
               <Grid item>
-                {formStartPage && <Button onClick={handleBack}>戻る</Button>}
+                {formStartPage && (
+                  <Button onClick={handleBack}>
+                    {t('web_workspaceForm-action_label__back')}
+                  </Button>
+                )}
               </Grid>
               <Grid item>
                 <Button
@@ -132,7 +138,7 @@ const NewPage: FC = () => {
                   disabled={form.helper.validState !== 'valid'}
                   color="primary"
                   onClick={handleCreate}>
-                  開始
+                  {t('web_new-action_label_new')}
                 </Button>
               </Grid>
             </Grid>

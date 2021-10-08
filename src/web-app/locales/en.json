@@ -1,3 +1,21 @@
 {
-  "page_start_subtitle": "Open"
+  "$pages/start/index": "#Comment#",
+  "web_start-header_label": "Open",
+  "web_start-action_label__new": "Get Started",
+  "web_start-action_label__edit": "Edit",
+  "$pages/common/workspaceForm": "#Comment#",
+  "web_workspaceForm-label__type": "Type",
+  "web_workspaceForm-label__targets": "Reference Resources",
+  "web_workspaceForm-action_label__back": "Back",
+  "$pages/edit/*": "#Comment#",
+  "web_edit-label__editTargets": "Edit target",
+  "web_edit-description_main__editTargets": "Drag and drop the file to edit",
+  "web_edit-description_sub__editTargets": "Supports tool exported json file",
+  "web_edit-description_btn__editTargets": "Upload Edit File",
+  "web_edit-header_label": "Edit Annotation",
+  "web_edit-action_label_edit": "Edit",
+  "web_edit-message_empty_edit_target": "Required the Edit target",
+  "$pages/new/*": "#Comment#",
+  "web_new-header_label": "Create Annotation",
+  "web_new-action_label_new": "Start"
 }

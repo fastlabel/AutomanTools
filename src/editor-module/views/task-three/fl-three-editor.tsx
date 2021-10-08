@@ -8,6 +8,7 @@ import {
 } from '@material-ui/core';
 import { Canvas, ThreeEvent } from '@react-three/fiber';
 import React, { createRef, FC, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Euler, Event, Group, Object3D, Vector3 } from 'three';
 import { PCDResult } from '../../types/labos';
 import { AnnotationClassVO, TaskAnnotationVO } from '../../types/vo';
@@ -85,6 +86,7 @@ const FLThreeEditor: FC<Props> = ({
   onObjectChange = (f) => f,
 }) => {
   const styles = useStyles();
+  const [t] = useTranslation();
   const [near, far, zoom] = useMemo(() => [0.03, 20, 10], []);
   const [target, setTarget] = useState<Object3D>();
   const rootRef = createRef<HTMLDivElement>();
@@ -158,7 +160,7 @@ const FLThreeEditor: FC<Props> = ({
         <Grid container spacing={2} className={styles.footer}>
           <Grid item xs={4}>
             <Box className={styles.footerLabel}>
-              <Typography>上面</Typography>
+              <Typography>{t('flThreeEditor-label__top')}</Typography>
             </Box>
             <Box height={footerBoxH}>
               <Canvas
@@ -181,7 +183,7 @@ const FLThreeEditor: FC<Props> = ({
           </Grid>
           <Grid item xs={4}>
             <Box className={styles.footerLabel}>
-              <Typography>側面</Typography>
+              <Typography>{t('flThreeEditor-label__side')}</Typography>
             </Box>
             <Box height={footerBoxH}>
               <Canvas
@@ -204,7 +206,7 @@ const FLThreeEditor: FC<Props> = ({
           </Grid>
           <Grid item xs={4}>
             <Box className={styles.footerLabel}>
-              <Typography>前面</Typography>
+              <Typography>{t('flThreeEditor-label__front')}</Typography>
             </Box>
             <Box height={footerBoxH}>
               <Canvas

@@ -12,6 +12,7 @@ import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import { useSnackbar } from 'notistack';
 import { Resizable, ResizeCallback } from 're-resizable';
 import React, { FC, useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import TaskStore from '../../../stores/task-store';
 import ClassList from '../../annotation-classes/class-list';
@@ -52,6 +53,7 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
 
   // TODO should move in index.
   const history = useHistory();
+  const [t] = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
   const {
@@ -172,7 +174,7 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
             enable={{ bottom: true }}
             onResizeStop={onInstanceListTopResizeStop}>
             <_PanelTitle
-              title="アノテーションクラス"
+              title={t('sidePanel-header_label__annotationClasses')}
               titleItem={
                 <Box marginRight={0.5}>
                   <IconButton size="small" onClick={onConfigClassesClick}>
@@ -198,7 +200,7 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
           className={classes.taskAnnotation}
           style={{ maxHeight: `calc(100vh - ${taskAnnotationHeight}px)` }}>
           <_PanelTitle
-            title="アノテーション"
+            title={t('sidePanel-header_label__taskAnnotation')}
             filterButton={
               multiFrame ? (
                 <ListItem dense>
@@ -214,15 +216,17 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
                         <VisibilityOffOutlinedIcon />
                       )
                     }>
-                    他のフレーム
+                    {t('sidePanel-action_label__otherFrameFilter')}
                   </Button>
                 </ListItem>
               ) : undefined
             }
             titleItem={
-              <Typography
-                variant="body2"
-                color="textSecondary">{`件数: ${filteredTaskAnnotations.length}`}</Typography>
+              <Typography variant="body2" color="textSecondary">
+                {t('sidePanel-count_label__taskAnnotation', {
+                  taskCount: String(filteredTaskAnnotations.length),
+                })}
+              </Typography>
             }>
             <InstanceList
               editingTaskAnnotation={editingTaskAnnotation}
@@ -245,7 +249,7 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
                     fullWidth
                     variant="contained"
                     onClick={() => history.push('/')}>
-                    取り消す
+                    {t('sidePanel-action_label__cancel')}
                   </Button>
                 </Grid>
                 <Grid item xs={6}>
@@ -255,9 +259,9 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
                     color="primary"
                     onClick={() => {
                       saveFrameTaskAnnotations();
-                      enqueueSnackbar('保存しました');
+                      enqueueSnackbar(t('sidePanel-message__save'));
                     }}>
-                    保存
+                    {t('sidePanel-action_label__save')}
                   </Button>
                 </Grid>
               </Grid>

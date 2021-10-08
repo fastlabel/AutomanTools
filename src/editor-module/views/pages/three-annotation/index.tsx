@@ -19,7 +19,6 @@ import FLPcd from '../../task-three/fl-pcd';
 import { FlCubeUtil } from './../../../utils/fl-cube-util';
 import { TaskAnnotationUtil } from './../../../utils/task-annotation-util';
 import FLThreeEditor from './../../task-three/fl-three-editor';
-import CalibrationEditDialog from './calibration-edit-dialog';
 import ClassListDialog from './class-list-dialog';
 import HotKey from './hot-key';
 import ImageDialog from './image-dialog';
@@ -279,7 +278,6 @@ const ThreeAnnotationPage: FC = () => {
       </Grid>
       <ClassListDialog />
       <ImageDialog calibrationCamera={calibrationCamera} />
-      <CalibrationEditDialog />
       <HotKey mainControlsRef={mainControlsRef} />
     </React.Fragment>
   );

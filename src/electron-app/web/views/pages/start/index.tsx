@@ -9,6 +9,7 @@ import {
 } from '@material-ui/core';
 import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import React, { FC, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import WorkspaceContext from '../../../context/workspace';
 
@@ -30,6 +31,7 @@ const workspaceApi = window.workspace;
 const StartPage: FC = () => {
   const classes = useStyles();
   const history = useHistory();
+  const [t] = useTranslation();
   const workspaceStore = WorkspaceContext.useContainer();
 
   const onClickStartButton = useCallback(() => {
@@ -76,7 +78,7 @@ const StartPage: FC = () => {
                 <Grid container direction="column" spacing={1}>
                   <Grid item>
                     <Typography color="textSecondary" variant="h6">
-                      開始
+                      {t('app_start-header_label__open')}
                     </Typography>
                   </Grid>
                   <Grid item>
@@ -85,7 +87,7 @@ const StartPage: FC = () => {
                       color="primary"
                       startIcon={<FolderOpenIcon />}
                       onClick={onClickStartButton}>
-                      フォルダを開く
+                      {t('app_start-header_action_label__folder_open')}
                     </Button>
                   </Grid>
                 </Grid>

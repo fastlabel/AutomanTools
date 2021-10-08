@@ -13,6 +13,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { useSnackbar } from 'notistack';
 import React, { FC, Reducer, useEffect, useReducer, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import { ProjectWebRepository } from '../../../repositories/project-web-repository';
@@ -152,6 +153,7 @@ const formReducerFactory: (
 const EditPage: FC = () => {
   const classes = useStyles();
   const history = useHistory();
+  const [t] = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
   const search = useLocation().search;
@@ -187,7 +189,9 @@ const EditPage: FC = () => {
       !(annotationClasses && annotationClasses.length > 0) ||
       !(taskAnnotations && taskAnnotations.length > 0)
     ) {
-      enqueueSnackbar('編集対象が設定されてません', { variant: 'error' });
+      enqueueSnackbar(t('web_edit-message_empty_edit_target'), {
+        variant: 'error',
+      });
       return;
     }
     projectRepository.setEditTarget(annotationClasses, taskAnnotations);
@@ -228,7 +232,7 @@ const EditPage: FC = () => {
           className={classes.main}>
           <Grid item className={classes.item}>
             <Typography color="textSecondary" variant="h4">
-              アノテーションを編集する
+              {t('web_edit-header_label')}
             </Typography>
           </Grid>
           <Grid item className={classes.item}>
@@ -237,7 +241,11 @@ const EditPage: FC = () => {
           <Grid item className={classes.item}>
             <Grid container justifyContent="space-between">
               <Grid item>
-                {formStartPage && <Button onClick={handleBack}>戻る</Button>}
+                {formStartPage && (
+                  <Button onClick={handleBack}>
+                    {t('web_workspaceForm-action_label__back')}
+                  </Button>
+                )}
               </Grid>
               <Grid item>
                 <Button
@@ -245,7 +253,7 @@ const EditPage: FC = () => {
                   disabled={form.helper.validState !== 'valid'}
                   color="primary"
                   onClick={handleCreate}>
-                  編集
+                  {t('web_edit-action_label_edit')}
                 </Button>
               </Grid>
             </Grid>

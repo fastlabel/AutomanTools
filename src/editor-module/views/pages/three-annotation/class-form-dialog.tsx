@@ -9,6 +9,7 @@ import React, {
   useReducer,
   useState,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   FLDialogActions,
   FLDialogContent,
@@ -47,6 +48,7 @@ const formReducer: Reducer<FormState<AnnotationClassVO>, FormAction> = (
 
 const ClassFormDialog: FC<Props> = ({ open, classVo, onClose, onSubmit }) => {
   const handleClose = useCallback(() => onClose(), []);
+  const [t] = useTranslation();
 
   const [submitType, setSubmitType] = useState<'add' | 'update'>(
     classVo ? 'update' : 'add'
@@ -88,40 +90,42 @@ const ClassFormDialog: FC<Props> = ({ open, classVo, onClose, onSubmit }) => {
       onClose={handleClose}
       aria-labelledby={componentCode}>
       <FLDialogTitle id={componentCode} onClose={handleClose}>
-        アノテーションクラスを作成
+        {submitType === 'update'
+          ? t('classForm-header_label__edit')
+          : t('classForm-header_label__create')}
       </FLDialogTitle>
       <FLDialogContent>
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <FLTextField
-              label="名称"
+              label={t('classForm-label__title')}
               form={['title', form, dispatchForm]}></FLTextField>
           </Grid>
           <Grid item xs={6}>
             <FLTextField
-              label="値"
+              label={t('classForm-label__value')}
               form={['value', form, dispatchForm]}></FLTextField>
           </Grid>
           <Grid item xs={12}>
             <FLColorField
-              label="色"
+              label={t('classForm-label__color')}
               form={['color', form, dispatchForm]}></FLColorField>
           </Grid>
           <Grid item xs={4}>
             <FLTextField
-              label="全長 X（初期値）"
+              label={t('classForm-label__defaultSizeX')}
               inputType="number"
               form={['defaultSize.x', form, dispatchForm]}></FLTextField>
           </Grid>
           <Grid item xs={4}>
             <FLTextField
-              label="全幅 Y（初期値）"
+              label={t('classForm-label__defaultSizeY')}
               inputType="number"
               form={['defaultSize.y', form, dispatchForm]}></FLTextField>
           </Grid>
           <Grid item xs={4}>
             <FLTextField
-              label="全高 Z（初期値）"
+              label={t('classForm-label__defaultSizeZ')}
               inputType="number"
               form={['defaultSize.z', form, dispatchForm]}></FLTextField>
           </Grid>
@@ -129,10 +133,12 @@ const ClassFormDialog: FC<Props> = ({ open, classVo, onClose, onSubmit }) => {
       </FLDialogContent>
       <FLDialogActions>
         <Button color="default" variant="text" onClick={handleClickSaveCreate}>
-          保存して新規作成
+          {t('classForm-action_label__saveCreate')}
         </Button>
         <Button onClick={handleClickSaveClose} variant="text" color="primary">
-          {submitType === 'update' ? '保存' : '作成'}
+          {submitType === 'update'
+            ? t('classForm-action_label__save')
+            : t('classForm-action_label__create')}
         </Button>
       </FLDialogActions>
     </Dialog>

@@ -7,6 +7,10 @@ import CameraCalibrationStore from '../../../stores/camera-calibration-store';
 
 type Props = {};
 
+/**
+ * under developing. It's for debug tool.
+ * @returns
+ */
 const CalibrationEditDialog: FC<Props> = () => {
   const { open, form, dispatchForm } = CameraCalibrationStore.useContainer();
   return (
@@ -15,7 +19,7 @@ const CalibrationEditDialog: FC<Props> = () => {
         <Grid container direction="column" spacing={1}>
           <Grid item>
             <FLTextField
-              label="画角"
+              label="Fov Angle (画角)"
               form={['fixFov', form, dispatchForm]}
               inputType="number"
             />

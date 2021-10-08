@@ -8,6 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { useSnackbar } from 'notistack';
 import React, { FC, Reducer, useEffect, useReducer } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import WorkspaceContext from '../../../context/workspace';
@@ -65,6 +66,7 @@ const formReducer: Reducer<FormState<WorkspaceFormState>, FormAction> = (
 const WorkspacePage: FC = () => {
   const classes = useStyles();
   const history = useHistory();
+  const [t] = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
   const search = useLocation().search;
@@ -92,7 +94,7 @@ const WorkspacePage: FC = () => {
           switch (errorCode) {
             case 'invalid_folder_not_empty':
               enqueueSnackbar(
-                `ワークスペースを新規作成する場合は空のフォルダを選択してください`,
+                t('app_workspace-message__invalid_folder_not_empty'),
                 { variant: 'error' }
               );
               return;
@@ -141,7 +143,7 @@ const WorkspacePage: FC = () => {
           className={classes.main}>
           <Grid item className={classes.item}>
             <Typography color="textSecondary" variant="h4">
-              ワークスペースを作成
+              {t('app_workspace-header_label')}
             </Typography>
           </Grid>
           <Grid item className={classes.item}>
@@ -150,7 +152,11 @@ const WorkspacePage: FC = () => {
           <Grid item className={classes.item}>
             <Grid container justifyContent="space-between">
               <Grid item>
-                {formStartPage && <Button onClick={handleBack}>戻る</Button>}
+                {formStartPage && (
+                  <Button onClick={handleBack}>
+                    {t('app_workspace-action_label__back')}
+                  </Button>
+                )}
               </Grid>
               <Grid item>
                 <Button
@@ -158,7 +164,7 @@ const WorkspacePage: FC = () => {
                   disabled={form.helper.validState !== 'valid'}
                   color="primary"
                   onClick={handleCreate}>
-                  ワークスペースを作成
+                  {t('app_workspace-action_label__create')}
                 </Button>
               </Grid>
             </Grid>
