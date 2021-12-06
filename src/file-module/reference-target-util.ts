@@ -27,6 +27,9 @@ export const ReferenceTargetUtil = {
 
     const targetQuery = files.reduce<any>(
       (res, f) => {
+        if (f.name === '.DS_Store') {
+          return res;
+        }
         const [topicId, extension] = f.name.split('.');
         const targetInfo = res.target_info;
 
