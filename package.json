@@ -12,6 +12,7 @@
     "webprod": "run-p webprod:*",
     "webprod:webpack": "webpack --config webpack.config.web-prod.ts --watch",
     "webprod:start": " wait-on ./public/index.html && cross-env NODE_ENV=\"development\" webpack-dev-server --config webpack.config.web-prod.ts",
+    "webbuild": "webpack --config webpack.config.web-prod.ts --progress",
     "start": "run-s build serve",
     "predev": "rimraf dist",
     "dev": "run-p dev:*",

@@ -4,8 +4,33 @@ A boilerplate for [Electron](https://www.electronjs.org/), [React](https://react
 
 ## Usage
 
+### prepare
+
 ```sh
-$ yarn install && yarn dev
+$ yarn install
+```
+_Note that you will need to have [Node.js](https://nodejs.org/) and [Yarn](https://yarnpkg.com/) installed._
+
+### webapp
+
+development
+```sh
+$ yarn webdev
 ```
 
-_Note that you will need to have [Node.js](https://nodejs.org/) and [Yarn](https://yarnpkg.com/) installed._
+build
+```sh
+$ yarn webbuild
+```
+
+### electron
+
+```sh
+$ yarn dev
+```
+
+build
+```
+$ yarn package
+```
+

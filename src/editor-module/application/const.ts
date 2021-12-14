@@ -1,5 +1,5 @@
 export const ApplicationConst = {
-  name: 'FastLabel 3D Annotation',
+  name: 'Automan',
   /**
    * version change of store json file structure changed
    */
