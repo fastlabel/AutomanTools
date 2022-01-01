@@ -4,3 +4,4 @@ dist/
 public/
 .env
 .DS_Store
+.firebase/
