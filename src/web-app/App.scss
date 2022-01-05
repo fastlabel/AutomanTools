@@ -25,11 +25,7 @@ body,
   height: 100%;
 
   .content {
-    height: calc(100% - #{$titlebar-height});
     overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
 
   .content-darwin {

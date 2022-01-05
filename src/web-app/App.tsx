@@ -9,7 +9,6 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import 'typeface-roboto/index.css';
 import './App.scss';
 import { useProjectWebRepository } from './repositories/project-web-repository';
-import TitleBar from './title-bar';
 import EditPage from './views/pages/edit';
 import NewPage from './views/pages/new';
 import StartPage from './views/pages/start/index';
@@ -21,7 +20,6 @@ export const App = (): JSX.Element => {
       <SnackbarProvider maxSnack={3} hideIconVariant>
         <div className="container">
           <Router>
-            <TitleBar />
             <div className={'content'}>
               <Switch>
                 <Route path="/threeannotation/:projectId">
