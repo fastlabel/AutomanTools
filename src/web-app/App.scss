@@ -17,15 +17,15 @@ $titlebar-height: 48px;
 html,
 body,
 #root {
-  height: 100%;
-  overflow: hidden;
+  // height: 100%;
+  // overflow: hidden;
 }
 
 .container {
-  height: 100%;
+  // height: 100%;
 
   .content {
-    overflow: hidden;
+    // overflow: hidden;
   }
 
   .content-darwin {
