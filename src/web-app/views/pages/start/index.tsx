@@ -11,14 +11,16 @@ import {
   DialogTitle,
   DialogActions,
   DialogContent,
+  Link,
 } from '@material-ui/core';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import React, { FC, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 
-import logo from '../../../images/logo.png';
 import hero from '../../../images/hero.png';
+import sideLeftImage from '../../../images/side-left.png';
+import sideRightImage from '../../../images/side-right.png';
 import copyImage from '../../../images/copy.png';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -41,6 +43,20 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       justifyContent: 'center',
       height: 620,
+    },
+    heroSideLeftImage: {
+      position: 'absolute',
+      top: 0,
+      left: '-20%',
+      margin: 0,
+      width: '50%',
+    },
+    heroSideRightImage: {
+      position: 'absolute',
+      top: 0,
+      right: '-20%',
+      margin: 0,
+      width: '50%',
     },
     heroImage: {
       position: 'absolute',
@@ -157,6 +173,23 @@ const useStyles = makeStyles((theme: Theme) =>
       borderRadius: 8,
       height: 280,
       width: 280,
+      padding: 24,
+    },
+    dataTypeImage: {
+      width: 240,
+      height: 148,
+      marginBottom: 8,
+    },
+    dataTypeItemTitle: {
+      color: '#212121',
+      fontSize: 16,
+      fontWeight: 'bold',
+      textAlign: 'center',
+    },
+    dataTypeSampleLink: {
+      marginTop: 24,
+      display: 'flex',
+      justifyContent: 'center',
     },
     dataTypeButton: {
       borderRadius: '100vh',
@@ -188,6 +221,20 @@ const useStyles = makeStyles((theme: Theme) =>
         borderRight: '50vw solid #1E88E5',
         borderBottom: '50px solid #1E88E5',
       },
+    },
+    usageSideLeftImage: {
+      position: 'absolute',
+      top: 110,
+      left: '-26%',
+      margin: 0,
+      width: '60%',
+    },
+    usageSideRightImage: {
+      position: 'absolute',
+      top: 20,
+      right: '-40%',
+      margin: 0,
+      width: '72%',
     },
     usageTitle: {
       fontSize: 32,
@@ -326,6 +373,8 @@ const StartPage: FC = () => {
     <Box>
       {/* Hero Section */}
       <Box className={classes.heroSection}>
+        <img src={sideLeftImage} className={classes.heroSideLeftImage} />
+        <img src={sideRightImage} className={classes.heroSideRightImage} />
         <Box className={classes.container}>
           <Box position="relative" mt={16}>
             <Box position="absolute" top={0} left={0} zIndex={20}>
@@ -390,13 +439,33 @@ const StartPage: FC = () => {
           <Box mt={7}>
             <Grid container className={classes.dataTypeBox}>
               <Grid item className={classes.dataTypeItem}>
-                a
+                <img className={classes.dataTypeImage} />
+                <Typography className={classes.dataTypeItemTitle}>
+                  3Dデータ(.pcd)
+                </Typography>
+                <Link className={classes.dataTypeSampleLink}>
+                  サンプルをダウンロード
+                </Link>
               </Grid>
               <Grid item className={classes.dataTypeItem}>
-                b
+                <img className={classes.dataTypeImage} />
+
+                <Typography className={classes.dataTypeItemTitle}>
+                  画像つき3Dデータ
+                </Typography>
+                <Link className={classes.dataTypeSampleLink}>
+                  サンプルをダウンロード
+                </Link>
               </Grid>
               <Grid item className={classes.dataTypeItem}>
-                c
+                <img className={classes.dataTypeImage} />
+
+                <Typography className={classes.dataTypeItemTitle}>
+                  連続した3Dデータ
+                </Typography>
+                <Link className={classes.dataTypeSampleLink}>
+                  サンプルをダウンロード
+                </Link>
               </Grid>
             </Grid>
           </Box>
@@ -409,6 +478,8 @@ const StartPage: FC = () => {
       </Box>
       {/* Usage Section */}
       <Box className={classes.usageSection}>
+        <img src={sideLeftImage} className={classes.usageSideLeftImage} />
+        <img src={sideRightImage} className={classes.usageSideRightImage} />
         <Box className={classes.container}>
           <Typography variant="h3" className={classes.usageTitle}>
             Automan の使い方
