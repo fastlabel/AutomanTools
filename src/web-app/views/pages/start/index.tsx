@@ -166,6 +166,9 @@ const useStyles = makeStyles((theme: Theme) =>
       fontWeight: 'bold',
       padding: '0 48px',
       color: '#FFF',
+      '&:hover': {
+        backgroundColor: '#1976D2',
+      },
     },
     usageSection: {
       position: 'relative',
@@ -202,9 +205,106 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: '#FFF',
       boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.10)',
       borderRadius: 8,
-      height: 500,
+      height: 520,
       width: 360,
       margin: '0 20px',
+      padding: 24,
+      position: 'relative',
+    },
+    usageItemTitle: {
+      fontSize: 20,
+      letterSpacing: '0.08em',
+      color: '#424242',
+      textAlign: 'center',
+      fontWeight: 'bold',
+      paddingBottom: 24,
+      borderBottom: '2px dashed #E0E0E0',
+      borderRadius: 2,
+      marginBottom: 40,
+    },
+    usageNum: {
+      backgroundColor: '#1E88E5',
+      width: 24,
+      height: 24,
+      borderRadius: 24,
+      display: 'flex',
+      color: '#FFF',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: 14,
+      fontWeight: 'bold',
+      flexShrink: 0,
+      position: 'relative',
+      zIndex: 20,
+    },
+    usageBar: {
+      width: 2,
+      position: 'absolute',
+      top: 140,
+      left: 35,
+      backgroundColor: '#1E88E5',
+      zIndex: 10,
+    },
+    usageContent: {
+      marginLeft: 16,
+    },
+    usageContentText: {
+      fontSize: 16,
+      color: '#424242',
+      lineHeight: '150%',
+      letterSpacing: '0.04em',
+    },
+    usageLink: {
+      color: '#1565C0',
+      fontSize: 12,
+      fontWeight: 'bold',
+      letterSpacing: '0.02em',
+      display: 'block',
+      margin: '10px 0 -4px',
+      textDecoration: 'none',
+      '&:hover': {
+        textDecoration: 'underline',
+      },
+    },
+    usageButton: {
+      position: 'absolute',
+      bottom: 40,
+      left: 0,
+      right: 0,
+      margin: '0 auto',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#FFF',
+      color: '#1E88E5',
+      borderRadius: '100vh',
+      border: '2px solid #1E88E5',
+      width: 240,
+      height: 48,
+      fontWeight: 'bold',
+      fontSize: 16,
+    },
+    footer: {
+      backgroundColor: '#FAFAFA',
+      padding: '60px 0',
+      display: 'flex',
+      justifyContent: 'center',
+    },
+    footerLogo: {
+      fontSize: 40,
+      color: '#424242',
+      fontWeight: 'bold',
+      letterSpacing: '0.04em',
+    },
+    footerCaption: {
+      fontSize: 14,
+      color: '#757575',
+      letterSpacing: '0.02em',
+    },
+    copylight: {
+      fontSize: 12,
+      color: '#9E9E9E',
+      letterSpacing: '0.02em',
     },
   })
 );
@@ -314,8 +414,103 @@ const StartPage: FC = () => {
             Automan の使い方
           </Typography>
           <Box mt={7} className={classes.usageBox}>
-            <Box className={classes.usageItem}>a</Box>
-            <Box className={classes.usageItem}>b</Box>
+            <Box className={classes.usageItem}>
+              <Typography className={classes.usageItemTitle}>
+                新しく始める
+              </Typography>
+              <Box className={classes.usageBar} height={210} />
+              <Box display="flex" mb={5}>
+                <Box className={classes.usageNum}>1</Box>
+                <Box ml={2}>
+                  <Typography className={classes.usageContentText}>
+                    pcdデータをアップロード
+                  </Typography>
+                  <a className={classes.usageLink} href="/">
+                    サンプルをダウンロード
+                  </a>
+                </Box>
+              </Box>
+              <Box display="flex" mb={5}>
+                <Box className={classes.usageNum}>2</Box>
+                <Box ml={2}>
+                  <Typography className={classes.usageContentText}>
+                    アノテーションのラベルを作成
+                  </Typography>
+                </Box>
+              </Box>
+              <Box display="flex" mb={5}>
+                <Box className={classes.usageNum}>3</Box>
+                <Box ml={2}>
+                  <Box fontWeight="bold" className={classes.usageContentText}>
+                    3Dデータをアノテーション
+                  </Box>
+                </Box>
+              </Box>
+              <Box display="flex">
+                <Box className={classes.usageNum}>4</Box>
+                <Box ml={2}>
+                  <Typography className={classes.usageContentText}>
+                    アノテーション結果を JSON で ダウンロード
+                  </Typography>
+                </Box>
+              </Box>
+              <Button variant="outlined" className={classes.usageButton}>
+                アノテーションを始める
+              </Button>
+            </Box>
+
+            <Box className={classes.usageItem}>
+              <Typography className={classes.usageItemTitle}>
+                アノテーションを編集
+              </Typography>
+              <Box className={classes.usageBar} height={140} />
+              <Box display="flex" mb={5}>
+                <Box className={classes.usageNum}>1</Box>
+                <Box ml={2}>
+                  <Typography className={classes.usageContentText}>
+                    出力された JSON と .pcd データを アップロード
+                  </Typography>
+                </Box>
+              </Box>
+              <Box display="flex" mb={5}>
+                <Box className={classes.usageNum}>2</Box>
+                <Box ml={2}>
+                  <Box fontWeight="bold" className={classes.usageContentText}>
+                    3Dデータのアノテーションを編集
+                  </Box>
+                </Box>
+              </Box>
+              <Box display="flex">
+                <Box className={classes.usageNum}>3</Box>
+                <Box ml={2}>
+                  <Typography className={classes.usageContentText}>
+                    アノテーション結果を JSON で ダウンロード
+                  </Typography>
+                </Box>
+              </Box>
+              <Button variant="outlined" className={classes.usageButton}>
+                アノテーションを編集する
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+      {/* Footer Section */}
+      <Box className={classes.footer}>
+        <Box className={classes.container}>
+          <Typography variant="h3" className={classes.footerLogo}>
+            Automan
+          </Typography>
+          <Box mt={2}>
+            <Typography variant="body1" className={classes.footerCaption}>
+              Automan は Tier 4 と Fastlabel, Inc. による共同の OSS
+              のプロジェクトです。
+            </Typography>
+          </Box>
+          <Box mt={8}>
+            <Typography variant="body1" className={classes.copylight}>
+              © Fastlabel 2022
+            </Typography>
           </Box>
         </Box>
       </Box>
@@ -372,8 +567,6 @@ const StartPage: FC = () => {
           </Grid>
         </Grid>
       </Box>
-
-      {/* Footer Section */}
     </Box>
   );
 };

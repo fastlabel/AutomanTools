@@ -23,7 +23,6 @@ export const App = (): JSX.Element => {
         <div className="container">
           <Router>
             <TitleBar />
-
             <div className={'content'}>
               <Switch>
                 <Route path="/threeannotation/:projectId">
