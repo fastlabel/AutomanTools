@@ -420,14 +420,14 @@ const StartPage: FC = () => {
                   variant="contained"
                   className={classes.webDownloadButton}
                   onClick={onClickStartButton}>
-                  Webで試す
+                  {t('web_hero_start_button')}
                 </Button>
                 <Button
                   variant="outlined"
                   className={classes.appDownloadButton}
                   download
                   href={m1MacAppLink}>
-                  アプリをダウンロード
+                  {t('web_hero_download_button')}
                 </Button>
               </Box>
             </Box>
@@ -439,14 +439,14 @@ const StartPage: FC = () => {
       <Box className={classes.copySection}>
         <Box className={classes.container}>
           <Typography variant="h3" className={classes.copyTitle}>
-            3D アノテーションを手元で、簡単に。
+            {t('web_copy_title')}
           </Typography>
           <Box mt={4} textAlign="center">
             <Typography variant="subtitle1" className={classes.copyCaption}>
-              Automan はウェブ上、またはアプリをインストールして、
+              {t('web_copy_caption_1')}
             </Typography>
             <Typography variant="subtitle1" className={classes.copyCaption}>
-              手元の端末で3Dデータのアノテーションを行うことができます。
+              {t('web_copy_caption_2')}
             </Typography>
           </Box>
           <Box className={classes.copyImageContainer}>
@@ -459,15 +459,15 @@ const StartPage: FC = () => {
         <Box className={classes.container}>
           <Box mt={12}>
             <Typography variant="h3" className={classes.copyTitle}>
-              3つの方法で3Dデータをアノテーション
+              {t('web_data_type_title')}
             </Typography>
           </Box>
           <Box mt={4} textAlign="center">
             <Typography variant="subtitle1" className={classes.copyCaption}>
-              pcdデータのアノテーションだけでなく、画像と比較したアノテーションや、
+              {t('web_data_type_caption_1')}
             </Typography>
             <Typography variant="subtitle1" className={classes.copyCaption}>
-              連続した3Dデータのアノテーションにも対応しています。
+              {t('web_data_type_caption_2')}
             </Typography>
           </Box>
           <Box mt={7}>
@@ -475,38 +475,38 @@ const StartPage: FC = () => {
               <Grid item className={classes.dataTypeItem}>
                 <img className={classes.dataTypeImage} src={pcdImage} />
                 <Typography className={classes.dataTypeItemTitle}>
-                  3Dデータ(.pcd)
+                  {t('web_data_type_pcd')}
                 </Typography>
                 <Link
                   className={classes.dataTypeSampleLink}
                   download
                   href={samplePcd}>
-                  サンプルをダウンロード
+                  {t('web_sample_download')}
                 </Link>
               </Grid>
               <Grid item className={classes.dataTypeItem}>
                 <img className={classes.dataTypeImage} src={pcdWithImage} />
                 <Typography className={classes.dataTypeItemTitle}>
-                  画像つき3Dデータ
+                  {t('web_data_type_pcd_image')}
                 </Typography>
                 <Link
                   className={classes.dataTypeSampleLink}
                   download
                   href={samplePcdImage}>
-                  サンプルをダウンロード
+                  {t('web_sample_download')}
                 </Link>
               </Grid>
               <Grid item className={classes.dataTypeItem}>
                 <img className={classes.dataTypeImage} src={pcdFramesImage} />
                 <Typography className={classes.dataTypeItemTitle}>
-                  連続した3Dデータ
+                  {t('web_data_type_pcd_frames')}
                 </Typography>
                 <Link
                   className={classes.dataTypeSampleLink}
                   download
                   target="_self"
                   href={samplePcdFrames}>
-                  サンプルをダウンロード
+                  {t('web_sample_download')}
                 </Link>
               </Grid>
             </Grid>
@@ -516,7 +516,7 @@ const StartPage: FC = () => {
               variant="contained"
               className={classes.dataTypeButton}
               onClick={onClickStartButton}>
-              今すぐWebで始める
+              {t('web_data_type_button')}
             </Button>
           </Box>
         </Box>
@@ -527,22 +527,22 @@ const StartPage: FC = () => {
         <img src={sideRightImage} className={classes.usageSideRightImage} />
         <Box className={classes.container}>
           <Typography variant="h3" className={classes.usageTitle}>
-            Automan の使い方
+            {t('web_usage_title')}
           </Typography>
           <Box mt={7} className={classes.usageBox}>
             <Box className={classes.usageItem}>
               <Typography className={classes.usageItemTitle}>
-                新しく始める
+                {t('web_usage_new_title')}
               </Typography>
               <Box className={classes.usageBar} height={210} />
               <Box display="flex" mb={5}>
                 <Box className={classes.usageNum}>1</Box>
                 <Box ml={2}>
                   <Typography className={classes.usageContentText}>
-                    pcdデータをアップロード
+                    {t('web_usage_new_step_1')}
                   </Typography>
                   <a className={classes.usageLink} href="/">
-                    サンプルをダウンロード
+                    {t('web_sample_download')}
                   </a>
                 </Box>
               </Box>
@@ -550,7 +550,7 @@ const StartPage: FC = () => {
                 <Box className={classes.usageNum}>2</Box>
                 <Box ml={2}>
                   <Typography className={classes.usageContentText}>
-                    アノテーションのラベルを作成
+                    {t('web_usage_new_step_2')}
                   </Typography>
                 </Box>
               </Box>
@@ -558,7 +558,7 @@ const StartPage: FC = () => {
                 <Box className={classes.usageNum}>3</Box>
                 <Box ml={2}>
                   <Box fontWeight="bold" className={classes.usageContentText}>
-                    3Dデータをアノテーション
+                    {t('web_usage_new_step_3')}
                   </Box>
                 </Box>
               </Box>
@@ -566,7 +566,7 @@ const StartPage: FC = () => {
                 <Box className={classes.usageNum}>4</Box>
                 <Box ml={2}>
                   <Typography className={classes.usageContentText}>
-                    アノテーション結果を JSON で ダウンロード
+                    {t('web_usage_new_step_4')}
                   </Typography>
                 </Box>
               </Box>
@@ -574,20 +574,20 @@ const StartPage: FC = () => {
                 variant="outlined"
                 className={classes.usageButton}
                 onClick={onClickStartButton}>
-                アノテーションを始める
+                {t('web_usage_new_button')}
               </Button>
             </Box>
 
             <Box className={classes.usageItem}>
               <Typography className={classes.usageItemTitle}>
-                アノテーションを編集
+                {t('web_usage_edit_title')}
               </Typography>
               <Box className={classes.usageBar} height={140} />
               <Box display="flex" mb={5}>
                 <Box className={classes.usageNum}>1</Box>
                 <Box ml={2}>
                   <Typography className={classes.usageContentText}>
-                    出力された JSON と .pcd データを アップロード
+                    {t('web_usage_edit_step_1')}
                   </Typography>
                 </Box>
               </Box>
@@ -595,7 +595,7 @@ const StartPage: FC = () => {
                 <Box className={classes.usageNum}>2</Box>
                 <Box ml={2}>
                   <Box fontWeight="bold" className={classes.usageContentText}>
-                    3Dデータのアノテーションを編集
+                    {t('web_usage_edit_step_2')}
                   </Box>
                 </Box>
               </Box>
@@ -603,7 +603,7 @@ const StartPage: FC = () => {
                 <Box className={classes.usageNum}>3</Box>
                 <Box ml={2}>
                   <Typography className={classes.usageContentText}>
-                    アノテーション結果を JSON で ダウンロード
+                    {t('web_usage_edit_step_3')}
                   </Typography>
                 </Box>
               </Box>
@@ -611,7 +611,7 @@ const StartPage: FC = () => {
                 variant="outlined"
                 className={classes.usageButton}
                 onClick={onClickEditButton}>
-                アノテーションを編集する
+                {t('web_usage_edit_button')}
               </Button>
             </Box>
           </Box>
