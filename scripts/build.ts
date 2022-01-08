@@ -2,7 +2,7 @@ import { build } from 'electron-builder';
 
 build({
   config: {
-    productName: 'FastLabel 3D Annotation',
+    productName: 'Automan',
     copyright: '© 2021 FastLabel and other contributors.',
     files: ['dist/**/*'],
     directories: {

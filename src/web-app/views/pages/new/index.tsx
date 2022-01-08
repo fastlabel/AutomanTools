@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: '#F5F5F5',
       display: 'flex',
       justifyContent: 'center',
+      alignItems: 'center',
       minHeight: '100vh',
     },
     main: {

@@ -1,14 +1,15 @@
 import { ApplicationConst } from '@fl-three-editor/application/const';
 import {
-  Button,
   createStyles,
-  Grid,
   makeStyles,
-  Typography,
-  Box,
-  Link,
 } from '@material-ui/core';
-import React, { FC, useCallback, useEffect } from 'react';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
+import Link from '@material-ui/core/Link';
+import Typography from '@material-ui/core/Typography';
+
+import React, { FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 
@@ -376,12 +377,16 @@ const StartPage: FC = () => {
   const [samplePcd, setSamplePcd] = useState<string>('');
   const [samplePcdImage, setSamplePcdImage] = useState<string>('');
   const [samplePcdFrames, setSamplePcdFrames] = useState<string>('');
+  const [m1MacAppLink, setM1MacAppLink] = useState<string>('');
 
   useEffect(() => {
     const getSamples = async () => {
       setSamplePcd(await getDownloadItem('automan_sample_pcd.zip'));
-      setSamplePcdImage(await getDownloadItem('automan_sample_pcd.zip'));
-      setSamplePcdFrames(await getDownloadItem('automan_sample_pcd.zip'));
+      setSamplePcdImage(await getDownloadItem('automan_sample_pcd&image.zip'));
+      setSamplePcdFrames(await getDownloadItem('automan_sample_pcd_frames.zip'));
+      setM1MacAppLink(
+        await getDownloadItem('apps/Automan-0.0.1-arm64-mac.zip')
+      );
     };
     getSamples();
   }, []);
@@ -418,7 +423,9 @@ const StartPage: FC = () => {
                 </Button>
                 <Button
                   variant="outlined"
-                  className={classes.appDownloadButton}>
+                  className={classes.appDownloadButton}
+                  download
+                  href={m1MacAppLink}>
                   アプリをダウンロード
                 </Button>
               </Box>
