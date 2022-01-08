@@ -7,21 +7,32 @@ import {
   Theme,
   Typography,
   Box,
-  Dialog,
-  DialogTitle,
-  DialogActions,
-  DialogContent,
   Link,
 } from '@material-ui/core';
-import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
-import React, { FC, useCallback } from 'react';
+import React, { FC, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
+
+import { initializeApp } from 'firebase/app';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 
 import hero from '../../../images/hero.png';
 import sideLeftImage from '../../../images/side-left.png';
 import sideRightImage from '../../../images/side-right.png';
 import copyImage from '../../../images/copy.png';
+import { useState } from 'react';
+
+const firebaseConfig = {
+  apiKey: 'AIzaSyC_1egYju9A0EpuJjKFzJ1trqzlmeoccEI',
+  storageBucket: 'fastlabel-3d-annotation-3b7ec2.appspot.com',
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const storage = getStorage(firebaseApp);
+
+async function getDownloadItem(url: string) {
+  return await getDownloadURL(ref(storage, url));
+}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,8 +49,9 @@ const useStyles = makeStyles((theme: Theme) =>
       width: '100%',
     },
     heroSection: {
+      position: 'relative',
       background:
-        'linear-gradient(303.23deg, #40A9F5 32.92%, #4986FA 53.59%, #4A82FA 61.76%, #515DFF 80.51%)',
+        'linear-gradient(301.64deg, #40A9F5 19.83%, #5288FC 40.74%, #377AFC 60.52%, #515DFF 79.3%)',
       display: 'flex',
       justifyContent: 'center',
       height: 620,
@@ -360,6 +372,18 @@ const StartPage: FC = () => {
   const [t] = useTranslation();
   const classes = useStyles();
   const history = useHistory();
+  const [samplePcd, setSamplePcd] = useState<string>('');
+  const [samplePcdImage, setSamplePcdImage] = useState<string>('');
+  const [samplePcdFrames, setSamplePcdFrames] = useState<string>('');
+
+  useEffect(() => {
+    const getSamples = async () => {
+      setSamplePcd(await getDownloadItem('automan_sample_pcd.zip'));
+      setSamplePcdImage(await getDownloadItem('automan_sample_pcd.zip'));
+      setSamplePcdFrames(await getDownloadItem('automan_sample_pcd.zip'));
+    };
+    getSamples();
+  }, []);
 
   const onClickStartButton = useCallback(() => {
     history.push('/new');
@@ -370,7 +394,7 @@ const StartPage: FC = () => {
   }, []);
 
   return (
-    <Box>
+    <Box overflow="hidden">
       {/* Hero Section */}
       <Box className={classes.heroSection}>
         <img src={sideLeftImage} className={classes.heroSideLeftImage} />
@@ -387,7 +411,8 @@ const StartPage: FC = () => {
               <Box display="flex" flexDirection="column" mt={8}>
                 <Button
                   variant="contained"
-                  className={classes.webDownloadButton}>
+                  className={classes.webDownloadButton}
+                  onClick={onClickStartButton}>
                   Webで試す
                 </Button>
                 <Button
@@ -443,7 +468,10 @@ const StartPage: FC = () => {
                 <Typography className={classes.dataTypeItemTitle}>
                   3Dデータ(.pcd)
                 </Typography>
-                <Link className={classes.dataTypeSampleLink}>
+                <Link
+                  className={classes.dataTypeSampleLink}
+                  download
+                  href={samplePcd}>
                   サンプルをダウンロード
                 </Link>
               </Grid>
@@ -453,7 +481,10 @@ const StartPage: FC = () => {
                 <Typography className={classes.dataTypeItemTitle}>
                   画像つき3Dデータ
                 </Typography>
-                <Link className={classes.dataTypeSampleLink}>
+                <Link
+                  className={classes.dataTypeSampleLink}
+                  download
+                  href={samplePcdImage}>
                   サンプルをダウンロード
                 </Link>
               </Grid>
@@ -463,14 +494,21 @@ const StartPage: FC = () => {
                 <Typography className={classes.dataTypeItemTitle}>
                   連続した3Dデータ
                 </Typography>
-                <Link className={classes.dataTypeSampleLink}>
+                <Link
+                  className={classes.dataTypeSampleLink}
+                  download
+                  target="_self"
+                  href={samplePcdFrames}>
                   サンプルをダウンロード
                 </Link>
               </Grid>
             </Grid>
           </Box>
           <Box mt={7} display="flex" justifyContent="center">
-            <Button variant="contained" className={classes.dataTypeButton}>
+            <Button
+              variant="contained"
+              className={classes.dataTypeButton}
+              onClick={onClickStartButton}>
               今すぐWebで始める
             </Button>
           </Box>
@@ -525,7 +563,10 @@ const StartPage: FC = () => {
                   </Typography>
                 </Box>
               </Box>
-              <Button variant="outlined" className={classes.usageButton}>
+              <Button
+                variant="outlined"
+                className={classes.usageButton}
+                onClick={onClickStartButton}>
                 アノテーションを始める
               </Button>
             </Box>
@@ -559,7 +600,10 @@ const StartPage: FC = () => {
                   </Typography>
                 </Box>
               </Box>
-              <Button variant="outlined" className={classes.usageButton}>
+              <Button
+                variant="outlined"
+                className={classes.usageButton}
+                onClick={onClickEditButton}>
                 アノテーションを編集する
               </Button>
             </Box>
@@ -584,59 +628,6 @@ const StartPage: FC = () => {
             </Typography>
           </Box>
         </Box>
-      </Box>
-
-      <Box className={classes.container}>
-        <Grid
-          container
-          justifyContent="center"
-          alignItems="center"
-          className={classes.root}
-          spacing={2}>
-          <Grid item className={classes.main}>
-            <Grid container direction="column" spacing={2}>
-              <Grid item>
-                <Typography
-                  color="textSecondary"
-                  variant="h3"
-                  style={{ minWidth: 572 }}>
-                  {ApplicationConst.name}
-                </Typography>
-                <Typography color="textSecondary" variant="h4"></Typography>
-              </Grid>
-              <Grid item>
-                <Grid container>
-                  <Grid item xs={12}>
-                    <Grid container direction="column" spacing={1}>
-                      <Grid item>
-                        <Typography color="textSecondary" variant="h6">
-                          {t('web_start-header_label')}
-                        </Typography>
-                      </Grid>
-                      <Grid item>
-                        <Button
-                          color="primary"
-                          onClick={onClickStartButton}
-                          style={{ minWidth: 140 }}>
-                          {t('web_start-action_label__new')}
-                        </Button>
-                      </Grid>
-                      <Grid item>
-                        <Button
-                          variant="outlined"
-                          startIcon={<EditOutlinedIcon />}
-                          onClick={onClickEditButton}
-                          style={{ minWidth: 140 }}>
-                          {t('web_start-action_label__edit')}
-                        </Button>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
       </Box>
     </Box>
   );
