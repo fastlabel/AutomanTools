@@ -10,6 +10,7 @@ import {
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { useSnackbar } from 'notistack';
 import React, { FC, Reducer, useEffect, useReducer, useState } from 'react';
@@ -23,12 +24,17 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       flexGrow: 1,
+      backgroundColor: '#F5F5F5',
+      display: 'flex',
+      justifyContent: 'center',
+      minHeight: '100vh',
     },
     main: {
-      minHeight: 600,
-      maxWidth: 700,
-      height: '100%',
-      width: '90vw',
+      width: '100%',
+      maxWidth: 720,
+      padding: 24,
+      backgroundColor: '#FFF',
+      borderRadius: 16,
     },
     item: {
       width: '100%',
@@ -217,13 +223,8 @@ const EditPage: FC = () => {
   useEffect(() => {}, [form]);
 
   return (
-    <Grid
-      container
-      justifyContent="center"
-      alignItems="center"
-      direction="column"
+    <Box
       className={classes.root}>
-      <Grid item>
         <Grid
           container
           justifyContent="center"
@@ -259,8 +260,7 @@ const EditPage: FC = () => {
             </Grid>
           </Grid>
         </Grid>
-      </Grid>
-    </Grid>
+    </Box>
   );
 };
 

@@ -4,7 +4,6 @@ import {
   createStyles,
   Grid,
   makeStyles,
-  Theme,
   Typography,
   Box,
   Link,
@@ -34,7 +33,7 @@ async function getDownloadItem(url: string) {
   return await getDownloadURL(ref(storage, url));
 }
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       flexGrow: 1,
@@ -77,11 +76,13 @@ const useStyles = makeStyles((theme: Theme) =>
       zIndex: 20,
     },
     heroTitle: {
+      color: '#FFF',
       fontSize: 48,
       fontWeight: 'bold',
       letterSpacing: '0.06em',
     },
     heroCaption: {
+      color: '#FFF',
       fontSize: 16,
       fontWeight: 'normal',
       letterSpacing: '0.04em',
@@ -385,13 +386,13 @@ const StartPage: FC = () => {
     getSamples();
   }, []);
 
-  const onClickStartButton = useCallback(() => {
+  const onClickStartButton = () => {
     history.push('/new');
-  }, []);
+  };
 
-  const onClickEditButton = useCallback(() => {
+  const onClickEditButton = () => {
     history.push('/edit');
-  }, []);
+  };
 
   return (
     <Box overflow="hidden">

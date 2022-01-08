@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       flexGrow: 1,
-      height: '100%',
+      height: '100vh',
       width: '100vw',
     },
     mainPanel: {

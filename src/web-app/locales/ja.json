@@ -16,6 +16,6 @@
   "web_edit-action_label_edit": "編集",
   "web_edit-message_empty_edit_target": "編集対象が設定されてません",
   "$pages/new/*": "#Comment#",
-  "web_new-header_label": "新しくアノテーションを始める",
+  "web_new-header_label": "3Dアノテーションを始める",
   "web_new-action_label_new": "開始"
 }
