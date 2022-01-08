@@ -1,15 +1,12 @@
 import { ApplicationConst } from '@fl-three-editor/application/const';
-import {
-  createStyles,
-  makeStyles,
-} from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 
@@ -20,7 +17,9 @@ import hero from '../../../images/hero.png';
 import sideLeftImage from '../../../images/side-left.png';
 import sideRightImage from '../../../images/side-right.png';
 import copyImage from '../../../images/copy.png';
-import { useState } from 'react';
+import pcdImage from '../../../images/pcd.png';
+import pcdWithImage from '../../../images/pcd_image.png';
+import pcdFramesImage from '../../../images/pcd_frames.png';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyC_1egYju9A0EpuJjKFzJ1trqzlmeoccEI',
@@ -383,7 +382,9 @@ const StartPage: FC = () => {
     const getSamples = async () => {
       setSamplePcd(await getDownloadItem('automan_sample_pcd.zip'));
       setSamplePcdImage(await getDownloadItem('automan_sample_pcd&image.zip'));
-      setSamplePcdFrames(await getDownloadItem('automan_sample_pcd_frames.zip'));
+      setSamplePcdFrames(
+        await getDownloadItem('automan_sample_pcd_frames.zip')
+      );
       setM1MacAppLink(
         await getDownloadItem('apps/Automan-0.0.1-arm64-mac.zip')
       );
@@ -472,7 +473,7 @@ const StartPage: FC = () => {
           <Box mt={7}>
             <Grid container className={classes.dataTypeBox}>
               <Grid item className={classes.dataTypeItem}>
-                <img className={classes.dataTypeImage} />
+                <img className={classes.dataTypeImage} src={pcdImage} />
                 <Typography className={classes.dataTypeItemTitle}>
                   3Dデータ(.pcd)
                 </Typography>
@@ -484,8 +485,7 @@ const StartPage: FC = () => {
                 </Link>
               </Grid>
               <Grid item className={classes.dataTypeItem}>
-                <img className={classes.dataTypeImage} />
-
+                <img className={classes.dataTypeImage} src={pcdWithImage} />
                 <Typography className={classes.dataTypeItemTitle}>
                   画像つき3Dデータ
                 </Typography>
@@ -497,8 +497,7 @@ const StartPage: FC = () => {
                 </Link>
               </Grid>
               <Grid item className={classes.dataTypeItem}>
-                <img className={classes.dataTypeImage} />
-
+                <img className={classes.dataTypeImage} src={pcdFramesImage} />
                 <Typography className={classes.dataTypeItemTitle}>
                   連続した3Dデータ
                 </Typography>
