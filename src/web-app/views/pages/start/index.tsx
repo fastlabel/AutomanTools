@@ -5,6 +5,8 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -109,6 +111,10 @@ const useStyles = makeStyles(() =>
       fontSize: 16,
       letterSpacing: '0.02em',
       marginTop: 16,
+    },
+    appDownloadLink: {
+      color: '#424242',
+      fontWeight: 'bold',
     },
     copySection: {
       position: 'relative',
@@ -377,6 +383,12 @@ const StartPage: FC = () => {
   const [samplePcdImage, setSamplePcdImage] = useState<string>('');
   const [samplePcdFrames, setSamplePcdFrames] = useState<string>('');
   const [m1MacAppLink, setM1MacAppLink] = useState<string>('');
+  const [intelMacAppLink, setIntelMacAppLink] = useState<string>('');
+  const [windowsAppLink, setWindowsAppLink] = useState<string>('');
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+    null
+  );
+  const open = Boolean(anchorEl);
 
   useEffect(() => {
     const getSamples = async () => {
@@ -385,8 +397,10 @@ const StartPage: FC = () => {
       setSamplePcdFrames(
         await getDownloadItem('automan_sample_pcd_frames.zip')
       );
-      setM1MacAppLink(
-        await getDownloadItem('apps/Automan-0.0.1-arm64-mac.zip')
+      setM1MacAppLink(await getDownloadItem('apps/Automan-0.0.1-arm64.dmg'));
+      setIntelMacAppLink(await getDownloadItem('apps/Automan-0.0.1.dmg'));
+      setWindowsAppLink(
+        await getDownloadItem('apps/Automan-0.0.1-win32-installer.exe')
       );
     };
     getSamples();
@@ -398,6 +412,14 @@ const StartPage: FC = () => {
 
   const onClickEditButton = () => {
     history.push('/edit');
+  };
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   return (
@@ -425,10 +447,48 @@ const StartPage: FC = () => {
                 <Button
                   variant="outlined"
                   className={classes.appDownloadButton}
-                  download
-                  href={m1MacAppLink}>
+                  onClick={handleClick}>
                   {t('web_hero_download_button')}
                 </Button>
+                <Menu
+                  id="download-menu"
+                  open={open}
+                  anchorEl={anchorEl}
+                  onClose={handleClose}
+                  getContentAnchorEl={null}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                  }}>
+                  <MenuItem>
+                    <Link
+                      className={classes.appDownloadLink}
+                      download
+                      href={windowsAppLink}>
+                      For Windows
+                    </Link>
+                  </MenuItem>
+                  <MenuItem>
+                    <Link
+                      className={classes.appDownloadLink}
+                      download
+                      href={intelMacAppLink}>
+                      For Mac with Intel processors
+                    </Link>
+                  </MenuItem>
+                  <MenuItem>
+                    <Link
+                      className={classes.appDownloadLink}
+                      download
+                      href={m1MacAppLink}>
+                      For Mac with Apple M1
+                    </Link>
+                  </MenuItem>
+                </Menu>
               </Box>
             </Box>
             <img className={classes.heroImage} src={hero} width={560} />
