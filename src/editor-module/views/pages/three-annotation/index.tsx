@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       flexGrow: 1,
-      height: '100vh',
+      height: (props: Props) => props.height || '100vh',
       width: '100vw',
     },
     mainPanel: {
@@ -46,8 +46,12 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const ThreeAnnotationPage: FC = () => {
-  const classes = useStyles();
+type Props = {
+  height?: '100%' | '100vh';
+}
+
+const ThreeAnnotationPage: FC<Props> = (props) => {
+  const classes = useStyles(props);
   const history = useHistory();
   const { projectId } = useParams<{ projectId: string }>();
   const mainControlsRef = createRef<FlMainCameraControls>();
