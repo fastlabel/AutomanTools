@@ -40,7 +40,7 @@ export const App = (): JSX.Element => {
                 <Route path="/">
                   <StartPage />
                 </Route>
-                <Route component={() => <StartPage />} />
+                <Route component={StartPage} />
               </Switch>
             </div>
           </Router>

@@ -8,10 +8,10 @@
   "scripts": {
     "webdev": "run-p webdev:*",
     "webdev:webpack": "webpack --config webpack.config.web-dev.ts --watch",
-    "webdev:start": " wait-on ./public/index.html && cross-env NODE_ENV=\"development\" webpack-dev-server --config webpack.config.web-dev.ts",
+    "webdev:start": " wait-on ./public/index.html && cross-env NODE_ENV=\"development\" webpack-dev-server --history-api-fallback --config webpack.config.web-dev.ts",
     "webprod": "run-p webprod:*",
     "webprod:webpack": "webpack --config webpack.config.web-prod.ts --watch",
-    "webprod:start": " wait-on ./public/index.html && cross-env NODE_ENV=\"development\" webpack-dev-server --config webpack.config.web-prod.ts",
+    "webprod:start": " wait-on ./public/index.html && cross-env NODE_ENV=\"development\" webpack-dev-server --history-api-fallback --config webpack.config.web-prod.ts",
     "webbuild": "webpack --config webpack.config.web-prod.ts --progress",
     "start": "run-s build serve",
     "predev": "rimraf dist",
