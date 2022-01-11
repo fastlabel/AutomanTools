@@ -625,8 +625,7 @@ const StartPage: FC = () => {
           </Typography>
           <Box mt={2}>
             <Typography variant="body1" className={classes.footerCaption}>
-              Automan は Tier 4 と Fastlabel, Inc. による共同の OSS
-              のプロジェクトです。
+              {t('web_footer_caption')}
             </Typography>
           </Box>
           <Box mt={8}>
