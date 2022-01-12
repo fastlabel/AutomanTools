@@ -601,7 +601,7 @@ const StartPage: FC = () => {
                   <Typography className={classes.usageContentText}>
                     {t('web_usage_new_step_1')}
                   </Typography>
-                  <a className={classes.usageLink} href="/">
+                  <a className={classes.usageLink} href={samplePcd}>
                     {t('web_sample_download')}
                   </a>
                 </Box>
