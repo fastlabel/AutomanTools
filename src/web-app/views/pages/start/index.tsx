@@ -690,7 +690,7 @@ const StartPage: FC = () => {
           </Box>
           <Box mt={8}>
             <Typography variant="body1" className={classes.copylight}>
-              © Fastlabel 2022
+              © FastLabel 2022
             </Typography>
           </Box>
         </Box>

@@ -43,5 +43,5 @@
   "web_usage_edit_step_3": "アノテーション結果をJSONでダウンロード",
   "web_usage_new_button": "アノテーションを始める",
   "web_usage_edit_button": "アノテーションを編集する",
-  "web_footer_caption": "Automan は Tier 4 と Fastlabel, Inc. による共同の OSS のプロジェクトです。"
+  "web_footer_caption": "Automan は FastLabel と Human Dataware Lab., Inc. による共同の OSS のプロジェクトです。"
 }

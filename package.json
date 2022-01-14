@@ -1,6 +1,6 @@
 {
   "name": "fastlabel-3d-annotation",
-  "description": "Automobile 3D annotation tool.",
+  "description": "AutomanTools is an open-source software for self-driving AI.",
   "version": "0.0.1",
   "author": "FastLabel & Human Dataware Lab.",
   "license": "Apache License 2.0",
