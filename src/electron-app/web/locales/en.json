@@ -1,0 +1,19 @@
+{
+  "$pages/start/index": "#Comment#",
+  "app_start-header_label__open": "Open",
+  "app_start-header_action_label__folder_open": "Open Folder",
+  "$pages/workspace/form": "#Comment#",
+  "app_workspaceForm-label_workspaceFolder": "Workspace Folder",
+  "app_workspaceForm-label_type": "Type",
+  "app_workspaceForm-label_targets": "Target",
+  "$pages/workspace/index": "#Comment#",
+  "app_workspace-header_label": "Create Workspace",
+  "app_workspace-action_label__create": "Create",
+  "app_workspace-action_label__back": "Back",
+  "app_workspace-message__invalid_folder_not_empty": "Must be select an empty folder",
+  "$title-bar": "#Comment#",
+  "titleBar-menu_label__file": "File",
+  "titleBar-menu_item_label__createWorkspace": "Create Workspace",
+  "titleBar-menu_item_label__openWorkspace": "Open Workspace",
+  "titleBar-menu_item_label__close": "Close"
+}

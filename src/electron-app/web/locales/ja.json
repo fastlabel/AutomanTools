@@ -1,0 +1,19 @@
+{
+  "$pages/start/index": "#Comment#",
+  "app_start-header_label__open": "開く",
+  "app_start-header_action_label__folder_open": "フォルダを開く",
+  "$pages/workspace/form": "#Comment#",
+  "app_workspaceForm-label_workspaceFolder": "ワークスペースフォルダ",
+  "app_workspaceForm-label_type": "タイプ",
+  "app_workspaceForm-label_targets": "対象",
+  "$pages/workspace/index": "#Comment#",
+  "app_workspace-header_label": "ワークスペースを作成",
+  "app_workspace-action_label__create": "ワークスペースを作成",
+  "app_workspace-action_label__back": "戻る",
+  "app_workspace-message__invalid_folder_not_empty": "ワークスペースを新規作成する場合は空のフォルダを選択してください",
+  "$title-bar": "#Comment#",
+  "titleBar-menu_label__file": "ファイル",
+  "titleBar-menu_item_label__createWorkspace": "新規ワークスペースを開く",
+  "titleBar-menu_item_label__openWorkspace": "ワークスペースを開く",
+  "titleBar-menu_item_label__close": "ウインドウを閉じる"
+}

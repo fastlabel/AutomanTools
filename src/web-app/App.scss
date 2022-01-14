@@ -1,0 +1,24 @@
+$titlebar-height: 48px;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+.container {
+  height: 100%;
+
+  .content {
+    overflow: hidden;
+  }
+
+  .content-darwin {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    -webkit-app-region: drag;
+  }
+}
