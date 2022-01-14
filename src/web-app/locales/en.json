@@ -43,5 +43,5 @@
   "web_usage_edit_step_3": "Download annotation results as JSON",
   "web_usage_new_button": "Start a new annotation",
   "web_usage_edit_button": "Edit annotation",
-  "web_footer_caption": "Automan is a joint OSS project between Tier 4 and Fastlabel, Inc."
+  "web_footer_caption": "Automan is a joint OSS project between FastLabel and Human Dataware Lab., Inc."
 }
