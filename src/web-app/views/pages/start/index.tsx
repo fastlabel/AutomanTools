@@ -22,6 +22,7 @@ import copyImage from '../../../images/copy.png';
 import pcdImage from '../../../images/pcd.png';
 import pcdWithImage from '../../../images/pcd_image.png';
 import pcdFramesImage from '../../../images/pcd_frames.png';
+import githubImage from '../../../images/github.png';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyC_1egYju9A0EpuJjKFzJ1trqzlmeoccEI',
@@ -48,6 +49,7 @@ const useStyles = makeStyles(() =>
     container: {
       maxWidth: 960,
       width: '100%',
+      position: 'relative',
     },
     heroSection: {
       position: 'relative',
@@ -367,6 +369,13 @@ const useStyles = makeStyles(() =>
       color: '#757575',
       letterSpacing: '0.02em',
     },
+    footerGithubImage: {
+      position: 'absolute',
+      width: 44,
+      height: 44,
+      top: 0,
+      right: 0,
+    },
     copylight: {
       fontSize: 12,
       color: '#9E9E9E',
@@ -683,6 +692,9 @@ const StartPage: FC = () => {
           <Typography variant="h3" className={classes.footerLogo}>
             Automan
           </Typography>
+          <Link href="https://github.com/fastlabel/AutomanTools/">
+            <img src={githubImage} className={classes.footerGithubImage} />
+          </Link>
           <Box mt={2}>
             <Typography variant="body1" className={classes.footerCaption}>
               {t('web_footer_caption')}
