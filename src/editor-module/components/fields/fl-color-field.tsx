@@ -1,7 +1,9 @@
-import { createStyles, makeStyles, TextField, Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import { TextField, Theme } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import React, { FC } from 'react';
 import { FormUtil } from './form-util';
 import { FormAction, FormState } from './type';
@@ -70,9 +72,9 @@ const FLColorField: FC<Props> = ({ label, form }) => {
   };
   return (
     <React.Fragment>
-      <Box mb={1} display="flex" alignItems="center">
-        <Typography variant="body2" component="div">
-          <Box mr={1} component="div">
+      <Box component="div" mb={1} display="flex" alignItems="center">
+        <Typography variant="body2">
+          <Box component="div" mr={1}>
             {label}
           </Box>
         </Typography>
@@ -80,7 +82,7 @@ const FLColorField: FC<Props> = ({ label, form }) => {
           className={styles.tag}
           style={{ backgroundColor: formValue }}></div>
       </Box>
-      <Box mb={1}>
+      <Box component="div" mb={1}>
         <TextField
           margin="dense"
           variant="outlined"
@@ -92,11 +94,12 @@ const FLColorField: FC<Props> = ({ label, form }) => {
           }}
         />
       </Box>
-      <Box mb={1}>
+      <Box component="div" mb={1}>
         <Grid container spacing={1}>
           {AnnotationColors.map((annotationColor) => (
             <Grid item key={annotationColor}>
               <Box
+                component="div"
                 className={styles.colorBox}
                 style={{ backgroundColor: annotationColor }}
                 onClick={() => onClickColor(annotationColor)}></Box>

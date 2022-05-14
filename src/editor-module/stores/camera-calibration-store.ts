@@ -59,7 +59,7 @@ const useCameraCalibration = () => {
     const offsetX = cx - width / 2;
     const offsetY = cy - height / 2;
 
-    let fov = (2 * Math.atan(fullHeight / (2 * fy)) * 180) / Math.PI;
+    const fov = (2 * Math.atan(fullHeight / (2 * fy)) * 180) / Math.PI;
     const distance = 1000;
 
     updateCameraInternal((pre) => ({

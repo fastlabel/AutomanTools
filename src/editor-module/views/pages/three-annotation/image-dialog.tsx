@@ -1,11 +1,13 @@
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import ArrowBackIosOutlinedIcon from '@material-ui/icons/ArrowBackIosOutlined';
-import ArrowForwardIosOutlinedIcon from '@material-ui/icons/ArrowForwardIosOutlined';
+import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined';
+import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Canvas, useThree } from '@react-three/fiber';
 import React, { FC, useEffect, useMemo, useState } from 'react';
-import { PerspectiveCamera, Texture, TextureLoader } from 'three';
+import { Texture, TextureLoader } from 'three';
 import DraggablePopover from '../../../components/draggable-popover';
 import ToolBar from '../../../components/tool-bar';
 import CameraCalibrationStore from '../../../stores/camera-calibration-store';
@@ -52,11 +54,7 @@ const _SceneBackground: FC<SceneBackgroundProps> = ({ tex }) => {
   return <></>;
 };
 
-type Props = {
-  calibrationCamera?: PerspectiveCamera;
-};
-
-const ImagePopover: FC<Props> = ({}) => {
+const ImagePopover: FC = () => {
   const styles = useStyles();
 
   const [state, setState] = useState<LocalState>({
@@ -109,29 +107,31 @@ const ImagePopover: FC<Props> = ({}) => {
       </ToolBar>
       {topicImageDialog.open && (
         <>
-          <Box width={state.width} height={state.height}>
+          <Box component="div" width={state.width} height={state.height}>
             <Canvas camera={calibrationCamera} resize={{ debounce: 500 }}>
               <_SceneBackground tex={state.tex} />
               <FLCubes frameNo={frameNo} annotations={taskAnnotations} />
             </Canvas>
           </Box>
           {topicImageDialog.hasPrev && (
-            <Box className={styles.prevButton} m={0}>
-              <Box height={48}>
+            <Box component="div" className={styles.prevButton} m={0}>
+              <Box component="div" height={48}>
                 <IconButton
                   aria-label="image-popover-prev"
-                  onClick={() => moveTopicImage('prev')}>
+                  onClick={() => moveTopicImage('prev')}
+                  size="large">
                   <ArrowBackIosOutlinedIcon />
                 </IconButton>
               </Box>
             </Box>
           )}
           {topicImageDialog.hasNext && (
-            <Box className={styles.nextButton} m={0}>
-              <Box height={48}>
+            <Box component="div" className={styles.nextButton} m={0}>
+              <Box component="div" height={48}>
                 <IconButton
                   aria-label="image-popover-next"
-                  onClick={() => moveTopicImage('next')}>
+                  onClick={() => moveTopicImage('next')}
+                  size="large">
                   <ArrowForwardIosOutlinedIcon />
                 </IconButton>
               </Box>

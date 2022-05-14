@@ -1,15 +1,15 @@
-import { Typography } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import ArrowBackIosOutlinedIcon from '@material-ui/icons/ArrowBackIosOutlined';
-import ArrowForwardIosOutlinedIcon from '@material-ui/icons/ArrowForwardIosOutlined';
-import FormatShapesOutlinedIcon from '@material-ui/icons/FormatShapesOutlined';
-import GetAppOutlinedIcon from '@material-ui/icons/GetAppOutlined';
-import InputOutlinedIcon from '@material-ui/icons/InputOutlined';
-import OpenWithOutlinedIcon from '@material-ui/icons/OpenWithOutlined';
-import PhotoLibraryOutlinedIcon from '@material-ui/icons/PhotoLibraryOutlined';
-import SaveOutlinedIcon from '@material-ui/icons/SaveOutlined';
-import SettingsOverscanOutlinedIcon from '@material-ui/icons/SettingsOverscanOutlined';
-import TouchAppOutlinedIcon from '@material-ui/icons/TouchAppOutlined';
+import { Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined';
+import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
+import FormatShapesOutlinedIcon from '@mui/icons-material/FormatShapesOutlined';
+import GetAppOutlinedIcon from '@mui/icons-material/GetAppOutlined';
+import InputOutlinedIcon from '@mui/icons-material/InputOutlined';
+import OpenWithOutlinedIcon from '@mui/icons-material/OpenWithOutlined';
+import PhotoLibraryOutlinedIcon from '@mui/icons-material/PhotoLibraryOutlined';
+import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
+import SettingsOverscanOutlinedIcon from '@mui/icons-material/SettingsOverscanOutlined';
+import TouchAppOutlinedIcon from '@mui/icons-material/TouchAppOutlined';
 import { useSnackbar } from 'notistack';
 import React, { FC, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,11 +20,7 @@ import ToolBarButton, {
 import { ProjectRepositoryContext } from '../../../repositories/project-repository';
 import TaskStore from '../../../stores/task-store';
 
-const workspaceApi = window.workspace;
-
-type Props = {};
-
-const ThreeToolbar: FC<Props> = () => {
+const ThreeToolbar: FC = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [t] = useTranslation();
   const projectRepository = useContext(ProjectRepositoryContext);
@@ -106,7 +102,7 @@ const ThreeToolbar: FC<Props> = () => {
             }));
           }}
         />
-        <Box mr={2} />
+        <Box component="div" mr={2} />
         <ToolBarButton
           toolTip={t('toolBar-label__selectMode_control')}
           active={taskToolBar.selectMode === 'control'}
@@ -123,7 +119,7 @@ const ThreeToolbar: FC<Props> = () => {
             updateTaskToolBar((pre) => ({ ...pre, selectMode: 'select' }))
           }
         />
-        <Box mr={2} />
+        <Box component="div" mr={2} />
         <ToolBarButton
           toolTip={t('toolBar-label__showLabel')}
           active={taskToolBar.showLabel}
@@ -142,7 +138,7 @@ const ThreeToolbar: FC<Props> = () => {
           icon={<PhotoLibraryOutlinedIcon />}
           onClick={() => openImageDialog(!topicImageDialog.open)}
         />
-        <Box mr={2} />
+        <Box component="div" mr={2} />
         <ToolBarButton
           toolTip={t('toolBar-label__copyPrevFrameObject')}
           disabled={!multiFrame}
@@ -152,7 +148,7 @@ const ThreeToolbar: FC<Props> = () => {
             enqueueSnackbar(t('toolBar-message__copyPrevFrame'));
           }}
         />
-        <Box mr={2} />
+        <Box component="div" mr={2} />
         <ToolBarButton
           toolTip={t('toolBar-label__save')}
           icon={<SaveOutlinedIcon />}
@@ -161,7 +157,7 @@ const ThreeToolbar: FC<Props> = () => {
             enqueueSnackbar(t('toolBar-message__save'));
           }}
         />
-        <Box mr={2} />
+        <Box component="div" mr={2} />
         <ToolBarButton
           toolTip={t('toolBar-label__export')}
           icon={<GetAppOutlinedIcon />}
@@ -184,7 +180,7 @@ const ThreeToolbar: FC<Props> = () => {
           }}
         />
       </ToolBarBoxButtonThemeProvider>
-      <Box flexGrow={1} />
+      <Box component="div" flexGrow={1} />
       {showFramePaging && (
         <>
           <ToolBarButton
@@ -193,7 +189,11 @@ const ThreeToolbar: FC<Props> = () => {
             icon={<ArrowBackIosOutlinedIcon />}
             onClick={onClickBackFrame}
           />
-          <Box minWidth={68} display="flex" justifyContent="center">
+          <Box
+            component="div"
+            minWidth={68}
+            display="flex"
+            justifyContent="center">
             <Typography variant="body1">
               {currentFrameNo}/{totalFrameNo}
             </Typography>

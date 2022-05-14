@@ -1,13 +1,9 @@
-import {
-  createStyles,
-  InputAdornment,
-  makeStyles,
-  TextField,
-  Theme,
-} from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import FolderIcon from '@material-ui/icons/Folder';
+import { InputAdornment, TextField, Theme } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import FolderIcon from '@mui/icons-material/Folder';
 import React, { FC } from 'react';
 import { FormUtil } from './form-util';
 import { FormAction, FormState } from './type';
@@ -35,12 +31,12 @@ const FLFileField: FC<Props> = ({ label, form }) => {
   const formValue = FormUtil.resolve(name, obj.data);
   return (
     <React.Fragment>
-      <Box mb={1}>
+      <Box component="div" mb={1}>
         <Typography variant="body2" component="div">
           {label}
         </Typography>
       </Box>
-      <Box>
+      <Box component="div">
         <TextField
           variant="outlined"
           margin="dense"

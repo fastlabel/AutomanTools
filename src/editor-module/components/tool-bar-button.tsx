@@ -1,22 +1,37 @@
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
-import { createTheme, ThemeProvider } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
+import { Theme } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import IconButton from '@mui/material/IconButton';
+import {
+  createTheme,
+  ThemeProvider,
+  StyledEngineProvider,
+} from '@mui/material/styles';
+import Tooltip from '@mui/material/Tooltip';
 import React, { FC } from 'react';
 
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
+
 const theme = createTheme({
-  overrides: {
+  components: {
     MuiIconButton: {
-      root: {
-        borderRadius: 'initial',
+      styleOverrides: {
+        root: {
+          borderRadius: 'initial',
+        },
       },
     },
     MuiTouchRipple: {
-      rippleVisible: {
-        animation: 'initial',
-      },
-      child: {
-        borderRadius: 'initial',
+      styleOverrides: {
+        rippleVisible: {
+          animation: 'initial',
+        },
+        child: {
+          borderRadius: 'initial',
+        },
       },
     },
   },
@@ -40,7 +55,11 @@ type Props = {
 };
 
 export const ToolBarBoxButtonThemeProvider: FC = ({ children }) => {
-  return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
+  return (
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+    </StyledEngineProvider>
+  );
 };
 
 const ToolBarButton: FC<Props> = ({

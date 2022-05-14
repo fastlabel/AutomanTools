@@ -1,8 +1,7 @@
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
 import React, { FC, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FLDialogTitle } from '../../../components/dialogs/fl-dialog';
@@ -11,9 +10,9 @@ import { AnnotationClassVO } from '../../../types/vo';
 import ClassList from '../../annotation-classes/class-list';
 import ClassFormDialog from './class-form-dialog';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({}));
-
-type Props = {};
+type Props = {
+  //
+};
 
 const ClassListDialog: FC<Props> = () => {
   const [open, setOpen] = React.useState(false);

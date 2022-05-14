@@ -2,11 +2,13 @@ import { FormUtil } from '@fl-three-editor/components/fields/form-util';
 import { FormAction, FormState } from '@fl-three-editor/components/fields/type';
 import { ProjectRepositoryContext } from '@fl-three-editor/repositories/project-repository';
 import { ProjectType } from '@fl-three-editor/types/const';
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
+import { Theme } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import { useSnackbar } from 'notistack';
 import React, { FC, Reducer, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -45,20 +47,18 @@ const formReducer: Reducer<FormState<WorkspaceFormState>, FormAction> = (
   state,
   action
 ) => {
+  let newState: WorkspaceFormState = {};
   switch (action.type) {
     case 'change':
-      let newState = FormUtil.update(action.name, action.value, state.data);
+      newState = FormUtil.update(action.name, action.value, state.data);
       if (action.name === 'type') {
         newState = FormUtil.update('targets', [], newState);
       }
-      const helper = { validState: 'valid' };
-
       if (newState.type && newState.targets && newState.targets.length > 0) {
-        helper.validState = 'valid';
+        return { data: newState, helper: { validState: 'valid' } };
       } else {
-        helper.validState = 'error';
+        return { data: newState, helper: { validState: 'error' } };
       }
-      return { data: newState, helper };
     case 'init':
       return { data: action.data, helper: {} };
   }
@@ -106,11 +106,12 @@ const NewPage: FC = () => {
     history.push('/');
   };
 
-  useEffect(() => {}, [form]);
+  useEffect(() => {
+    //
+  }, [form]);
 
   return (
-    <Box
-      className={classes.root}>
+    <Box component="div" className={classes.root}>
       <Grid
         container
         justifyContent="center"

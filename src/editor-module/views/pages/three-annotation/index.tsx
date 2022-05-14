@@ -1,5 +1,7 @@
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
+import { Theme } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Grid from '@mui/material/Grid';
 import React, {
   createRef,
   FC,
@@ -48,7 +50,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type Props = {
   height?: '100%' | '100vh';
-}
+};
 
 const ThreeAnnotationPage: FC<Props> = (props) => {
   const classes = useStyles(props);
@@ -122,7 +124,7 @@ const ThreeAnnotationPage: FC<Props> = (props) => {
       const z = PcdUtil.getMaxMin(pcd.position, 'z');
       return [
         pcd,
-        <FLPcd pcd={pcd} baseSize={0.3} />,
+        <FLPcd key="" pcd={pcd} baseSize={0.3} />,
         new Vector3(
           (x.min + x.max) / 2,
           (z.min + z.max) / 2,
@@ -281,7 +283,7 @@ const ThreeAnnotationPage: FC<Props> = (props) => {
         </Grid>
       </Grid>
       <ClassListDialog />
-      <ImageDialog calibrationCamera={calibrationCamera} />
+      <ImageDialog />
       <HotKey mainControlsRef={mainControlsRef} />
     </React.Fragment>
   );

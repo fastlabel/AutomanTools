@@ -1,4 +1,5 @@
-import { createStyles, makeStyles } from '@material-ui/core';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import TaskStore from '../../../stores/task-store';
 import { AnnotationClassVO } from '../../../types/vo';

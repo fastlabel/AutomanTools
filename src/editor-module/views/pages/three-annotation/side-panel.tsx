@@ -1,14 +1,16 @@
-import { Button, createStyles, makeStyles, Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Typography from '@material-ui/core/Typography';
-import SettingsIcon from '@material-ui/icons/Settings';
-import VisibilityOffOutlinedIcon from '@material-ui/icons/VisibilityOffOutlined';
-import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
+import { Button, Theme } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import Typography from '@mui/material/Typography';
+import SettingsIcon from '@mui/icons-material/Settings';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { useSnackbar } from 'notistack';
 import { Resizable, ResizeCallback } from 're-resizable';
 import React, { FC, useCallback, useMemo, useState } from 'react';
@@ -143,10 +145,10 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
     children,
   }) => {
     return (
-      <Box>
+      <Box component="div">
         <List>
           <ListItem dense>
-            <Box flexGrow={1}>
+            <Box component="div" flexGrow={1}>
               <Typography variant="subtitle2">{title}</Typography>
             </Box>
             {titleItem}
@@ -176,7 +178,7 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
             <_PanelTitle
               title={t('sidePanel-header_label__annotationClasses')}
               titleItem={
-                <Box marginRight={0.5}>
+                <Box component="div" marginRight={0.5}>
                   <IconButton size="small" onClick={onConfigClassesClick}>
                     <SettingsIcon />
                   </IconButton>

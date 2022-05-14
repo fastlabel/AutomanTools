@@ -1,6 +1,6 @@
-import { Typography } from '@material-ui/core';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
+import { Typography } from '@mui/material';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
 import React, { FC } from 'react';
 
 type Props = {};
@@ -10,7 +10,7 @@ const TitleBar: FC<Props> = () => {
     <AppBar position="static">
       <Toolbar variant="dense">
         <Typography variant="h6" color="inherit">
-        Automan
+          Automan
         </Typography>
       </Toolbar>
     </AppBar>

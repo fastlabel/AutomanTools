@@ -4,8 +4,10 @@ import { FormUtil } from '@fl-three-editor/components/fields/form-util';
 import { FormAction, FormState } from '@fl-three-editor/components/fields/type';
 import { ProjectType } from '@fl-three-editor/types/const';
 import { WorkspaceUtil } from '@fl-three-editor/utils/workspace-util';
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
+import { Theme } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Grid from '@mui/material/Grid';
 import React, { FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 

@@ -1,21 +1,28 @@
 import { ApplicationConst } from '@fl-three-editor/application/const';
-import { Button, Divider, Menu, MenuItem } from '@material-ui/core';
-import AppBar from '@material-ui/core/AppBar';
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
+import { Button, Divider, Menu, MenuItem } from '@mui/material';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import {
   createTheme,
-  makeStyles,
+  StyledEngineProvider,
+  Theme,
   ThemeProvider,
-} from '@material-ui/core/styles';
-import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
+} from '@mui/material/styles';
+import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import makeStyles from '@mui/styles/makeStyles';
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import favicon from './asset/favicon-200.png';
 import WorkspaceContext from './context/workspace';
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
 
 const COLOR = {
   btn_normal: '#cacaca',
@@ -27,38 +34,48 @@ const COLOR = {
 };
 
 const theme = createTheme({
-  overrides: {
+  components: {
     MuiButton: {
-      root: {
-        borderRadius: 'initial',
-        height: '100%',
+      styleOverrides: {
+        root: {
+          borderRadius: 'initial',
+          height: '100%',
+        },
       },
     },
     MuiIconButton: {
-      root: {
-        borderRadius: 'initial',
-        color: COLOR.btn_normal,
-        '&:hover': {
-          color: COLOR.btn_hover,
+      styleOverrides: {
+        root: {
+          borderRadius: 'initial',
+          color: COLOR.btn_normal,
+          '&:hover': {
+            color: COLOR.btn_hover,
+          },
         },
       },
     },
     MuiTouchRipple: {
-      rippleVisible: {
-        animation: 'initial',
-      },
-      child: {
-        borderRadius: 'initial',
+      styleOverrides: {
+        rippleVisible: {
+          animation: 'initial',
+        },
+        child: {
+          borderRadius: 'initial',
+        },
       },
     },
     MuiMenu: {
-      paper: {
-        borderRadius: 0,
+      styleOverrides: {
+        paper: {
+          borderRadius: 0,
+        },
       },
     },
     MuiMenuItem: {
-      root: {
-        fontSize: '0.8125rem',
+      styleOverrides: {
+        root: {
+          fontSize: '0.8125rem',
+        },
       },
     },
   },
@@ -180,7 +197,11 @@ const ToolMenu: FC<ToolMenuProps> = ({ id, label, menus }) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleMenu = (func: () => void = () => {}) => {
+  const handleMenu = (
+    func: () => void = () => {
+      // empty func
+    }
+  ) => {
     return () => {
       func();
       setAnchorEl(null);
@@ -201,7 +222,6 @@ const ToolMenu: FC<ToolMenuProps> = ({ id, label, menus }) => {
       <Menu
         id={id}
         anchorEl={anchorEl}
-        getContentAnchorEl={null}
         open={Boolean(anchorEl)}
         onClose={handleMenu()}
         anchorOrigin={{
@@ -225,7 +245,9 @@ const ToolMenu: FC<ToolMenuProps> = ({ id, label, menus }) => {
 
 const { appApi, workspace } = window;
 
-type Props = {};
+type Props = {
+  //
+};
 
 const TitleBar: FC<Props> = () => {
   const classes = useStyles();
@@ -294,107 +316,110 @@ const TitleBar: FC<Props> = () => {
 
   return (
     <div className={classes.root}>
-      <ThemeProvider theme={theme}>
-        <AppBar
-          className={classes.appBar}
-          position="static"
-          color="transparent"
-          elevation={0}>
-          <Toolbar
-            variant="dense"
-            classes={{
-              root: classes.toolbarRoot,
-              dense: classes.toolbarDense,
-            }}>
-            <Box display="flex" mr={1}>
-              <img src={favicon} width="auto" height={24} />
-            </Box>
-            <Box className={classes.menu} height={38}>
-              <ToolMenu
-                id="toolbar-file"
-                label={t('titleBar-menu_label__file')}
-                menus={[
-                  // {
-                  //   label: '新しいウインドウ',
-                  //   onClick: () => {
-                  //     // TODO
-                  //   },
-                  // },
-                  // {
-                  //   separator: true
-                  // },
-                  {
-                    label: t('titleBar-menu_item_label__createWorkspace'),
-                    onClick: () => {
-                      history.push('/workspace');
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <AppBar
+            className={classes.appBar}
+            position="static"
+            color="transparent"
+            elevation={0}>
+            <Toolbar
+              variant="dense"
+              classes={{
+                root: classes.toolbarRoot,
+                dense: classes.toolbarDense,
+              }}>
+              <Box component="div" display="flex" mr={1}>
+                <img src={favicon} width="auto" height={24} />
+              </Box>
+              <Box component="div" className={classes.menu} height={38}>
+                <ToolMenu
+                  id="toolbar-file"
+                  label={t('titleBar-menu_label__file')}
+                  menus={[
+                    // {
+                    //   label: '新しいウインドウ',
+                    //   onClick: () => {
+                    //     // TODO
+                    //   },
+                    // },
+                    // {
+                    //   separator: true
+                    // },
+                    {
+                      label: t('titleBar-menu_item_label__createWorkspace'),
+                      onClick: () => {
+                        history.push('/workspace');
+                      },
                     },
-                  },
-                  {
-                    label: t('titleBar-menu_item_label__openWorkspace'),
-                    onClick: () => {
-                      const selectFolder = workspace.openFolderDialog();
-                      selectFolder.then((wkDir) => {
-                        if (!wkDir) return;
-                        workspaceStore.setWorkspaceFolder(wkDir);
-                        workspace
-                          .load({ wkDir, query: { meta: { project: true } } })
-                          .then((res) => {
-                            if (res.meta?.project) {
-                              const projectId = res.meta?.project.projectId;
-                              history.push(`/threeannotation/${projectId}`);
-                              return;
-                            }
-                            workspaceStore.setForceUpdate(true);
-                            history.push('/workspace');
-                          })
-                          .catch((err) => {
-                            // not exist meta/project.json
-                            workspaceStore.setForceUpdate(true);
-                            history.push('/workspace');
-                          });
-                      });
+                    {
+                      label: t('titleBar-menu_item_label__openWorkspace'),
+                      onClick: () => {
+                        const selectFolder = workspace.openFolderDialog();
+                        selectFolder.then((wkDir) => {
+                          if (!wkDir) return;
+                          workspaceStore.setWorkspaceFolder(wkDir);
+                          workspace
+                            .load({ wkDir, query: { meta: { project: true } } })
+                            .then((res) => {
+                              if (res.meta?.project) {
+                                const projectId = res.meta?.project.projectId;
+                                history.push(`/threeannotation/${projectId}`);
+                                return;
+                              }
+                              workspaceStore.setForceUpdate(true);
+                              history.push('/workspace');
+                            })
+                            .catch((err) => {
+                              // not exist meta/project.json
+                              workspaceStore.setForceUpdate(true);
+                              history.push('/workspace');
+                            });
+                        });
+                      },
                     },
-                  },
-                  {
-                    separator: true,
-                  },
-                  {
-                    label: t('titleBar-menu_item_label__close'),
-                    onClick: () => {
-                      window.close();
+                    {
+                      separator: true,
                     },
-                  },
-                  // {
-                  //   separator: true
-                  // },
-                  // {
-                  //   label: '終了',
-                  //   onClick: () => {
-                  //     history.push('/workspace');
-                  //   },
-                  // }
-                ]}
-              />
-            </Box>
-            <Box className={classes.title}>
-              <Typography variant="body1">{ApplicationConst.name}</Typography>
-            </Box>
-            <Box className={classes.control}>
-              <IconButton color="inherit" onClick={onMinimize}>
-                <MinimizeIcon />
-              </IconButton>
-              <IconButton
-                color="inherit"
-                onClick={maximized ? onRestore : onMaximize}>
-                {maximized ? <RestoreIcon /> : <MaximizeIcon />}
-              </IconButton>
-              <IconButton color="inherit" onClick={onClose}>
-                <CloseIcon />
-              </IconButton>
-            </Box>
-          </Toolbar>
-        </AppBar>
-      </ThemeProvider>
+                    {
+                      label: t('titleBar-menu_item_label__close'),
+                      onClick: () => {
+                        window.close();
+                      },
+                    },
+                    // {
+                    //   separator: true
+                    // },
+                    // {
+                    //   label: '終了',
+                    //   onClick: () => {
+                    //     history.push('/workspace');
+                    //   },
+                    // }
+                  ]}
+                />
+              </Box>
+              <Box component="div" className={classes.title}>
+                <Typography variant="body1">{ApplicationConst.name}</Typography>
+              </Box>
+              <Box component="div" className={classes.control}>
+                <IconButton color="inherit" onClick={onMinimize} size="large">
+                  <MinimizeIcon />
+                </IconButton>
+                <IconButton
+                  color="inherit"
+                  onClick={maximized ? onRestore : onMaximize}
+                  size="large">
+                  {maximized ? <RestoreIcon /> : <MaximizeIcon />}
+                </IconButton>
+                <IconButton color="inherit" onClick={onClose} size="large">
+                  <CloseIcon />
+                </IconButton>
+              </Box>
+            </Toolbar>
+          </AppBar>
+        </ThemeProvider>
+      </StyledEngineProvider>
     </div>
   );
 };

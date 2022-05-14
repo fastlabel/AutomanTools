@@ -1,11 +1,6 @@
-import {
-  Box,
-  createStyles,
-  Grid,
-  makeStyles,
-  Theme,
-  Typography,
-} from '@material-ui/core';
+import { Box, Grid, Theme, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Canvas, ThreeEvent } from '@react-three/fiber';
 import React, { createRef, FC, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -122,7 +117,7 @@ const FLThreeEditor: FC<Props> = ({
   const orthographic = !!useOrthographicCamera;
   return (
     <div className={styles.root} ref={rootRef}>
-      <Box flexGrow={1} mt={2} mr={2} ml={2} mb={1}>
+      <Box component="div" flexGrow={1} mt={2} mr={2} ml={2} mb={1}>
         <Canvas
           orthographic={orthographic}
           camera={{
@@ -156,13 +151,13 @@ const FLThreeEditor: FC<Props> = ({
           {cameraHelper}
         </Canvas>
       </Box>
-      <Box mr={2} ml={2} mb={1}>
+      <Box component="div" mr={2} ml={2} mb={1}>
         <Grid container spacing={2} className={styles.footer}>
           <Grid item xs={4}>
-            <Box className={styles.footerLabel}>
+            <Box component="div" className={styles.footerLabel}>
               <Typography>{t('flThreeEditor-label__top')}</Typography>
             </Box>
-            <Box height={footerBoxH}>
+            <Box component="div" height={footerBoxH}>
               <Canvas
                 orthographic
                 camera={{
@@ -182,10 +177,10 @@ const FLThreeEditor: FC<Props> = ({
             </Box>
           </Grid>
           <Grid item xs={4}>
-            <Box className={styles.footerLabel}>
+            <Box component="div" className={styles.footerLabel}>
               <Typography>{t('flThreeEditor-label__side')}</Typography>
             </Box>
-            <Box height={footerBoxH}>
+            <Box component="div" height={footerBoxH}>
               <Canvas
                 orthographic
                 camera={{
@@ -205,10 +200,10 @@ const FLThreeEditor: FC<Props> = ({
             </Box>
           </Grid>
           <Grid item xs={4}>
-            <Box className={styles.footerLabel}>
+            <Box component="div" className={styles.footerLabel}>
               <Typography>{t('flThreeEditor-label__front')}</Typography>
             </Box>
-            <Box height={footerBoxH}>
+            <Box component="div" height={footerBoxH}>
               <Canvas
                 orthographic
                 camera={{

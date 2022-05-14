@@ -1,13 +1,8 @@
 import { ApplicationConst } from '@fl-three-editor/application/const';
-import {
-  Button,
-  createStyles,
-  Grid,
-  makeStyles,
-  Theme,
-  Typography,
-} from '@material-ui/core';
-import FolderOpenIcon from '@material-ui/icons/FolderOpen';
+import { Button, Grid, Theme, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import React, { FC, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';

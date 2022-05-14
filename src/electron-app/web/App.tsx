@@ -29,7 +29,7 @@ export const App = (): JSX.Element => {
                   <TaskStore.Provider>
                     <AnnotationClassStore.Provider>
                       <CameraCalibrationStore.Provider>
-                        <ThreeAnnotationPage height='100%'/>
+                        <ThreeAnnotationPage height="100%" />
                       </CameraCalibrationStore.Provider>
                     </AnnotationClassStore.Provider>
                   </TaskStore.Provider>
