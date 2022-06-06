@@ -52,7 +52,7 @@
   "sidePanel-action_label__save": "保存",
   "sidePanel-message__save": "保存しました",
   "$tool-bar": "#Comment#",
-  "toolBar-label__planView": "平面図表示",
+  "toolBar-label__birdsEyeView": "鳥瞰図表示",
   "toolBar-label__selectMode_control": "カメラのズーム・移動",
   "toolBar-label__selectMode_select": "オブジェクトの選択",
   "toolBar-label__showLabel": "ラベル表示",

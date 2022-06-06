@@ -10,7 +10,7 @@ import {
   Scene,
   Vector3,
 } from 'three';
-import { AnnotationClassVO, TaskAnnotationVOPoints } from '../../types/vo';
+import { AnnotationClassVO, ThreePoints } from '../../types/vo';
 import FLCube from './fl-cube';
 
 type Prop = ReactThreeFiber.Overwrite<
@@ -56,7 +56,7 @@ const FLAnnotationControls = React.forwardRef<FLAnnotationControlsImpl, Prop>(
         return [0, 0, 0, 0, 0, 0, x, y, z];
       }
       return undefined;
-    }, [preObject]) as TaskAnnotationVOPoints;
+    }, [preObject]) as ThreePoints;
 
     React.useEffect(() => {
       controls.connect(explDomElement);

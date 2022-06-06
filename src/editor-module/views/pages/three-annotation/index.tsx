@@ -1,16 +1,15 @@
-import { Theme } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
-import Grid from '@mui/material/Grid';
 import React, {
   createRef,
   FC,
   useCallback,
   useEffect,
   useMemo,
-  useState,
+  useState
 } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Group, PerspectiveCamera, Vector3 } from 'three';
 import AnnotationClassStore from '../../../stores/annotation-class-store';
 import CameraCalibrationStore from '../../../stores/camera-calibration-store';
@@ -54,10 +53,8 @@ type Props = {
 
 const ThreeAnnotationPage: FC<Props> = (props) => {
   const classes = useStyles(props);
-  const history = useHistory();
   const { projectId } = useParams<{ projectId: string }>();
   const mainControlsRef = createRef<FlMainCameraControls>();
-
   const [initialed, setInitialed] = useState(false);
 
   const {
@@ -74,6 +71,8 @@ const ThreeAnnotationPage: FC<Props> = (props) => {
     selectTaskAnnotations,
     changePageMode,
     resetSelectMode,
+    isTaskAnnotationUpdated,
+    setIsTaskAnnotationUpdated
   } = TaskStore.useContainer();
 
   const { annotationClass, dispatchAnnotationClass } =
@@ -161,7 +160,7 @@ const ThreeAnnotationPage: FC<Props> = (props) => {
           pcd={pcd}
           bgSub={pcdEditorObj}
           cameraHelper={resolveCameraHelper(calibrationCamera)}
-          targets={selectingTaskAnnotations}
+          selectedTaskAnnotations={selectingTaskAnnotations}
           position0={position0}
           preObject={selectingAnnotationClass}
           onClickObj={onClickObj}
@@ -214,6 +213,16 @@ const ThreeAnnotationPage: FC<Props> = (props) => {
     selectingTaskAnnotations,
     cubeGroupRef,
     onClickObj,
+    // added by lint
+    addTaskAnnotations,
+    mainControlsRef,
+    pcdEditorObj,
+    resolveCameraHelper,
+    selectTaskAnnotations,
+    taskToolBar.selectMode,
+    taskToolBar.showLabel,
+    taskToolBar.useOrthographicCamera,
+    updateTaskAnnotations,
   ]);
 
   // initialize Editor
@@ -235,6 +244,7 @@ const ThreeAnnotationPage: FC<Props> = (props) => {
         });
       }
       setInitialed(true);
+      setIsTaskAnnotationUpdated(true);
     }
   }, [taskRom]);
 
@@ -285,6 +295,7 @@ const ThreeAnnotationPage: FC<Props> = (props) => {
       <ClassListDialog />
       <ImageDialog />
       <HotKey mainControlsRef={mainControlsRef} />
+      
     </React.Fragment>
   );
 };

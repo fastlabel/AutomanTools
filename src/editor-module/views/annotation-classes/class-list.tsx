@@ -13,7 +13,7 @@ import React, { FC } from 'react';
 import { AnnotationType } from '../../types/const';
 import { AnnotationClassVO } from '../../types/vo';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     flexGrow: {
       flexGrow: 1,

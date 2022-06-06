@@ -103,7 +103,7 @@ export const WorkSpaceDriver = {
       });
     });
   },
-  loadQuery: (param: WKLoadParam): Promise<WKSkeleton<any, ArrayBuffer>> => {
+  loadQuery: (param: WKLoadParam): Promise<WKSkeleton<any>> => {
     return new Promise((resolve, reject) => {
       reduceQuery<true | string>(param.query, (path, value) => {
         const targetPath = `${param.wkDir}/${path}`;
@@ -141,7 +141,7 @@ export const WorkSpaceDriver = {
         });
     });
   },
-  exist: (param: WKLoadParam): Promise<WKSkeleton<boolean, boolean>> => {
+  exist: (param: WKLoadParam): Promise<WKSkeleton<boolean>> => {
     return new Promise((resolve, reject) => {
       reduceQuery<true | string>(param.query, (path, value) => {
         const targetPath = `${param.wkDir}/${path}`;

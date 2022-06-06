@@ -5,7 +5,7 @@ import { ProjectRepositoryContext } from '../repositories/project-repository';
 import {
   AnnotationClassVO,
   TaskAnnotationVO,
-  TaskAnnotationVOPoints,
+  ThreePoints,
   TaskFrameVO,
   TaskROMVO,
 } from '../types/vo';
@@ -104,7 +104,7 @@ export type UpdateTaskAnnotationsCommand =
       frameNo: string;
       changes: {
         [id: string]: {
-          points: TaskAnnotationVOPoints;
+          points: ThreePoints;
         };
       };
     }
@@ -114,6 +114,8 @@ export type UpdateTaskAnnotationsCommand =
   | UpdateTaskAnnotationCommand;
 
 const useTask = () => {
+  const [isTaskAnnotationUpdated, setIsTaskAnnotationUpdated] =
+    useState<boolean>(false);
   const projectRepository = useContext(ProjectRepositoryContext);
   const [pageStatus, _updatePageStatus] = useState<
     'preparing' | 'loading' | 'ready' | 'saving'
@@ -146,7 +148,7 @@ const useTask = () => {
 
   const [taskToolBar, updateTaskToolBar] = useState<TaskToolbar>({
     useOrthographicCamera: false,
-    selectMode: 'control',
+    selectMode: 'select',
     showLabel: false,
   });
 
@@ -355,6 +357,7 @@ const useTask = () => {
     _updatePageStatus('saving');
     projectRepository.saveFrameTaskAnnotations(taskAnnotations).then(() => {
       _updatePageStatus('ready');
+      setIsTaskAnnotationUpdated(false);
     });
   }, [projectRepository, taskAnnotations, _updatePageStatus]);
 
@@ -363,6 +366,7 @@ const useTask = () => {
       // ${updateTaskAnnotations}$ commands:[{command:'move'|'updateAttr', params for command}]
       //   move points
       //   setAttr[code only]
+      setIsTaskAnnotationUpdated(true);
       if (param.type === 'objectTransForm') {
         _updateTaskAnnotations((prev) => {
           for (let i = 0, len = prev.length; i < len; i++) {
@@ -412,7 +416,12 @@ const useTask = () => {
         _updateTaskAnnotations((prev) => prev.filter((i) => i.id !== param.id));
       }
     },
-    [_updateTaskAnnotations, resetSelectMode]
+    [
+      _updateTaskAnnotations,
+      _updateEditingTaskAnnotation,
+      resetSelectMode,
+      setIsTaskAnnotationUpdated,
+    ]
   );
 
   const addTaskAnnotations = useCallback(
@@ -502,6 +511,8 @@ const useTask = () => {
   );
 
   return {
+    isTaskAnnotationUpdated,
+    setIsTaskAnnotationUpdated,
     taskToolBar,
     pageStatus,
     // states

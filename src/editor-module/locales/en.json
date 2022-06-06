@@ -52,7 +52,7 @@
   "sidePanel-action_label__save": "Save",
   "sidePanel-message__save": "Saved",
   "$tool-bar": "#Comment#",
-  "toolBar-label__planView": "Plan View",
+  "toolBar-label__birdsEyeView": "Bird’s Eye View",
   "toolBar-label__selectMode_control": "Pan & zoom scene",
   "toolBar-label__selectMode_select": "Select figure",
   "toolBar-label__showLabel": "Show label",

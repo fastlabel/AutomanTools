@@ -95,58 +95,58 @@ const HotKey: FC<Props> = ({ mainControlsRef }) => {
           break;
         case 'ArrowRight':
           if (controls) {
-            controls.rotate(KEY_ROTATE_SEED, 0);
+            controls.keyRotate(KEY_ROTATE_SEED, 0);
           }
           break;
         case 'ArrowLeft':
           if (controls) {
-            controls.rotate(-KEY_ROTATE_SEED, 0);
+            controls.keyRotate(-KEY_ROTATE_SEED, 0);
           }
           break;
         case 'ArrowDown':
           if (controls) {
-            controls.rotate(0, -KEY_ROTATE_SEED);
+            controls.keyRotate(0, -KEY_ROTATE_SEED);
           }
           break;
         case 'ArrowUp':
           if (controls) {
-            controls.rotate(0, KEY_ROTATE_SEED);
+            controls.keyRotate(0, KEY_ROTATE_SEED);
           }
           break;
         case 'q':
           if (controls) {
-            // TODO move up
-            controls.dolly(KEY_DOLLY_SEED);
+            // TODO move forward
+            controls.pan(0, 0, -KEY_DOLLY_SEED);
           }
           break;
         case 'e':
           if (controls) {
-            // TODO move down
-            controls.dolly(KEY_DOLLY_SEED, true);
+            // TODO move back
+            controls.pan(0, 0, KEY_DOLLY_SEED);
           }
           break;
         case 'a':
           if (controls) {
             // move left
-            controls.pan(KEY_PAN_SEED, 0);
+            controls.pan(KEY_PAN_SEED, 0, 0);
           }
           break;
         case 'w':
           if (controls) {
-            // TODO move forward
-            controls.pan(0, KEY_PAN_SEED);
+            // TODO move up
+            controls.pan(0, KEY_PAN_SEED, 0);
           }
           break;
         case 's':
           if (controls) {
-            // TODO move back
-            controls.pan(0, -KEY_PAN_SEED);
+            // TODO move down
+            controls.pan(0, -KEY_PAN_SEED, 0);
           }
           break;
         case 'd':
           if (controls) {
             // move right
-            controls.pan(-KEY_PAN_SEED, 0);
+            controls.pan(-KEY_PAN_SEED, 0, 0);
           }
           break;
         case 'Escape':

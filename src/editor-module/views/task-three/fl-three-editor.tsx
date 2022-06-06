@@ -1,4 +1,4 @@
-import { Box, Grid, Theme, Typography } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { Canvas, ThreeEvent } from '@react-three/fiber';
@@ -20,9 +20,6 @@ const useStyles = makeStyles(() =>
       height: '100%',
       flexDirection: 'column',
       backgroundColor: '#1a1a1a',
-    },
-    wrapTaskForm: {
-      padding: theme.spacing(2),
     },
     footer: {
       maxHeight: 360,
@@ -49,7 +46,7 @@ type Props = {
   bgSub?: JSX.Element;
   cameraHelper?: JSX.Element;
   position0?: Vector3;
-  targets?: TaskAnnotationVO[];
+  selectedTaskAnnotations?: TaskAnnotationVO[];
   preObject?: AnnotationClassVO;
   onClickObj?: (evt: ThreeEvent<MouseEvent>) => void;
   onPutObject?: (
@@ -62,6 +59,8 @@ type Props = {
 const C_RESIZE = { debounce: 100 };
 const C_DISTANCE = 5;
 
+const ANNOTATION_OPACITY = 50;
+
 const FLThreeEditor: FC<Props> = ({
   frameNo,
   annotations,
@@ -73,7 +72,7 @@ const FLThreeEditor: FC<Props> = ({
   pcd,
   bgSub,
   position0,
-  targets,
+  selectedTaskAnnotations,
   preObject,
   cameraHelper,
   onClickObj = (f) => f,
@@ -88,13 +87,13 @@ const FLThreeEditor: FC<Props> = ({
   const _cubeGroupRef = cubeGroupRef || createRef<Group>();
 
   useEffect(() => {
-    if (targets && targets.length === 1 && _cubeGroupRef.current) {
-      const vo = targets[0];
+    if (selectedTaskAnnotations && selectedTaskAnnotations.length === 1 && _cubeGroupRef.current) {
+      const vo = selectedTaskAnnotations[0];
       setTarget(_cubeGroupRef.current.getObjectByName(vo.id));
     } else {
       setTarget(undefined);
     }
-  }, [_cubeGroupRef, targets]);
+  }, [_cubeGroupRef, selectedTaskAnnotations]);
 
   useEffect(() => {
     if (rootRef.current) {
@@ -142,9 +141,11 @@ const FLThreeEditor: FC<Props> = ({
           )}
           <FLCubes
             ref={_cubeGroupRef}
+            selectedTaskAnnotations={selectedTaskAnnotations}
+            frameNo={frameNo}
             selectable={selectable}
             showLabel={showLabel}
-            frameNo={frameNo}
+            annotationOpacity={ANNOTATION_OPACITY}
             annotations={annotations}
             onClick={onClickObj}
           />
@@ -169,6 +170,7 @@ const FLThreeEditor: FC<Props> = ({
                 resize={C_RESIZE}>
                 {bgSub}
                 <FLObjectControls
+                  annotationOpacity={ANNOTATION_OPACITY}
                   control="top"
                   target={target}
                   onObjectChange={onObjectChange}
@@ -192,6 +194,7 @@ const FLThreeEditor: FC<Props> = ({
                 resize={C_RESIZE}>
                 {bgSub}
                 <FLObjectControls
+                  annotationOpacity={ANNOTATION_OPACITY}
                   control="side"
                   target={target}
                   onObjectChange={onObjectChange}
@@ -215,6 +218,7 @@ const FLThreeEditor: FC<Props> = ({
                 resize={C_RESIZE}>
                 {bgSub}
                 <FLObjectControls
+                  annotationOpacity={ANNOTATION_OPACITY}
                   control="front"
                   target={target}
                   onObjectChange={onObjectChange}

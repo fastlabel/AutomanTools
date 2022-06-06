@@ -35,7 +35,6 @@
     "@mui/lab": "^5.0.0-alpha.81",
     "@mui/material": "^5.7.0",
     "@mui/styles": "^5.7.0",
-    "@react-three/drei": "^7.3.1",
     "@react-three/fiber": "^7.0.6",
     "firebase": "^9.6.2",
     "i18next": "^20.3.5",

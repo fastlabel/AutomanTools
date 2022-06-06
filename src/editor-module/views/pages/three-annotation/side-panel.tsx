@@ -1,16 +1,20 @@
-import { Button, Theme } from '@mui/material';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import SettingsIcon from '@mui/icons-material/Settings';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Typography from '@mui/material/Typography';
-import SettingsIcon from '@mui/icons-material/Settings';
-import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useSnackbar } from 'notistack';
 import { Resizable, ResizeCallback } from 're-resizable';
 import React, { FC, useCallback, useMemo, useState } from 'react';
@@ -69,6 +73,8 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
     saveFrameTaskAnnotations,
     updateTaskAnnotations,
   } = TaskStore.useContainer();
+
+  const [resetDialog, setResetDialog] = useState<boolean>(false);
 
   const [width, setWidth] = useState<number>(360);
   const [height, setHeight] = useState<number>(240);
@@ -162,6 +168,7 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
 
   // TODO calc max size
   return (
+    <>
     <Resizable
       size={{ width, height: '100%' }}
       enable={{ left: false }}
@@ -250,7 +257,7 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
                   <Button
                     fullWidth
                     variant="contained"
-                    onClick={() => history.push('/')}>
+                    onClick={() => setResetDialog(true)}>
                     {t('sidePanel-action_label__cancel')}
                   </Button>
                 </Grid>
@@ -272,6 +279,24 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
         </Grid>
       </Grid>
     </Resizable>
+     {/* CANCEL DIALOG */}
+     <Dialog fullWidth maxWidth="sm" onClose={() => setResetDialog(false)} open={resetDialog}>
+        <DialogTitle>{t("task.edit.reset")}</DialogTitle>
+        <DialogContent>{t("task.edit.reset.description")}</DialogContent>
+        <DialogActions>
+          <Box component="div" mx={2} my={1}>
+            <Box mr={2} component="span">
+              <Button variant="text" onClick={() => setResetDialog(false)}>
+                {t("close")}
+              </Button>
+            </Box>
+            <Button variant="text" onClick={()=> history.push('/')} color="primary">
+              {t("task.edit.reset")}
+            </Button>
+          </Box>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 

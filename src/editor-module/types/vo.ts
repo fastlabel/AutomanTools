@@ -36,7 +36,7 @@ export type TaskImageTopicVO = {
   calibration?: boolean;
 };
 
-export type TaskAnnotationVOPoints = [
+export type ThreePoints = [
   px: number,
   py: number,
   pz: number,
@@ -51,7 +51,7 @@ export type TaskAnnotationVOPoints = [
 export type TaskAnnotationOriginVO = {
   id: string;
   annotationClassId: string;
-  points: { [frameNo: string]: TaskAnnotationVOPoints };
+  points: { [frameNo: string]: ThreePoints };
   createdAt: string;
   updatedAt: string;
 };

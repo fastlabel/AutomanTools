@@ -85,6 +85,7 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
   private object: Object3D | undefined;
   private enabled = true;
   private axis: ControlKey | null = null;
+  private annotationOpacity = 50;
   private size = 1;
   private dragging = false;
 
@@ -168,6 +169,9 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
     defineProperty('rotationAxis', this.rotationAxis);
     defineProperty('rotationAngle', this.rotationAngle);
     defineProperty('eye', this.eye);
+    
+    defineProperty("annotationOpacity", this.annotationOpacity);
+
     domElement.addEventListener('pointerdown', this.onPointerDown);
     domElement.addEventListener('pointermove', this.onPointerHover);
     this.domElement.ownerDocument.addEventListener(
@@ -547,6 +551,10 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
 
   public setSize = (size: number): void => {
     this.size = size;
+  };
+
+  public setAnnotationOpacity = (annotationOpacity: number): void => {
+    this.annotationOpacity = annotationOpacity;
   };
 
   public update = (): void => {

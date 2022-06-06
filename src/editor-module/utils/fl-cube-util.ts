@@ -1,6 +1,6 @@
 import { ThreeEvent } from '@react-three/fiber';
 import { BoxGeometry, Mesh, MeshBasicMaterial, Object3D, Vector3 } from 'three';
-import { TaskAnnotationVOPoints } from '../types/vo';
+import { ThreePoints } from '../types/vo';
 
 /**
  * Cube
@@ -32,7 +32,7 @@ export const FlCubeUtil = {
     >;
     return cube.material.color;
   },
-  getPointsVo: (object: Object3D): TaskAnnotationVOPoints => {
+  getPointsVo: (object: Object3D): ThreePoints => {
     const scale = FlCubeUtil.getScale(object);
     // prevent NaN with decimal value
     // to Number prevent Nan in editing.

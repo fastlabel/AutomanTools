@@ -1,26 +1,25 @@
+import CloseIcon from '@mui/icons-material/Close';
 import MuiDialogActions from '@mui/material/DialogActions';
 import MuiDialogContent from '@mui/material/DialogContent';
 import MuiDialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
-import { Theme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 import { WithStyles } from '@mui/styles';
 import createStyles from '@mui/styles/createStyles';
 import withStyles from '@mui/styles/withStyles';
-import Typography from '@mui/material/Typography';
-import CloseIcon from '@mui/icons-material/Close';
 import React from 'react';
 
 const styles = () =>
   createStyles({
     root: {
-      margin: 0,
-      padding: theme.spacing(2),
+      m:0,
+      p: 2,
     },
     closeButton: {
       position: 'absolute',
-      right: theme.spacing(1),
-      top: theme.spacing(1),
-      color: theme.palette.grey[500],
+      right: 8,
+      top: 8,
+      color: "palette.grey.500",
     },
   });
 
@@ -48,13 +47,13 @@ export const FLDialogTitle = withStyles(styles)((props: DialogTitleProps) => {
   );
 });
 
-export const FLDialogContent = withStyles(() => ({
+export const FLDialogContent = withStyles((theme) => ({
   root: {
     padding: theme.spacing(2),
   },
 }))(MuiDialogContent);
 
-export const FLDialogActions = withStyles(() => ({
+export const FLDialogActions = withStyles((theme) => ({
   root: {
     margin: 0,
     padding: theme.spacing(1),

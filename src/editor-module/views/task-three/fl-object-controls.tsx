@@ -12,9 +12,10 @@ const [zoom, distance] = [5, 5];
 
 const FLObjectControls: FC<{
   control: ControlType;
+  annotationOpacity: number;
   target?: Object3D;
   onObjectChange?: (event: Event) => void;
-}> = ({ control, target, onObjectChange = (f) => f }) => {
+}> = ({ control, annotationOpacity, target, onObjectChange = (f) => f }) => {
   const invalidate = useThree(({ invalidate }) => invalidate);
   const gl = useThree(({ gl }) => gl);
   const camera = useThree(({ camera }) => camera);
@@ -90,6 +91,10 @@ const FLObjectControls: FC<{
       old.removeEventListener('objectChange', onObjectChange);
     };
   }, [transformControls, onObjectChange]);
+
+  React.useEffect(() => {
+    transformControls.setAnnotationOpacity(annotationOpacity);
+  }, [annotationOpacity, transformControls]);
 
   useFrame(() => {
     if (!transformControls.isDragging() && orbitControls.enabled)

@@ -46,6 +46,8 @@ export class FLTransformControlsGizmo extends Object3D {
 
   private positions: Map<ControlKey, Vector3> = new Map();
 
+  private annotationOpacity = 50;
+
   constructor(control: ControlType) {
     super();
     this.control = control;
@@ -92,7 +94,8 @@ export class FLTransformControlsGizmo extends Object3D {
     handles = handles.concat(item.gizmo.children);
     handles = handles.concat(item.picker.children);
 
-    handles.forEach((handle) => {
+    const gizmoLastIndex = item.gizmo.children.length - 1;
+    handles.forEach((handle, index) => {
       // hide aligned to camera
       handle.visible = true;
       handle.position.copy(this.worldPosition);
@@ -101,6 +104,9 @@ export class FLTransformControlsGizmo extends Object3D {
       if (handle.name === 'T_BOX') {
         handle.scale.copy(objectScale);
         handle.quaternion.copy(quaternion);
+        if (gizmoLastIndex >= index) {
+          ((handle as Mesh).material as MeshBasicMaterial).opacity = 0.01 * this.annotationOpacity;
+        }
       } else {
         const base = this.positions.get(handle.name as any)?.clone();
         if (base) {
@@ -130,6 +136,9 @@ export class FLTransformControlsGizmo extends Object3D {
             const q = new Quaternion();
             q.setFromEuler(new Euler(0, HALF_ANGLE, 0));
             handle.quaternion.copy(quaternion).multiply(q);
+          }
+          if (gizmoLastIndex >= index) {
+            ((handle as Mesh).material as MeshBasicMaterial).opacity = Math.min(1, 0.02 * this.annotationOpacity);
           }
         }
       }

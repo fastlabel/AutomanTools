@@ -20,7 +20,7 @@ import { AnnotationType } from '../../types/const';
 import { TaskAnnotationVO } from '../../types/vo';
 import { FormatUtil } from '../../utils/format-util';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     flexGrow: {
       flexGrow: 1,
