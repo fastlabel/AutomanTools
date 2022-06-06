@@ -19,7 +19,7 @@ import { useDropzone } from 'react-dropzone';
 import { FormUtil } from './form-util';
 import { FormAction, FormState } from './type';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     attachedDragzone: {
       minHeight: 184,

@@ -8,6 +8,7 @@ declare global {
 export interface Workspace {
   openFolderDialog: () => Promise<string>;
   save: (param: WKSaveParam) => Promise<void>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   load: (param: WKLoadParam) => Promise<WKSkeleton<any, ArrayBuffer>>;
   exist: (param: WKLoadParam) => Promise<WKSkeleton<boolean, boolean>>;
   checkWorkspace: (param: WKCheckParam) => Promise<WKCheckResult>;
@@ -16,6 +17,7 @@ export interface Workspace {
 
 export type WKJsonSaveCommand = {
   method: 'json';
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   resource: any;
 };
 
@@ -27,7 +29,7 @@ export type WKCopyCommand = {
 
 export type WKSaveCommand = WKJsonSaveCommand | WKCopyCommand;
 
-export type WKSkeleton<J, R> = {
+export type WKSkeleton<J> = {
   meta?: {
     project?: J;
     annotation_classes?: J;
@@ -66,6 +68,7 @@ export type WKSaveParam = {
 };
 export type WKExportPram = {
   fileName: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dataJson: any;
 };
 

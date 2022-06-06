@@ -37,7 +37,7 @@ const theme = createTheme({
   },
 });
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     icon: () => ({
       marginRight: theme.spacing(1),

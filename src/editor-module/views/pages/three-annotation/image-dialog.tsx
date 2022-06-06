@@ -14,7 +14,7 @@ import CameraCalibrationStore from '../../../stores/camera-calibration-store';
 import TaskStore from '../../../stores/task-store';
 import FLCubes from '../../task-three/fl-cubes';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     prevButton: {
       display: 'flex',

@@ -3,9 +3,7 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import React, { FC } from 'react';
 
-type Props = {};
-
-const TitleBar: FC<Props> = () => {
+const TitleBar: FC = () => {
   return (
     <AppBar position="static">
       <Toolbar variant="dense">

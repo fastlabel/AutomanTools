@@ -26,7 +26,7 @@ type PanelTitleProps = {
   titleItem?: JSX.Element;
 };
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       height: '100%',

@@ -8,7 +8,7 @@ import React, { FC } from 'react';
 import { FormUtil } from './form-util';
 import { FormAction, FormState } from './type';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     margin: {
       margin: theme.spacing(1),

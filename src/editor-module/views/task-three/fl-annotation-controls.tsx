@@ -1,9 +1,4 @@
-import {
-  ReactThreeFiber,
-  ThreeEvent,
-  useFrame,
-  useThree,
-} from '@react-three/fiber';
+import { ReactThreeFiber, ThreeEvent, useThree } from '@react-three/fiber';
 import * as React from 'react';
 import { useMemo } from 'react';
 import {
@@ -36,10 +31,10 @@ type Prop = ReactThreeFiber.Overwrite<
 >;
 
 const FLAnnotationControls = React.forwardRef<FLAnnotationControlsImpl, Prop>(
-  (
+  function FLAnnotationControls(
     { camera, domElement, preObject, onPutObject = (f) => f, ...restProps },
     ref
-  ) => {
+  ) {
     const invalidate = useThree(({ invalidate }) => invalidate);
     const defaultCamera = useThree(({ camera }) => camera);
     const gl = useThree(({ gl }) => gl);
@@ -54,11 +49,6 @@ const FLAnnotationControls = React.forwardRef<FLAnnotationControlsImpl, Prop>(
       () => new FLAnnotationControlsImpl(explCamera, scene),
       [explCamera, scene]
     );
-
-    useFrame(() => {
-      if (controls.enabled) {
-      }
-    });
 
     const points = useMemo(() => {
       if (preObject) {

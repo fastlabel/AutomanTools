@@ -8,21 +8,21 @@ import {
   TaskAnnotationVO,
 } from '@fl-three-editor/types/vo';
 import { Theme } from '@mui/material';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useSnackbar } from 'notistack';
-import React, { FC, Reducer, useEffect, useReducer, useState } from 'react';
+import React, { FC, Reducer, useReducer, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import { ProjectWebRepository } from '../../../repositories/project-web-repository';
 import WorkspaceForm, { WorkspaceFormState } from './form';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       flexGrow: 1,
@@ -65,6 +65,7 @@ const isTaskAnnotations = (arrays: any[]) => {
   return true;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isAnnotationClasses = (arrays: any[]) => {
   if (!(arrays && typeof arrays.length === 'number')) {
     // is Array
@@ -91,14 +92,14 @@ const readJson = (files: File[]) => {
   return new Promise<{
     annotationClasses?: AnnotationClassVO[];
     taskAnnotations?: TaskAnnotationVO[];
-  }>((resolve, reject) => {
+  }>((resolve) => {
     const result: {
       annotationClasses?: AnnotationClassVO[];
       taskAnnotations?: TaskAnnotationVO[];
     } = {};
     Promise.all(
       files.map((f) => {
-        return new Promise<void>((resolve, reject) => {
+        return new Promise<void>((resolve) => {
           const reader = new FileReader();
           reader.onload = (ev: ProgressEvent<FileReader>) => {
             if (!ev.target) return;
@@ -202,6 +203,7 @@ const EditPage: FC = () => {
     }
     projectRepository.setEditTarget(annotationClasses, taskAnnotations);
     projectRepository
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .create({ type, targets, projectId: uuid().toString() } as any)
       .then(({ projectId, errorCode }) => {
         if (errorCode) {

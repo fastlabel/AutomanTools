@@ -27,7 +27,7 @@ import ImageDialog from './image-dialog';
 import ThreeSidePanel from './side-panel';
 import ThreeToolbar from './tool-bar';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       flexGrow: 1,

@@ -19,11 +19,10 @@ const formReducer: Reducer<FormState<CameraCalibration>, FormAction> = (
   switch (action.type) {
     case 'change':
       // TODO validation
-      const newState = {
+      return {
         data: FormUtil.update(action.name, action.value, state.data),
         helper: state.helper,
       };
-      return newState;
     case 'init':
       return { data: action.data, helper: {} };
   }

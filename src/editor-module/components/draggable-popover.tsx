@@ -6,7 +6,7 @@ import Popover from '@mui/material/Popover';
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     content: {
       position: 'relative',

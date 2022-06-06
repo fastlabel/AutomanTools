@@ -1,16 +1,16 @@
-import { Collapse, Menu, MenuItem, Theme } from '@mui/material';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
-import ListItemText from '@mui/material/ListItemText';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import { Collapse, Menu, MenuItem, Theme } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import React, { FC, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import FLTextField from '../../components/fields/fl-text-field';
@@ -20,7 +20,7 @@ import { AnnotationType } from '../../types/const';
 import { TaskAnnotationVO } from '../../types/vo';
 import { FormatUtil } from '../../utils/format-util';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     flexGrow: {
       flexGrow: 1,
@@ -93,118 +93,119 @@ const InstanceList: FC<Props> = ({
   }, []);
 
   const collapseContent = useMemo(
-    () => (item: TaskAnnotationVO) => {
-      const [
-        positionX,
-        positionY,
-        positionZ,
-        rotationX,
-        rotationY,
-        rotationZ,
-        sizeX,
-        sizeY,
-        sizeZ,
-      ] = item.points[frameNo] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
-      const data = {
-        positionX,
-        positionY,
-        positionZ,
-        rotationX,
-        rotationY,
-        rotationZ,
-        sizeX,
-        sizeY,
-        sizeZ,
-      };
-      const formObj: FormState<any> = { data };
-      return (
-        <Collapse in={true} timeout={100} unmountOnExit>
-          <List disablePadding>
-            <ListItem dense>
-              <FLTextField
-                mode="list"
-                readonly={true}
-                label={t('instanceList-label__positionX')}
-                form={['positionX', formObj]}
-              />
-            </ListItem>
-            <ListItem dense>
-              <FLTextField
-                mode="list"
-                readonly={true}
-                label={t('instanceList-label__positionY')}
-                form={['positionY', formObj]}
-              />
-            </ListItem>
-            <ListItem dense>
-              <FLTextField
-                mode="list"
-                readonly={true}
-                label={t('instanceList-label__positionZ')}
-                form={['positionZ', formObj]}
-              />
-            </ListItem>
-            <ListItem dense>
-              <FLTextField
-                mode="list"
-                readonly={true}
-                label={t('instanceList-label__rotationX')}
-                form={['rotationX', formObj]}
-              />
-            </ListItem>
-            <ListItem dense>
-              <FLTextField
-                mode="list"
-                readonly={true}
-                label={t('instanceList-label__rotationY')}
-                form={['rotationY', formObj]}
-              />
-            </ListItem>
-            <ListItem dense>
-              <FLTextField
-                mode="list"
-                readonly={true}
-                label={t('instanceList-label__rotationZ')}
-                form={['rotationZ', formObj]}
-              />
-            </ListItem>
-            <ListItem dense>
-              <FLTextField
-                mode="list"
-                readonly={true}
-                label={t('instanceList-label__sizeX')}
-                form={['sizeX', formObj]}
-              />
-            </ListItem>
-            <ListItem dense>
-              <FLTextField
-                mode="list"
-                readonly={true}
-                label={t('instanceList-label__sizeY')}
-                form={['sizeY', formObj]}
-              />
-            </ListItem>
-            <ListItem dense>
-              <FLTextField
-                mode="list"
-                readonly={true}
-                label={t('instanceList-label__sizeZ')}
-                form={['sizeZ', formObj]}
-              />
-            </ListItem>
-          </List>
-        </Collapse>
-      );
-    },
+    () =>
+      function CollapseContent(item: TaskAnnotationVO) {
+        const [
+          positionX,
+          positionY,
+          positionZ,
+          rotationX,
+          rotationY,
+          rotationZ,
+          sizeX,
+          sizeY,
+          sizeZ,
+        ] = item.points[frameNo] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
+        const data = {
+          positionX,
+          positionY,
+          positionZ,
+          rotationX,
+          rotationY,
+          rotationZ,
+          sizeX,
+          sizeY,
+          sizeZ,
+        };
+        const formObj: FormState<any> = { data };
+        return (
+          <Collapse in={true} timeout={100} unmountOnExit>
+            <List disablePadding>
+              <ListItem dense>
+                <FLTextField
+                  mode="list"
+                  readonly={true}
+                  label={t('instanceList-label__positionX')}
+                  form={['positionX', formObj]}
+                />
+              </ListItem>
+              <ListItem dense>
+                <FLTextField
+                  mode="list"
+                  readonly={true}
+                  label={t('instanceList-label__positionY')}
+                  form={['positionY', formObj]}
+                />
+              </ListItem>
+              <ListItem dense>
+                <FLTextField
+                  mode="list"
+                  readonly={true}
+                  label={t('instanceList-label__positionZ')}
+                  form={['positionZ', formObj]}
+                />
+              </ListItem>
+              <ListItem dense>
+                <FLTextField
+                  mode="list"
+                  readonly={true}
+                  label={t('instanceList-label__rotationX')}
+                  form={['rotationX', formObj]}
+                />
+              </ListItem>
+              <ListItem dense>
+                <FLTextField
+                  mode="list"
+                  readonly={true}
+                  label={t('instanceList-label__rotationY')}
+                  form={['rotationY', formObj]}
+                />
+              </ListItem>
+              <ListItem dense>
+                <FLTextField
+                  mode="list"
+                  readonly={true}
+                  label={t('instanceList-label__rotationZ')}
+                  form={['rotationZ', formObj]}
+                />
+              </ListItem>
+              <ListItem dense>
+                <FLTextField
+                  mode="list"
+                  readonly={true}
+                  label={t('instanceList-label__sizeX')}
+                  form={['sizeX', formObj]}
+                />
+              </ListItem>
+              <ListItem dense>
+                <FLTextField
+                  mode="list"
+                  readonly={true}
+                  label={t('instanceList-label__sizeY')}
+                  form={['sizeY', formObj]}
+                />
+              </ListItem>
+              <ListItem dense>
+                <FLTextField
+                  mode="list"
+                  readonly={true}
+                  label={t('instanceList-label__sizeZ')}
+                  form={['sizeZ', formObj]}
+                />
+              </ListItem>
+            </List>
+          </Collapse>
+        );
+      },
     []
   );
 
   const listItemRenderer = useMemo(
     () =>
-      (
+      function ListItemRenderer(
         item: TaskAnnotationVO,
         content?: (item: TaskAnnotationVO) => JSX.Element
-      ) => {
+      ) {
         const hasFrame = item.points[frameNo];
         const selected = selectedItems?.has(item.id) === true;
         const hidden = invisibleClasses?.has(item.id);

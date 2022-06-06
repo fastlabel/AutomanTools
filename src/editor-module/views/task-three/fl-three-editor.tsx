@@ -13,7 +13,7 @@ import FLMainControls from './fl-main-controls';
 import FLObjectControls from './fl-object-controls';
 import FLPcd from './fl-pcd';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       display: 'flex',

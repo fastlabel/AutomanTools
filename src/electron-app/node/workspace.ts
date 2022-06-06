@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from 'fs';
 import {
   WKCheckParam,
@@ -79,7 +80,7 @@ const _reduceQuery = <T>(
 
 export const WorkSpaceDriver = {
   saveQuery: (param: WKSaveParam): Promise<void> => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       reduceQuery<WKSaveCommand>(
         param.query,
         (path, value) => {
@@ -160,13 +161,15 @@ export const WorkSpaceDriver = {
     });
   },
   checkWorkspace: (param: WKCheckParam): Promise<WKCheckResult> => {
-    return new Promise(async (resolve, reject) => {
-      if (await FileDriver.emptyDir(param.wkDir)) {
-        // can create new workspace
-        resolve({ code: 'valid_new_wk', valid: true });
-        return;
-      }
-      resolve({ code: 'invalid_folder_not_empty', valid: false });
+    return new Promise((resolve) => {
+      FileDriver.emptyDir(param.wkDir).then((result) => {
+        if (result) {
+          // can create new workspace
+          resolve({ code: 'valid_new_wk', valid: true });
+          return;
+        }
+        resolve({ code: 'invalid_folder_not_empty', valid: false });
+      });
     });
   },
 };

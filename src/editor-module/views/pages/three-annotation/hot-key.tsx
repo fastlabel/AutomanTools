@@ -85,9 +85,11 @@ const HotKey: FC<Props> = ({ mainControlsRef }) => {
         case '7':
         case '8':
         case '9':
+          // eslint-disable-next-line no-case-declarations
           const selectAnnotationClassIdx = Number(key) - 1;
+          // eslint-disable-next-line no-case-declarations
           const annClasses = memoTaskStore.annotationClasses;
-          if (annClasses.length > selectAnnotationClassIdx) {
+          if (annClasses.length > Number(key) - 1) {
             selectAnnotationClass(annClasses[selectAnnotationClassIdx]);
           }
           break;
@@ -151,11 +153,12 @@ const HotKey: FC<Props> = ({ mainControlsRef }) => {
           resetSelectMode();
           break;
         case 'Delete':
-          const type = event.shiftKey ? 'removeAll' : 'removeFrame';
           // current only supported single select
-          const id = memoTaskStore.selectingTaskAnnotationIds[0];
-          const frameNo = memoTaskStore.currentFrameNo;
-          updateTaskAnnotations({ type, id, frameNo });
+          updateTaskAnnotations({
+            type: event.shiftKey ? 'removeAll' : 'removeFrame',
+            id: memoTaskStore.selectingTaskAnnotationIds[0],
+            frameNo: memoTaskStore.currentFrameNo,
+          });
           break;
         default:
           handled = false;

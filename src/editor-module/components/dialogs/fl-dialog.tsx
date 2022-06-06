@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import React from 'react';
 
-const styles = (theme: Theme) =>
+const styles = () =>
   createStyles({
     root: {
       margin: 0,
@@ -48,13 +48,13 @@ export const FLDialogTitle = withStyles(styles)((props: DialogTitleProps) => {
   );
 });
 
-export const FLDialogContent = withStyles((theme: Theme) => ({
+export const FLDialogContent = withStyles(() => ({
   root: {
     padding: theme.spacing(2),
   },
 }))(MuiDialogContent);
 
-export const FLDialogActions = withStyles((theme: Theme) => ({
+export const FLDialogActions = withStyles(() => ({
   root: {
     margin: 0,
     padding: theme.spacing(1),

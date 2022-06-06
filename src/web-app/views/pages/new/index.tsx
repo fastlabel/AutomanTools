@@ -2,13 +2,12 @@ import { FormUtil } from '@fl-three-editor/components/fields/form-util';
 import { FormAction, FormState } from '@fl-three-editor/components/fields/type';
 import { ProjectRepositoryContext } from '@fl-three-editor/repositories/project-repository';
 import { ProjectType } from '@fl-three-editor/types/const';
-import { Theme } from '@mui/material';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useSnackbar } from 'notistack';
 import React, { FC, Reducer, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +15,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import WorkspaceForm, { WorkspaceFormState } from './form';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       flexGrow: 1,
@@ -88,6 +87,7 @@ const NewPage: FC = () => {
 
   const handleCreate = () => {
     projectRepository
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .create({ ...form.data, projectId: uuid().toString() } as any)
       .then(({ projectId, errorCode }) => {
         if (errorCode) {

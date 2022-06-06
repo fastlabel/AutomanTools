@@ -139,10 +139,13 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
           this.dispatchEvent(this.changeEvent);
         },
       });
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       this[propName] = defaultValue;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       this.plane[propName] = defaultValue;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       this.gizmo[propName] = defaultValue;
     };
@@ -382,6 +385,7 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
             this.tempVector2.x = -this.tempVector2.x;
           } else if (this.control === 'side') {
             this.tempVector2.x = -this.tempVector2.x;
+            // eslint-disable-next-line no-empty
           } else if (this.control === 'front') {
           }
           break;
@@ -399,6 +403,7 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
         case 'S_BL':
           if (this.control === 'top') {
             this.tempVector2.y = -this.tempVector2.y;
+            // eslint-disable-next-line no-empty
           } else if (this.control === 'side') {
           } else if (this.control === 'front') {
             this.tempVector2.y = -this.tempVector2.y;
@@ -406,6 +411,7 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
           }
           break;
         case 'S_BR':
+          // eslint-disable-next-line no-empty
           if (this.control === 'top') {
           } else if (this.control === 'side') {
             this.tempVector2.z = -this.tempVector2.z;
