@@ -1,14 +1,21 @@
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
+import ToggleOffIcon from '@mui/icons-material/ToggleOff';
+import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import { Collapse, Menu, MenuItem, Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Typography from '@mui/material/Typography';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import React, { FC, useCallback, useMemo } from 'react';
@@ -16,7 +23,6 @@ import { useTranslation } from 'react-i18next';
 import FLTextField from '../../components/fields/fl-text-field';
 import { FormState } from '../../components/fields/type';
 import { UpdateTaskAnnotationCommand } from '../../stores/task-store';
-import { AnnotationType } from '../../types/const';
 import { TaskAnnotationVO } from '../../types/vo';
 import { FormatUtil } from '../../utils/format-util';
 
@@ -53,6 +59,9 @@ type Props = {
   ) => void;
   onClickToggleInvisible?: (item: TaskAnnotationVO, visible: boolean) => void;
   onUpdateTaskAnnotation?: (event: UpdateTaskAnnotationCommand) => void;
+  hasPoints?: (frameNo: string) => boolean;
+  onChangeFrameAppearance?: (item: TaskAnnotationVO) => void;
+  onChangeCurrentFrameAppearance?: (item: TaskAnnotationVO) => void;
 };
 
 const resolveMode = (selected: boolean, event: any) => {
@@ -72,6 +81,8 @@ const InstanceList: FC<Props> = ({
   onClickItem = (f) => f,
   onClickToggleInvisible,
   onUpdateTaskAnnotation = (f) => f,
+  onChangeFrameAppearance = (f) => f,
+  onChangeCurrentFrameAppearance = (f) => f,
 }) => {
   const styles = useStyles();
   const [t] = useTranslation();
@@ -92,9 +103,15 @@ const InstanceList: FC<Props> = ({
     setAnchor(null);
   }, []);
 
+  const [_disabledFrameSwitch] = useMemo(
+    () => [selectedItems?.size !== 1],
+    [selectedItems]
+  );
+
   const collapseContent = useMemo(
     () =>
       function CollapseContent(item: TaskAnnotationVO) {
+        const _hasPoints = !!item.points[frameNo];
         const [
           positionX,
           positionY,
@@ -120,6 +137,72 @@ const InstanceList: FC<Props> = ({
         const formObj: FormState<any> = { data };
         return (
           <Collapse in={true} timeout={100} unmountOnExit>
+            <List dense disablePadding>
+              <ListItem dense>
+                <IconButton
+                  color="default"
+                  size="small"
+                  onClick={() => onChangeFrameAppearance(item)}
+                  disabled={_disabledFrameSwitch}>
+                  {_hasPoints ? (
+                    <ToggleOnIcon fontSize="small" color="primary" />
+                  ) : (
+                    <ToggleOffIcon fontSize="small" />
+                  )}
+                </IconButton>
+                <Typography variant="body2">
+                  &nbsp;
+                  {_hasPoints
+                    ? t('sidePanel-action_label__annotationOff')
+                    : t('sidePanel-action_label__annotationOn')}
+                </Typography>
+                <Box flexGrow={1} />
+                <Chip
+                  label={'A'}
+                  disabled
+                  variant="outlined"
+                  size="small"
+                  sx={{
+                    fontSize: '0.5rem',
+                    height: 20,
+                    borderRadius: 4,
+                    mr: 1,
+                  }}
+                />
+              </ListItem>
+              <ListItem dense>
+                <IconButton
+                  color="default"
+                  size="small"
+                  onClick={() => onChangeCurrentFrameAppearance(item)}
+                  disabled={_disabledFrameSwitch}>
+                  {_hasPoints ? (
+                    <ToggleOnIcon fontSize="small" color="primary" />
+                  ) : (
+                    <ToggleOffIcon fontSize="small" />
+                  )}
+                </IconButton>
+                <Typography variant="body2">
+                  &nbsp;
+                  {_hasPoints
+                    ? t('sidePanel-action_label__annotationOffCurrent')
+                    : t('sidePanel-action_label__annotationOnCurrent')}
+                </Typography>
+                <Box flexGrow={1} />
+                <Chip
+                  label={'D'}
+                  disabled
+                  variant="outlined"
+                  size="small"
+                  sx={{
+                    fontSize: '0.5rem',
+                    height: 20,
+                    borderRadius: 4,
+                    mr: 1,
+                  }}
+                />
+              </ListItem>
+            </List>
             <List disablePadding>
               <ListItem dense>
                 <FLTextField
@@ -197,7 +280,13 @@ const InstanceList: FC<Props> = ({
           </Collapse>
         );
       },
-    []
+    [
+      t,
+      frameNo,
+      _disabledFrameSwitch,
+      onChangeFrameAppearance,
+      onChangeCurrentFrameAppearance,
+    ]
   );
 
   const listItemRenderer = useMemo(
@@ -224,7 +313,7 @@ const InstanceList: FC<Props> = ({
               }>
               <span
                 style={{ backgroundColor: item.color }}
-                className={getClassTagStyle(item.type)}
+                className={styles.markCuboid}
               />
               <ListItemText
                 primary={item.title}
@@ -265,7 +354,15 @@ const InstanceList: FC<Props> = ({
           </React.Fragment>
         );
       },
-    [invisibleClasses, selectedItems]
+    [
+      frameNo,
+      styles,
+      handleClick,
+      invisibleClasses,
+      onClickItem,
+      onClickToggleInvisible,
+      selectedItems,
+    ]
   );
 
   const [disabledAddFrame, disabledRemoveFrame, disabledRemoveAll] =
@@ -277,18 +374,14 @@ const InstanceList: FC<Props> = ({
         return [disabledAddFrame, disabledRemoveFrame, false];
       }
       return [true, true, true];
-    }, [anchor]);
-
-  const getClassTagStyle = (type: AnnotationType): any => {
-    return styles.markCuboid;
-  };
+    }, [anchor, frameNo]);
 
   return (
     <>
       <List component="div" disablePadding>
         {selectedItems?.size === 1 && editingTaskAnnotation
           ? listItemRenderer(editingTaskAnnotation, collapseContent)
-          : instances.map((item, index) => listItemRenderer(item))}
+          : instances.map((item) => listItemRenderer(item))}
       </List>
       <Menu
         id="task-annotation-menu"

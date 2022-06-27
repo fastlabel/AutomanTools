@@ -25,6 +25,7 @@ import ToolBarButton, {
 } from '../../../components/tool-bar-button';
 import { ProjectRepositoryContext } from '../../../repositories/project-repository';
 import TaskStore from '../../../stores/task-store';
+import DynamicFeedIcon from '@mui/icons-material/DynamicFeed';
 
 const ThreeToolbar: FC = () => {
   const [taskSaveDialog, setTaskSaveDialog] = React.useState<boolean>(false);
@@ -193,6 +194,18 @@ const ThreeToolbar: FC = () => {
             onClick={() => openImageDialog(!topicImageDialog.open)}
           />
           <Box component="div" mr={2} />
+          <ToolBarButton
+            toolTip={t('toolBar-label__interpolation')}
+            disabled={!multiFrame}
+            active={taskToolBar.interpolation}
+            icon={<DynamicFeedIcon />}
+            onClick={() =>
+              updateTaskToolBar((pre) => ({
+                ...pre,
+                interpolation: !pre.interpolation,
+              }))
+            }
+          />
           <ToolBarButton
             toolTip={t('toolBar-label__copyPrevFrameObject')}
             disabled={!multiFrame}

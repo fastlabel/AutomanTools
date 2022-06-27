@@ -57,6 +57,7 @@
   "toolBar-label__selectMode_select": "Select figure",
   "toolBar-label__showLabel": "Show label",
   "toolBar-label__showImage": "Show Image",
+  "toolBar-label__interpolation": "Frame Interpolation",
   "toolBar-label__copyPrevFrameObject": "Copy figure from previous frame",
   "toolBar-message__copyPrevFrame": "Copied to displayed frame",
   "toolBar-label__save": "Save",
@@ -68,5 +69,9 @@
   "$fl-three-editor": "#Comment#",
   "flThreeEditor-label__top": "TOP",
   "flThreeEditor-label__side": "SIDE",
-  "flThreeEditor-label__front": "FRONT"
+  "flThreeEditor-label__front": "FRONT",
+  "sidePanel-action_label__annotationOff": "Turn off in   frames",
+  "sidePanel-action_label__annotationOn": "Turn on in subsequent frames",
+  "sidePanel-action_label__annotationOffCurrent": "Turn off at the current frame",
+  "sidePanel-action_label__annotationOnCurrent": "Turn on at the current frame"
 }

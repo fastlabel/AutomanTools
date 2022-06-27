@@ -73,11 +73,9 @@ const FLColorField: FC<Props> = ({ label, form }) => {
   return (
     <React.Fragment>
       <Box component="div" mb={1} display="flex" alignItems="center">
-        <Typography variant="body2">
-          <Box component="div" mr={1}>
-            {label}
-          </Box>
-        </Typography>
+        <Box component="div" mr={1}>
+          <Typography variant="body2">{label}</Typography>
+        </Box>
         <div
           className={styles.tag}
           style={{ backgroundColor: formValue }}></div>

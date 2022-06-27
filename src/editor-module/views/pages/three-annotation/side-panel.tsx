@@ -1,3 +1,4 @@
+import { TASK_SIDEBAR_WIDTH } from '@fl-three-editor/components/style-const';
 import SettingsIcon from '@mui/icons-material/Settings';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
@@ -72,11 +73,14 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
     selectTaskAnnotations,
     saveFrameTaskAnnotations,
     updateTaskAnnotations,
+    onChangeCurrentFrameAppearance,
+    onChangeFrameAppearance
+
   } = TaskStore.useContainer();
 
   const [resetDialog, setResetDialog] = useState<boolean>(false);
 
-  const [width, setWidth] = useState<number>(360);
+  const [width, setWidth] = useState<number>(TASK_SIDEBAR_WIDTH);
   const [height, setHeight] = useState<number>(240);
 
   const [taskAnnotationFilterAll, setTaskAnnotationFilterAll] =
@@ -245,6 +249,8 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
               selectedItems={selectedTaskAnnotationIdSet}
               onClickItem={onClickTaskAnnotation}
               onUpdateTaskAnnotation={updateTaskAnnotations}
+              onChangeFrameAppearance={onChangeFrameAppearance}
+              onChangeCurrentFrameAppearance={onChangeCurrentFrameAppearance}
             />
           </_PanelTitle>
         </Grid>
