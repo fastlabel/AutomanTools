@@ -511,7 +511,10 @@ class FlMainCameraControls extends EventDispatcher {
             (2 * deltaY * targetDistance) / element.clientHeight,
             scope.object.matrix
           );
-          panForward((2 * deltaZ * targetDistance) / element.clientHeight, scope.object.matrix);
+          panForward(
+            (2 * deltaZ * targetDistance) / element.clientHeight,
+            scope.object.matrix
+          );
         } else if (
           element &&
           scope.object instanceof OrthographicCamera &&

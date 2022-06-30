@@ -169,8 +169,8 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
     defineProperty('rotationAxis', this.rotationAxis);
     defineProperty('rotationAngle', this.rotationAngle);
     defineProperty('eye', this.eye);
-    
-    defineProperty("annotationOpacity", this.annotationOpacity);
+
+    defineProperty('annotationOpacity', this.annotationOpacity);
 
     domElement.addEventListener('pointerdown', this.onPointerDown);
     domElement.addEventListener('pointermove', this.onPointerHover);

@@ -73,5 +73,12 @@
   "sidePanel-action_label__annotationOff": "以降のフレームをOFFにする",
   "sidePanel-action_label__annotationOn": "以降のフレームをONにする",
   "sidePanel-action_label__annotationOffCurrent": "現在のフレームをOFFにする",
-  "sidePanel-action_label__annotationOnCurrent": "現在のフレームをONにする"
+  "sidePanel-action_label__annotationOnCurrent": "現在のフレームをONにする",
+  "task.edit.reset": "取り消す",
+  "task.edit.reset.description": "タスクの変更内容を取り消してもよろしいでしょうか？",
+  "close": "閉じる",
+  "task.save.title": "確認",
+  "task.save.description": "タスク一覧に戻る前に変更を保存しますか？",
+  "task.save.yes": "保存して戻る",
+  "task.save.no": "保存しないで戻る"
 }

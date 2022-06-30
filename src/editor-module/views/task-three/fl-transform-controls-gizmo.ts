@@ -105,7 +105,8 @@ export class FLTransformControlsGizmo extends Object3D {
         handle.scale.copy(objectScale);
         handle.quaternion.copy(quaternion);
         if (gizmoLastIndex >= index) {
-          ((handle as Mesh).material as MeshBasicMaterial).opacity = 0.01 * this.annotationOpacity;
+          ((handle as Mesh).material as MeshBasicMaterial).opacity =
+            0.01 * this.annotationOpacity;
         }
       } else {
         const base = this.positions.get(handle.name as any)?.clone();
@@ -138,7 +139,10 @@ export class FLTransformControlsGizmo extends Object3D {
             handle.quaternion.copy(quaternion).multiply(q);
           }
           if (gizmoLastIndex >= index) {
-            ((handle as Mesh).material as MeshBasicMaterial).opacity = Math.min(1, 0.02 * this.annotationOpacity);
+            ((handle as Mesh).material as MeshBasicMaterial).opacity = Math.min(
+              1,
+              0.02 * this.annotationOpacity
+            );
           }
         }
       }

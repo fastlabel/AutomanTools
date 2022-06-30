@@ -96,7 +96,10 @@ export const TaskAnnotationUtil = {
       return vo;
     });
   },
-  findNearestFramePoints: (vo: TaskAnnotationVO, frameNo: string): {prev:string, next:string} => {
+  findNearestFramePoints: (
+    vo: TaskAnnotationVO,
+    frameNo: string
+  ): { prev: string; next: string } => {
     return Object.keys(vo.points)
       .sort()
       .reduce<{ prev: string; next: string }>(

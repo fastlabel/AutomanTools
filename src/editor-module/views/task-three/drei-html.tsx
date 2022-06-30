@@ -1,21 +1,37 @@
 /* eslint-disable */
 
-import * as React from "react";
-import * as ReactDOM from "react-dom";
-import { Vector3, Group, Object3D, Matrix4, Camera, PerspectiveCamera, OrthographicCamera, Raycaster } from "three";
-import { Assign } from "utility-types";
-import { ReactThreeFiber, useFrame, useThree } from "@react-three/fiber";
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import {
+  Vector3,
+  Group,
+  Object3D,
+  Matrix4,
+  Camera,
+  PerspectiveCamera,
+  OrthographicCamera,
+  Raycaster,
+} from 'three';
+import { Assign } from 'utility-types';
+import { ReactThreeFiber, useFrame, useThree } from '@react-three/fiber';
 
 const v1 = new Vector3();
 const v2 = new Vector3();
 const v3 = new Vector3();
 
-function defaultCalculatePosition(el: Object3D, camera: Camera, size: { width: number; height: number }) {
+function defaultCalculatePosition(
+  el: Object3D,
+  camera: Camera,
+  size: { width: number; height: number }
+) {
   const objectPos = v1.setFromMatrixPosition(el.matrixWorld);
   objectPos.project(camera);
   const widthHalf = size.width / 2;
   const heightHalf = size.height / 2;
-  return [objectPos.x * widthHalf + widthHalf, -(objectPos.y * heightHalf) + heightHalf];
+  return [
+    objectPos.x * widthHalf + widthHalf,
+    -(objectPos.y * heightHalf) + heightHalf,
+  ];
 }
 
 export type CalculatePosition = typeof defaultCalculatePosition;
@@ -28,7 +44,12 @@ function isObjectBehindCamera(el: Object3D, camera: Camera) {
   return deltaCamObj.angleTo(camDir) > Math.PI / 2;
 }
 
-function isObjectVisible(el: Object3D, camera: Camera, raycaster: Raycaster, occlude: Object3D[]) {
+function isObjectVisible(
+  el: Object3D,
+  camera: Camera,
+  raycaster: Raycaster,
+  occlude: Object3D[]
+) {
   const elPos = v1.setFromMatrixPosition(el.matrixWorld);
   const screenPos = elPos.clone();
   screenPos.project(camera);
@@ -57,8 +78,15 @@ function objectScale(el: Object3D, camera: Camera) {
   }
 }
 
-function objectZIndex(el: Object3D, camera: Camera, zIndexRange: Array<number>) {
-  if (camera instanceof PerspectiveCamera || camera instanceof OrthographicCamera) {
+function objectZIndex(
+  el: Object3D,
+  camera: Camera,
+  zIndexRange: Array<number>
+) {
+  if (
+    camera instanceof PerspectiveCamera ||
+    camera instanceof OrthographicCamera
+  ) {
     const objectPos = v1.setFromMatrixPosition(el.matrixWorld);
     const cameraPos = v2.setFromMatrixPosition(camera.matrixWorld);
     const dist = objectPos.distanceTo(cameraPos);
@@ -71,10 +99,11 @@ function objectZIndex(el: Object3D, camera: Camera, zIndexRange: Array<number>) 
 
 const epsilon = (value: number) => (Math.abs(value) < 1e-10 ? 0 : value);
 
-function getCSSMatrix(matrix: Matrix4, multipliers: number[], prepend = "") {
-  let matrix3d = "matrix3d(";
+function getCSSMatrix(matrix: Matrix4, multipliers: number[], prepend = '') {
+  let matrix3d = 'matrix3d(';
   for (let i = 0; i !== 16; i++) {
-    matrix3d += epsilon(multipliers[i] * matrix.elements[i]) + (i !== 15 ? "," : ")");
+    matrix3d +=
+      epsilon(multipliers[i] * matrix.elements[i]) + (i !== 15 ? ',' : ')');
   }
   return prepend + matrix3d;
 }
@@ -84,24 +113,48 @@ const getCameraCSSMatrix = ((multipliers: number[]) => {
 })([1, -1, 1, 1, 1, -1, 1, 1, 1, -1, 1, 1, 1, -1, 1, 1]);
 
 const getObjectCSSMatrix = ((scaleMultipliers: (n: number) => number[]) => {
-  return (matrix: Matrix4, factor: number) => getCSSMatrix(matrix, scaleMultipliers(factor), "translate(-50%,-50%)");
-})((f: number) => [1 / f, 1 / f, 1 / f, 1, -1 / f, -1 / f, -1 / f, -1, 1 / f, 1 / f, 1 / f, 1, 1, 1, 1, 1]);
+  return (matrix: Matrix4, factor: number) =>
+    getCSSMatrix(matrix, scaleMultipliers(factor), 'translate(-50%,-50%)');
+})((f: number) => [
+  1 / f,
+  1 / f,
+  1 / f,
+  1,
+  -1 / f,
+  -1 / f,
+  -1 / f,
+  -1,
+  1 / f,
+  1 / f,
+  1 / f,
+  1,
+  1,
+  1,
+  1,
+  1,
+]);
 
 type PointerEventsProperties =
-  | "auto"
-  | "none"
-  | "visiblePainted"
-  | "visibleFill"
-  | "visibleStroke"
-  | "visible"
-  | "painted"
-  | "fill"
-  | "stroke"
-  | "all"
-  | "inherit";
+  | 'auto'
+  | 'none'
+  | 'visiblePainted'
+  | 'visibleFill'
+  | 'visibleStroke'
+  | 'visible'
+  | 'painted'
+  | 'fill'
+  | 'stroke'
+  | 'all'
+  | 'inherit';
 
 export interface HtmlProps
-  extends Omit<Assign<React.HTMLAttributes<HTMLDivElement>, ReactThreeFiber.Object3DNode<Group, typeof Group>>, "ref"> {
+  extends Omit<
+    Assign<
+      React.HTMLAttributes<HTMLDivElement>,
+      ReactThreeFiber.Object3DNode<Group, typeof Group>
+    >,
+    'ref'
+  > {
   prepend?: boolean;
   center?: boolean;
   fullscreen?: boolean;
@@ -137,9 +190,9 @@ export const Html = React.forwardRef(
       onOcclude,
       zIndexRange = [16777271, 0],
       calculatePosition = defaultCalculatePosition,
-      as = "div",
+      as = 'div',
       wrapperClass,
-      pointerEvents = "auto",
+      pointerEvents = 'auto',
       ...props
     }: HtmlProps,
     ref: React.Ref<HTMLDivElement>
@@ -185,18 +238,18 @@ export const Html = React.forwardRef(
     const styles: React.CSSProperties = React.useMemo(() => {
       if (transform) {
         return {
-          position: "absolute",
+          position: 'absolute',
           top: 0,
           left: 0,
           width: size.width,
           height: size.height,
-          transformStyle: "preserve-3d",
-          pointerEvents: "none",
+          transformStyle: 'preserve-3d',
+          pointerEvents: 'none',
         };
       } else {
         return {
-          position: "absolute",
-          transform: center ? "translate3d(-50%,-50%,0)" : "none",
+          position: 'absolute',
+          transform: center ? 'translate3d(-50%,-50%,0)' : 'none',
           ...(fullscreen && {
             top: -size.height / 2,
             left: -size.width / 2,
@@ -209,7 +262,7 @@ export const Html = React.forwardRef(
     }, [style, center, fullscreen, size, transform]);
 
     const transformInnerStyles: React.CSSProperties = React.useMemo(
-      () => ({ position: "absolute", pointerEvents }),
+      () => ({ position: 'absolute', pointerEvents }),
       [pointerEvents]
     );
 
@@ -218,13 +271,26 @@ export const Html = React.forwardRef(
         ReactDOM.render(
           <div ref={transformOuterRef} style={styles}>
             <div ref={transformInnerRef} style={transformInnerStyles}>
-              <div ref={ref} className={className} style={style} children={children} />
+              <div
+                ref={ref}
+                className={className}
+                style={style}
+                children={children}
+              />
             </div>
           </div>,
           el
         );
       } else {
-        ReactDOM.render(<div ref={ref} style={styles} className={className} children={children} />, el);
+        ReactDOM.render(
+          <div
+            ref={ref}
+            style={styles}
+            className={className}
+            children={children}
+          />,
+          el
+        );
       }
     });
 
@@ -234,7 +300,9 @@ export const Html = React.forwardRef(
       if (group.current) {
         camera.updateMatrixWorld();
         group.current.updateWorldMatrix(true, false);
-        const vec = transform ? oldPosition.current : calculatePosition(group.current, camera, size);
+        const vec = transform
+          ? oldPosition.current
+          : calculatePosition(group.current, camera, size);
 
         if (
           transform ||
@@ -244,7 +312,7 @@ export const Html = React.forwardRef(
         ) {
           const isBehindCamera = isObjectBehindCamera(group.current, camera);
           let raytraceTarget: null | undefined | boolean | Object3D[] = false;
-          if (typeof occlude === "boolean") {
+          if (typeof occlude === 'boolean') {
             if (occlude === true) {
               raytraceTarget = [scene];
             }
@@ -254,7 +322,12 @@ export const Html = React.forwardRef(
 
           const previouslyVisible = visible.current;
           if (raytraceTarget) {
-            const isvisible = isObjectVisible(group.current, camera, raycaster, raytraceTarget);
+            const isvisible = isObjectVisible(
+              group.current,
+              camera,
+              raycaster,
+              raytraceTarget
+            );
             visible.current = isvisible && !isBehindCamera;
           } else {
             visible.current = !isBehindCamera;
@@ -262,27 +335,38 @@ export const Html = React.forwardRef(
 
           if (previouslyVisible !== visible.current) {
             if (onOcclude) onOcclude(!visible.current);
-            else el.style.display = visible.current ? "block" : "none";
+            else el.style.display = visible.current ? 'block' : 'none';
           }
 
-          el.style.zIndex = `${objectZIndex(group.current, camera, zIndexRange)}`;
+          el.style.zIndex = `${objectZIndex(
+            group.current,
+            camera,
+            zIndexRange
+          )}`;
           if (transform) {
             const [widthHalf, heightHalf] = [size.width / 2, size.height / 2];
             const fov = camera.projectionMatrix.elements[5] * heightHalf;
-            const { isOrthographicCamera, top, left, bottom, right } = camera as OrthographicCamera;
+            const { isOrthographicCamera, top, left, bottom, right } =
+              camera as OrthographicCamera;
             const cameraMatrix = getCameraCSSMatrix(camera.matrixWorldInverse);
             const cameraTransform = isOrthographicCamera
-              ? `scale(${fov})translate(${epsilon(-(right + left) / 2)}px,${epsilon((top + bottom) / 2)}px)`
+              ? `scale(${fov})translate(${epsilon(
+                  -(right + left) / 2
+                )}px,${epsilon((top + bottom) / 2)}px)`
               : `translateZ(${fov}px)`;
             let matrix = group.current.matrixWorld;
             if (sprite) {
-              matrix = camera.matrixWorldInverse.clone().transpose().copyPosition(matrix).scale(group.current.scale);
+              matrix = camera.matrixWorldInverse
+                .clone()
+                .transpose()
+                .copyPosition(matrix)
+                .scale(group.current.scale);
               matrix.elements[3] = matrix.elements[7] = matrix.elements[11] = 0;
               matrix.elements[15] = 1;
             }
-            el.style.width = size.width + "px";
-            el.style.height = size.height + "px";
-            el.style.perspective = isOrthographicCamera ? "" : `${fov}px`;
+            el.style.width = size.width + 'px';
+            el.style.height = size.height + 'px';
+            el.style.perspective = isOrthographicCamera ? '' : `${fov}px`;
             if (transformOuterRef.current && transformInnerRef.current) {
               transformOuterRef.current.style.transform = `${cameraTransform}${cameraMatrix}translate(${widthHalf}px,${heightHalf}px)`;
               transformInnerRef.current.style.transform = getObjectCSSMatrix(
@@ -291,7 +375,10 @@ export const Html = React.forwardRef(
               );
             }
           } else {
-            const scale = distanceFactor === undefined ? 1 : objectScale(group.current, camera) * distanceFactor;
+            const scale =
+              distanceFactor === undefined
+                ? 1
+                : objectScale(group.current, camera) * distanceFactor;
             el.style.transform = `translate3d(${vec[0]}px,${vec[1]}px,0) scale(${scale})`;
           }
           oldPosition.current = vec;

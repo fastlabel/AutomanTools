@@ -12,14 +12,14 @@ import React from 'react';
 const styles = () =>
   createStyles({
     root: {
-      m:0,
+      m: 0,
       p: 2,
     },
     closeButton: {
       position: 'absolute',
       right: 8,
       top: 8,
-      color: "palette.grey.500",
+      color: 'palette.grey.500',
     },
   });
 

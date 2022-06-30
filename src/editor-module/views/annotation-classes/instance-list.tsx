@@ -137,72 +137,50 @@ const InstanceList: FC<Props> = ({
         const formObj: FormState<any> = { data };
         return (
           <Collapse in={true} timeout={100} unmountOnExit>
-            <List dense disablePadding>
-              <ListItem dense>
-                <IconButton
-                  color="default"
-                  size="small"
-                  onClick={() => onChangeFrameAppearance(item)}
-                  disabled={_disabledFrameSwitch}>
-                  {_hasPoints ? (
-                    <ToggleOnIcon fontSize="small" color="primary" />
-                  ) : (
-                    <ToggleOffIcon fontSize="small" />
-                  )}
-                </IconButton>
-                <Typography variant="body2">
-                  &nbsp;
-                  {_hasPoints
-                    ? t('sidePanel-action_label__annotationOff')
-                    : t('sidePanel-action_label__annotationOn')}
-                </Typography>
-                <Box flexGrow={1} />
-                <Chip
-                  label={'A'}
-                  disabled
-                  variant="outlined"
-                  size="small"
-                  sx={{
-                    fontSize: '0.5rem',
-                    height: 20,
-                    borderRadius: 4,
-                    mr: 1,
-                  }}
-                />
-              </ListItem>
-              <ListItem dense>
-                <IconButton
-                  color="default"
-                  size="small"
-                  onClick={() => onChangeCurrentFrameAppearance(item)}
-                  disabled={_disabledFrameSwitch}>
-                  {_hasPoints ? (
-                    <ToggleOnIcon fontSize="small" color="primary" />
-                  ) : (
-                    <ToggleOffIcon fontSize="small" />
-                  )}
-                </IconButton>
-                <Typography variant="body2">
-                  &nbsp;
-                  {_hasPoints
-                    ? t('sidePanel-action_label__annotationOffCurrent')
-                    : t('sidePanel-action_label__annotationOnCurrent')}
-                </Typography>
-                <Box flexGrow={1} />
-                <Chip
-                  label={'D'}
-                  disabled
-                  variant="outlined"
-                  size="small"
-                  sx={{
-                    fontSize: '0.5rem',
-                    height: 20,
-                    borderRadius: 4,
-                    mr: 1,
-                  }}
-                />
-              </ListItem>
-            </List>
+            {multiFrame && (
+              <List dense disablePadding>
+                <ListItem dense>
+                  <IconButton
+                    color="default"
+                    size="small"
+                    onClick={() => onChangeFrameAppearance(item)}
+                    disabled={_disabledFrameSwitch}>
+                    {_hasPoints ? (
+                      <ToggleOnIcon fontSize="small" color="primary" />
+                    ) : (
+                      <ToggleOffIcon fontSize="small" />
+                    )}
+                  </IconButton>
+                  <Typography variant="body2">
+                    &nbsp;
+                    {_hasPoints
+                      ? t('sidePanel-action_label__annotationOff')
+                      : t('sidePanel-action_label__annotationOn')}
+                  </Typography>
+                  <Box flexGrow={1} />
+                </ListItem>
+                <ListItem dense>
+                  <IconButton
+                    color="default"
+                    size="small"
+                    onClick={() => onChangeCurrentFrameAppearance(item)}
+                    disabled={_disabledFrameSwitch}>
+                    {_hasPoints ? (
+                      <ToggleOnIcon fontSize="small" color="primary" />
+                    ) : (
+                      <ToggleOffIcon fontSize="small" />
+                    )}
+                  </IconButton>
+                  <Typography variant="body2">
+                    &nbsp;
+                    {_hasPoints
+                      ? t('sidePanel-action_label__annotationOffCurrent')
+                      : t('sidePanel-action_label__annotationOnCurrent')}
+                  </Typography>
+                  <Box flexGrow={1} />
+                </ListItem>
+              </List>
+            )}
             <List disablePadding>
               <ListItem dense>
                 <FLTextField

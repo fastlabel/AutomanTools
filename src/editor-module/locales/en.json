@@ -73,5 +73,12 @@
   "sidePanel-action_label__annotationOff": "Turn off in   frames",
   "sidePanel-action_label__annotationOn": "Turn on in subsequent frames",
   "sidePanel-action_label__annotationOffCurrent": "Turn off at the current frame",
-  "sidePanel-action_label__annotationOnCurrent": "Turn on at the current frame"
+  "sidePanel-action_label__annotationOnCurrent": "Turn on at the current frame",
+  "task.edit.reset": "Reset Task",
+  "task.edit.reset.description": "Are you sure to reset task? The changes of task annotations are not saved.",
+  "close": "Close",
+  "task.save.title": "Confirmation",
+  "task.save.description": "Do you want to save before returning to the task list?",
+  "task.save.yes": "Save and return",
+  "task.save.no": "Return without saving"
 }

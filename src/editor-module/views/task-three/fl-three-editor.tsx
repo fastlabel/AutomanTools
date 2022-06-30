@@ -87,7 +87,11 @@ const FLThreeEditor: FC<Props> = ({
   const _cubeGroupRef = cubeGroupRef || createRef<Group>();
 
   useEffect(() => {
-    if (selectedTaskAnnotations && selectedTaskAnnotations.length === 1 && _cubeGroupRef.current) {
+    if (
+      selectedTaskAnnotations &&
+      selectedTaskAnnotations.length === 1 &&
+      _cubeGroupRef.current
+    ) {
       const vo = selectedTaskAnnotations[0];
       setTarget(_cubeGroupRef.current.getObjectByName(vo.id));
     } else {

@@ -32,7 +32,7 @@ const FLCubes = React.forwardRef<Object3D, Props>(
     ref
   ) => {
     const selectedTaskAnnotationSet = React.useMemo(
-      () => new Set(selectedTaskAnnotations?.map(a => a.id)),
+      () => new Set(selectedTaskAnnotations?.map((a) => a.id)),
       [selectedTaskAnnotations]
     );
     const getLabelTitle = (

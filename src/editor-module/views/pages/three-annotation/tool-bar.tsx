@@ -62,7 +62,7 @@ const ThreeToolbar: FC = () => {
         event.preventDefault();
         onClickBackToTasks();
       } else {
-        window.history.back();
+        backToTasks();
       }
     };
 
@@ -77,7 +77,7 @@ const ThreeToolbar: FC = () => {
   }, [isTaskAnnotationUpdated]);
 
   const backToTasks = (): void => {
-    history.goBack();
+    history.push('/');
   };
 
   const onClickBackToTasks = (): void => {
@@ -284,7 +284,13 @@ const ThreeToolbar: FC = () => {
             <Button onClick={backToTasks} variant="text" sx={{ mr: 2 }}>
               {t('task.save.no')}
             </Button>
-            <Button variant="text" color="primary" onClick={onClickSave}>
+            <Button
+              variant="text"
+              color="primary"
+              onClick={() => {
+                onClickSave();
+                backToTasks();
+              }}>
               {t('task.save.yes')}
             </Button>
           </Box>

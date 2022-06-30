@@ -15,6 +15,7 @@ import {
   Vector3,
 } from 'three';
 import { ThreePoints } from '../../types/vo';
+import { FormatUtil } from '@fl-three-editor/utils/format-util';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -166,9 +167,11 @@ const FLCube = React.forwardRef<Group, Props>(
                 <div
                   className={styles.tooltip}
                   onMouseEnter={() => onLabelMouseOver(id)}
-                  onMouseLeave={() => onLabelMouseOver('')}>
+                  onMouseLeave={() => onLabelMouseOver('')}
+                  title={id}>
+                  <div className={styles.tooltipLabel}>id</div>
                   <div className={styles.tooltipContent} style={{ color }}>
-                    {labelTitle}
+                    {FormatUtil.omitVal(id, 3)}
                   </div>
                 </div>
               </Html>

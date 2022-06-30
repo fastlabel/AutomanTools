@@ -95,22 +95,22 @@ const HotKey: FC<Props> = ({ mainControlsRef }) => {
           break;
         case 'ArrowRight':
           if (controls) {
-            controls.keyRotate(KEY_ROTATE_SEED, 0);
+            controls.rotate(KEY_ROTATE_SEED, 0);
           }
           break;
         case 'ArrowLeft':
           if (controls) {
-            controls.keyRotate(-KEY_ROTATE_SEED, 0);
+            controls.rotate(-KEY_ROTATE_SEED, 0);
           }
           break;
         case 'ArrowDown':
           if (controls) {
-            controls.keyRotate(0, -KEY_ROTATE_SEED);
+            controls.rotate(0, -KEY_ROTATE_SEED);
           }
           break;
         case 'ArrowUp':
           if (controls) {
-            controls.keyRotate(0, KEY_ROTATE_SEED);
+            controls.rotate(0, KEY_ROTATE_SEED);
           }
           break;
         case 'q':

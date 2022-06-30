@@ -340,19 +340,21 @@ const ThreeAnnotationPage: FC<Props> = (props) => {
               <ThreeToolbar />
             </Grid>
             <Grid item>
-              <FrameBar
-                windowWidth={windowWidth}
-                currentFrame={currentFrame}
-                totalFrames={totalFrames}
-                selectedTaskAnnotations={selectingTaskAnnotations}
-                hasAnnotation={hasAnnotation}
-                onClickFrameButton={(frame: number) => {
-                  changeFrame(('0000' + frame).slice(-4));
-                }}
-                onDoubleClickFrameButton={(frame: number) => {
-                  //
-                }}
-              />
+              {totalFrames > 1 && (
+                <FrameBar
+                  windowWidth={windowWidth}
+                  currentFrame={currentFrame}
+                  totalFrames={totalFrames}
+                  selectedTaskAnnotations={selectingTaskAnnotations}
+                  hasAnnotation={hasAnnotation}
+                  onClickFrameButton={(frame: number) => {
+                    changeFrame(('0000' + frame).slice(-4));
+                  }}
+                  onDoubleClickFrameButton={(frame: number) => {
+                    //
+                  }}
+                />
+              )}
             </Grid>
             <Grid item className={classes.mainContent}>
               {editor}
