@@ -186,6 +186,7 @@ const InstanceList: FC<Props> = ({
                 <FLTextField
                   mode="list"
                   readonly={true}
+                  inputType="number"
                   label={t('instanceList-label__positionX')}
                   form={['positionX', formObj]}
                 />
@@ -194,6 +195,7 @@ const InstanceList: FC<Props> = ({
                 <FLTextField
                   mode="list"
                   readonly={true}
+                  inputType="number"
                   label={t('instanceList-label__positionY')}
                   form={['positionY', formObj]}
                 />
@@ -202,6 +204,7 @@ const InstanceList: FC<Props> = ({
                 <FLTextField
                   mode="list"
                   readonly={true}
+                  inputType="number"
                   label={t('instanceList-label__positionZ')}
                   form={['positionZ', formObj]}
                 />
@@ -210,6 +213,7 @@ const InstanceList: FC<Props> = ({
                 <FLTextField
                   mode="list"
                   readonly={true}
+                  inputType="number"
                   label={t('instanceList-label__rotationX')}
                   form={['rotationX', formObj]}
                 />
@@ -218,6 +222,7 @@ const InstanceList: FC<Props> = ({
                 <FLTextField
                   mode="list"
                   readonly={true}
+                  inputType="number"
                   label={t('instanceList-label__rotationY')}
                   form={['rotationY', formObj]}
                 />
@@ -226,6 +231,7 @@ const InstanceList: FC<Props> = ({
                 <FLTextField
                   mode="list"
                   readonly={true}
+                  inputType="number"
                   label={t('instanceList-label__rotationZ')}
                   form={['rotationZ', formObj]}
                 />
@@ -234,6 +240,7 @@ const InstanceList: FC<Props> = ({
                 <FLTextField
                   mode="list"
                   readonly={true}
+                  inputType="number"
                   label={t('instanceList-label__sizeX')}
                   form={['sizeX', formObj]}
                 />
@@ -242,6 +249,7 @@ const InstanceList: FC<Props> = ({
                 <FLTextField
                   mode="list"
                   readonly={true}
+                  inputType="number"
                   label={t('instanceList-label__sizeY')}
                   form={['sizeY', formObj]}
                 />
@@ -250,6 +258,7 @@ const InstanceList: FC<Props> = ({
                 <FLTextField
                   mode="list"
                   readonly={true}
+                  inputType="number"
                   label={t('instanceList-label__sizeZ')}
                   form={['sizeZ', formObj]}
                 />
@@ -258,13 +267,7 @@ const InstanceList: FC<Props> = ({
           </Collapse>
         );
       },
-    [
-      t,
-      frameNo,
-      _disabledFrameSwitch,
-      onChangeFrameAppearance,
-      onChangeCurrentFrameAppearance,
-    ]
+    [frameNo, multiFrame, _disabledFrameSwitch, t, onChangeFrameAppearance, onChangeCurrentFrameAppearance]
   );
 
   const listItemRenderer = useMemo(

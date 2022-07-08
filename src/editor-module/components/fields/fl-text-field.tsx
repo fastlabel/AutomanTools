@@ -25,7 +25,10 @@ const FLTextField: FC<Props> = ({
   form,
 }) => {
   const [name, obj, dispatch] = form;
-  const formValue = FormUtil.resolve(name, obj.data);
+  let formValue = FormUtil.resolve(name, obj.data);
+  if(inputType === 'number'){
+    formValue = Number(formValue).toFixed(2);
+  }
   const onChange = useCallback(
     (e) => {
       if (dispatch) {
@@ -53,6 +56,10 @@ const FLTextField: FC<Props> = ({
           variant="outlined"
           fullWidth
           value={formValue}
+          inputProps={{
+            step: inputType === 'number' ? 0.01 : undefined,
+            sx: inputType === 'number' ? { textAlign: 'right' } : undefined,
+          }}
           onChange={onChange}
         />
       </Box>
