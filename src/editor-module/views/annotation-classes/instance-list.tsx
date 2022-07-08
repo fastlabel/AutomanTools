@@ -267,7 +267,14 @@ const InstanceList: FC<Props> = ({
           </Collapse>
         );
       },
-    [frameNo, multiFrame, _disabledFrameSwitch, t, onChangeFrameAppearance, onChangeCurrentFrameAppearance]
+    [
+      frameNo,
+      multiFrame,
+      _disabledFrameSwitch,
+      t,
+      onChangeFrameAppearance,
+      onChangeCurrentFrameAppearance,
+    ]
   );
 
   const listItemRenderer = useMemo(

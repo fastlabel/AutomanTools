@@ -26,7 +26,7 @@ const FLTextField: FC<Props> = ({
 }) => {
   const [name, obj, dispatch] = form;
   let formValue = FormUtil.resolve(name, obj.data);
-  if(inputType === 'number'){
+  if (inputType === 'number') {
     formValue = Number(formValue).toFixed(2);
   }
   const onChange = useCallback(
