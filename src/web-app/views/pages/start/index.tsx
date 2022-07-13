@@ -407,10 +407,10 @@ const StartPage: FC = () => {
       setSamplePcdFrames(
         await getDownloadItem('automan_sample_pcd_frames.zip')
       );
-      setM1MacAppLink(await getDownloadItem('apps/Automan-0.0.1-arm64.dmg'));
-      setIntelMacAppLink(await getDownloadItem('apps/Automan-0.0.1.dmg'));
+      setM1MacAppLink(await getDownloadItem('apps/Automan-0.0.2-arm64.dmg'));
+      setIntelMacAppLink(await getDownloadItem('apps/Automan-0.0.2.dmg'));
       setWindowsAppLink(
-        await getDownloadItem('apps/Automan-0.0.1-win32-installer.exe')
+        await getDownloadItem('apps/Automan-0.0.2-win32-installer.exe')
       );
     };
     getSamples();
