@@ -1,10 +1,12 @@
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Popover from '@material-ui/core/Popover';
+import { Theme } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Box from '@mui/material/Box';
+import Popover from '@mui/material/Popover';
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     content: {
       position: 'relative',
@@ -65,7 +67,9 @@ const DraggablePopover: FC<Props> = ({ handle, open, children }) => {
         anchorPosition={{ top: 0, left: 0 }}
         PaperProps={{ className: styles.popoverPaper }}
         open={open}>
-        <Box className={styles.content}>{children}</Box>
+        <Box component="div" className={styles.content}>
+          {children}
+        </Box>
       </Popover>
     </Draggable>
   );

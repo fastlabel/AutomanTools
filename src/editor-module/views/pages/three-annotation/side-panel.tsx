@@ -1,14 +1,21 @@
-import { Button, createStyles, makeStyles, Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Typography from '@material-ui/core/Typography';
-import SettingsIcon from '@material-ui/icons/Settings';
-import VisibilityOffOutlinedIcon from '@material-ui/icons/VisibilityOffOutlined';
-import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
+import { TASK_SIDEBAR_WIDTH } from '@fl-three-editor/components/style-const';
+import SettingsIcon from '@mui/icons-material/Settings';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import { Button } from '@mui/material';
+import Box from '@mui/material/Box';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import Typography from '@mui/material/Typography';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useSnackbar } from 'notistack';
 import { Resizable, ResizeCallback } from 're-resizable';
 import React, { FC, useCallback, useMemo, useState } from 'react';
@@ -24,7 +31,7 @@ type PanelTitleProps = {
   titleItem?: JSX.Element;
 };
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       height: '100%',
@@ -66,9 +73,13 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
     selectTaskAnnotations,
     saveFrameTaskAnnotations,
     updateTaskAnnotations,
+    onChangeCurrentFrameAppearance,
+    onChangeFrameAppearance,
   } = TaskStore.useContainer();
 
-  const [width, setWidth] = useState<number>(360);
+  const [resetDialog, setResetDialog] = useState<boolean>(false);
+
+  const [width, setWidth] = useState<number>(TASK_SIDEBAR_WIDTH);
   const [height, setHeight] = useState<number>(240);
 
   const [taskAnnotationFilterAll, setTaskAnnotationFilterAll] =
@@ -143,10 +154,10 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
     children,
   }) => {
     return (
-      <Box>
+      <Box component="div">
         <List>
           <ListItem dense>
-            <Box flexGrow={1}>
+            <Box component="div" flexGrow={1}>
               <Typography variant="subtitle2">{title}</Typography>
             </Box>
             {titleItem}
@@ -160,116 +171,144 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
 
   // TODO calc max size
   return (
-    <Resizable
-      size={{ width, height: '100%' }}
-      enable={{ left: false }}
-      onResizeStop={onLeftResizeStop}>
-      <Grid container direction="column" className={classes.root}>
-        <Grid
-          item
-          className={classes.annotationClasses}
-          style={{ height: height + 5 }}>
-          <Resizable
-            size={{ width: '100%', height }}
-            enable={{ bottom: true }}
-            onResizeStop={onInstanceListTopResizeStop}>
+    <>
+      <Resizable
+        size={{ width, height: '100%' }}
+        enable={{ left: false }}
+        onResizeStop={onLeftResizeStop}>
+        <Grid container direction="column" className={classes.root}>
+          <Grid
+            item
+            className={classes.annotationClasses}
+            style={{ height: height + 5 }}>
+            <Resizable
+              size={{ width: '100%', height }}
+              enable={{ bottom: true }}
+              onResizeStop={onInstanceListTopResizeStop}>
+              <_PanelTitle
+                title={t('sidePanel-header_label__annotationClasses')}
+                titleItem={
+                  <Box component="div" marginRight={0.5}>
+                    <IconButton size="small" onClick={onConfigClassesClick}>
+                      <SettingsIcon />
+                    </IconButton>
+                  </Box>
+                }>
+                {taskRom.status === 'loaded' ? (
+                  <ClassList
+                    classes={taskRom.annotationClasses}
+                    onClickItem={onClickAnnotationClass}
+                    selectedId={selectedAnnotationClassId}
+                  />
+                ) : (
+                  <div />
+                )}
+              </_PanelTitle>
+            </Resizable>
+          </Grid>
+          <Divider />
+          <Grid
+            item
+            className={classes.taskAnnotation}
+            style={{ maxHeight: `calc(100vh - ${taskAnnotationHeight}px)` }}>
             <_PanelTitle
-              title={t('sidePanel-header_label__annotationClasses')}
+              title={t('sidePanel-header_label__taskAnnotation')}
+              filterButton={
+                multiFrame ? (
+                  <ListItem dense>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      color="primary"
+                      onClick={() => setTaskAnnotationFilterAll((pre) => !pre)}
+                      startIcon={
+                        taskAnnotationFilterAll ? (
+                          <VisibilityOutlinedIcon />
+                        ) : (
+                          <VisibilityOffOutlinedIcon />
+                        )
+                      }>
+                      {t('sidePanel-action_label__otherFrameFilter')}
+                    </Button>
+                  </ListItem>
+                ) : undefined
+              }
               titleItem={
-                <Box marginRight={0.5}>
-                  <IconButton size="small" onClick={onConfigClassesClick}>
-                    <SettingsIcon />
-                  </IconButton>
-                </Box>
+                <Typography variant="body2" color="textSecondary">
+                  {t('sidePanel-count_label__taskAnnotation', {
+                    taskCount: String(filteredTaskAnnotations.length),
+                  })}
+                </Typography>
               }>
-              {taskRom.status === 'loaded' ? (
-                <ClassList
-                  classes={taskRom.annotationClasses}
-                  onClickItem={onClickAnnotationClass}
-                  selectedId={selectedAnnotationClassId}
-                />
-              ) : (
-                <div />
-              )}
+              <InstanceList
+                editingTaskAnnotation={editingTaskAnnotation}
+                frameNo={frameNo}
+                instances={filteredTaskAnnotations}
+                multiFrame={multiFrame}
+                selectedItems={selectedTaskAnnotationIdSet}
+                onClickItem={onClickTaskAnnotation}
+                onUpdateTaskAnnotation={updateTaskAnnotations}
+                onChangeFrameAppearance={onChangeFrameAppearance}
+                onChangeCurrentFrameAppearance={onChangeCurrentFrameAppearance}
+              />
             </_PanelTitle>
-          </Resizable>
-        </Grid>
-        <Divider />
-        <Grid
-          item
-          className={classes.taskAnnotation}
-          style={{ maxHeight: `calc(100vh - ${taskAnnotationHeight}px)` }}>
-          <_PanelTitle
-            title={t('sidePanel-header_label__taskAnnotation')}
-            filterButton={
-              multiFrame ? (
-                <ListItem dense>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    color="primary"
-                    onClick={() => setTaskAnnotationFilterAll((pre) => !pre)}
-                    startIcon={
-                      taskAnnotationFilterAll ? (
-                        <VisibilityOutlinedIcon />
-                      ) : (
-                        <VisibilityOffOutlinedIcon />
-                      )
-                    }>
-                    {t('sidePanel-action_label__otherFrameFilter')}
-                  </Button>
-                </ListItem>
-              ) : undefined
-            }
-            titleItem={
-              <Typography variant="body2" color="textSecondary">
-                {t('sidePanel-count_label__taskAnnotation', {
-                  taskCount: String(filteredTaskAnnotations.length),
-                })}
-              </Typography>
-            }>
-            <InstanceList
-              editingTaskAnnotation={editingTaskAnnotation}
-              frameNo={frameNo}
-              instances={filteredTaskAnnotations}
-              multiFrame={multiFrame}
-              selectedItems={selectedTaskAnnotationIdSet}
-              onClickItem={onClickTaskAnnotation}
-              onUpdateTaskAnnotation={updateTaskAnnotations}
-            />
-          </_PanelTitle>
-        </Grid>
-        <Divider />
-        <Grid item className={classes.footer}>
-          <List>
-            <ListItem dense>
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    onClick={() => history.push('/')}>
-                    {t('sidePanel-action_label__cancel')}
-                  </Button>
+          </Grid>
+          <Divider />
+          <Grid item className={classes.footer}>
+            <List>
+              <ListItem dense>
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      onClick={() => setResetDialog(true)}>
+                      {t('sidePanel-action_label__cancel')}
+                    </Button>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        saveFrameTaskAnnotations();
+                        enqueueSnackbar(t('sidePanel-message__save'));
+                      }}>
+                      {t('sidePanel-action_label__save')}
+                    </Button>
+                  </Grid>
                 </Grid>
-                <Grid item xs={6}>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    onClick={() => {
-                      saveFrameTaskAnnotations();
-                      enqueueSnackbar(t('sidePanel-message__save'));
-                    }}>
-                    {t('sidePanel-action_label__save')}
-                  </Button>
-                </Grid>
-              </Grid>
-            </ListItem>
-          </List>
+              </ListItem>
+            </List>
+          </Grid>
         </Grid>
-      </Grid>
-    </Resizable>
+      </Resizable>
+      {/* CANCEL DIALOG */}
+      <Dialog
+        fullWidth
+        maxWidth="sm"
+        onClose={() => setResetDialog(false)}
+        open={resetDialog}>
+        <DialogTitle>{t('task.edit.reset')}</DialogTitle>
+        <DialogContent>{t('task.edit.reset.description')}</DialogContent>
+        <DialogActions>
+          <Box component="div" mx={2} my={1}>
+            <Box mr={2} component="span">
+              <Button variant="text" onClick={() => setResetDialog(false)}>
+                {t('close')}
+              </Button>
+            </Box>
+            <Button
+              variant="text"
+              onClick={() => history.push('/')}
+              color="primary">
+              {t('task.edit.reset')}
+            </Button>
+          </Box>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 

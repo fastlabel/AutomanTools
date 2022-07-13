@@ -1,6 +1,6 @@
-import { TextField } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
+import { TextField } from '@mui/material';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import React, { FC, useCallback } from 'react';
 import { FormUtil } from './form-util';
 import { FormAction, FormState } from './type';
@@ -25,7 +25,10 @@ const FLTextField: FC<Props> = ({
   form,
 }) => {
   const [name, obj, dispatch] = form;
-  const formValue = FormUtil.resolve(name, obj.data);
+  let formValue = FormUtil.resolve(name, obj.data);
+  if (inputType === 'number') {
+    formValue = Number(formValue).toFixed(2);
+  }
   const onChange = useCallback(
     (e) => {
       if (dispatch) {
@@ -38,13 +41,14 @@ const FLTextField: FC<Props> = ({
   return (
     <React.Fragment>
       <Box
+        component="div"
         mb={mode === 'grid' ? 1 : 0}
         width={mode === 'grid' ? undefined : 120}>
         <Typography variant="body2" component="div">
           {label}
         </Typography>
       </Box>
-      <Box>
+      <Box component="div">
         <TextField
           margin="dense"
           disabled={readonly}
@@ -52,6 +56,10 @@ const FLTextField: FC<Props> = ({
           variant="outlined"
           fullWidth
           value={formValue}
+          inputProps={{
+            step: inputType === 'number' ? 0.01 : undefined,
+            sx: inputType === 'number' ? { textAlign: 'right' } : undefined,
+          }}
           onChange={onChange}
         />
       </Box>

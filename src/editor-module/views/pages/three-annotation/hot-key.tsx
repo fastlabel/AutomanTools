@@ -1,4 +1,5 @@
-import { createStyles, makeStyles } from '@material-ui/core';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import TaskStore from '../../../stores/task-store';
 import { AnnotationClassVO } from '../../../types/vo';
@@ -84,9 +85,11 @@ const HotKey: FC<Props> = ({ mainControlsRef }) => {
         case '7':
         case '8':
         case '9':
+          // eslint-disable-next-line no-case-declarations
           const selectAnnotationClassIdx = Number(key) - 1;
+          // eslint-disable-next-line no-case-declarations
           const annClasses = memoTaskStore.annotationClasses;
-          if (annClasses.length > selectAnnotationClassIdx) {
+          if (annClasses.length > Number(key) - 1) {
             selectAnnotationClass(annClasses[selectAnnotationClassIdx]);
           }
           break;
@@ -112,49 +115,50 @@ const HotKey: FC<Props> = ({ mainControlsRef }) => {
           break;
         case 'q':
           if (controls) {
-            // TODO move up
-            controls.dolly(KEY_DOLLY_SEED);
+            // TODO move forward
+            controls.pan(0, 0, -KEY_DOLLY_SEED);
           }
           break;
         case 'e':
           if (controls) {
-            // TODO move down
-            controls.dolly(KEY_DOLLY_SEED, true);
+            // TODO move back
+            controls.pan(0, 0, KEY_DOLLY_SEED);
           }
           break;
         case 'a':
           if (controls) {
             // move left
-            controls.pan(KEY_PAN_SEED, 0);
+            controls.pan(KEY_PAN_SEED, 0, 0);
           }
           break;
         case 'w':
           if (controls) {
-            // TODO move forward
-            controls.pan(0, KEY_PAN_SEED);
+            // TODO move up
+            controls.pan(0, KEY_PAN_SEED, 0);
           }
           break;
         case 's':
           if (controls) {
-            // TODO move back
-            controls.pan(0, -KEY_PAN_SEED);
+            // TODO move down
+            controls.pan(0, -KEY_PAN_SEED, 0);
           }
           break;
         case 'd':
           if (controls) {
             // move right
-            controls.pan(-KEY_PAN_SEED, 0);
+            controls.pan(-KEY_PAN_SEED, 0, 0);
           }
           break;
         case 'Escape':
           resetSelectMode();
           break;
         case 'Delete':
-          const type = event.shiftKey ? 'removeAll' : 'removeFrame';
           // current only supported single select
-          const id = memoTaskStore.selectingTaskAnnotationIds[0];
-          const frameNo = memoTaskStore.currentFrameNo;
-          updateTaskAnnotations({ type, id, frameNo });
+          updateTaskAnnotations({
+            type: event.shiftKey ? 'removeAll' : 'removeFrame',
+            id: memoTaskStore.selectingTaskAnnotationIds[0],
+            frameNo: memoTaskStore.currentFrameNo,
+          });
           break;
         default:
           handled = false;

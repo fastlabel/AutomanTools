@@ -1,6 +1,6 @@
-import Box from '@material-ui/core/Box';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
+import Box from '@mui/material/Box';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import React, { CSSProperties, FC } from 'react';
 
 type Props = {
@@ -11,6 +11,7 @@ type Props = {
 const ToolBar: FC<Props> = ({ className, style, children }) => {
   return (
     <Box
+      component="div"
       className={className}
       style={style}
       borderRight={'1px solid rgba(0, 0, 0, 0.12)'}>

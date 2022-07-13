@@ -1,6 +1,7 @@
 /* eslint-disable */
 import {
   Camera,
+  Euler,
   EventDispatcher,
   Matrix4,
   MOUSE,
@@ -98,9 +99,11 @@ class FlMainCameraControls extends EventDispatcher {
   connect: (domElement: HTMLElement) => void;
   dispose: () => void;
 
-  pan: (deltaX: number, deltaY: number) => void;
+  pan: (deltaX: number, deltaY: number, deltaZ: number) => void;
   rotate: (angleX: number, angleY: number) => void;
   dolly: (dollyScale: number, out?: true) => void;
+  point: (target: Vector3, position: Vector3) => void;
+  keyRotate: (angleX: number, angleY: number) => void;
 
   constructor(object: Camera, domElement?: HTMLElement) {
     super();
@@ -178,6 +181,7 @@ class FlMainCameraControls extends EventDispatcher {
     };
 
     this.reset = (): void => {
+      targetEuler.set(0, 0, 0);
       scope.target.copy(scope.target0);
       scope.object.position.copy(scope.position0);
       if (scope.object instanceof PerspectiveCamera) {
@@ -207,6 +211,8 @@ class FlMainCameraControls extends EventDispatcher {
       const lastQuaternion = new Quaternion();
 
       const twoPI = 2 * Math.PI;
+
+      const euler = new Euler();
 
       return function update(): boolean {
         const position = scope.object.position;
@@ -283,6 +289,12 @@ class FlMainCameraControls extends EventDispatcher {
         position.copy(scope.target).add(offset);
 
         scope.object.lookAt(scope.target);
+
+        euler.setFromQuaternion(scope.object.quaternion);
+        euler.x += targetEuler.x;
+        euler.y += targetEuler.y;
+        euler.z += targetEuler.z;
+        scope.object.quaternion.setFromEuler(euler);
 
         if (scope.enableDamping === true) {
           sphericalDelta.theta *= 1 - scope.dampingFactor;
@@ -385,6 +397,8 @@ class FlMainCameraControls extends EventDispatcher {
     const spherical = new Spherical();
     const sphericalDelta = new Spherical();
 
+    const targetEuler = new Euler();
+
     let scale = 1;
     const panOffset = new Vector3();
     let zoomChanged = false;
@@ -448,11 +462,29 @@ class FlMainCameraControls extends EventDispatcher {
       };
     })();
 
+    const panForward = (() => {
+      const v = new Vector3();
+
+      return function panForward(distance: number, objectMatrix: Matrix4) {
+        if (scope.screenSpacePanning === true) {
+          v.setFromMatrixColumn(objectMatrix, 2);
+        } else {
+          // [Remain] untested below code
+          v.setFromMatrixColumn(objectMatrix, 0);
+          v.crossVectors(scope.target, v);
+        }
+
+        v.multiplyScalar(distance * 2);
+
+        panOffset.add(v);
+      };
+    })();
+
     // deltaX and deltaY are in pixels; right and down are positive
     const pan = (() => {
       const offset = new Vector3();
 
-      return function pan(deltaX: number, deltaY: number) {
+      return function pan(deltaX: number, deltaY: number, deltaZ: number) {
         const element = scope.domElement;
 
         if (
@@ -477,6 +509,10 @@ class FlMainCameraControls extends EventDispatcher {
           );
           panUp(
             (2 * deltaY * targetDistance) / element.clientHeight,
+            scope.object.matrix
+          );
+          panForward(
+            (2 * deltaZ * targetDistance) / element.clientHeight,
             scope.object.matrix
           );
         } else if (
@@ -604,7 +640,7 @@ class FlMainCameraControls extends EventDispatcher {
     function handleMouseMovePan(event: MouseEvent) {
       panEnd.set(event.clientX, event.clientY);
       panDelta.subVectors(panEnd, panStart).multiplyScalar(scope.panSpeed);
-      pan(panDelta.x, panDelta.y);
+      pan(panDelta.x, panDelta.y, 0);
       panStart.copy(panEnd);
       scope.update();
     }
@@ -628,22 +664,22 @@ class FlMainCameraControls extends EventDispatcher {
 
       switch (event.code) {
         case scope.keys.UP:
-          pan(0, scope.keyPanSpeed);
+          pan(0, scope.keyPanSpeed, 0);
           needsUpdate = true;
           break;
 
         case scope.keys.BOTTOM:
-          pan(0, -scope.keyPanSpeed);
+          pan(0, -scope.keyPanSpeed, 0);
           needsUpdate = true;
           break;
 
         case scope.keys.LEFT:
-          pan(scope.keyPanSpeed, 0);
+          pan(scope.keyPanSpeed, 0, 0);
           needsUpdate = true;
           break;
 
         case scope.keys.RIGHT:
-          pan(-scope.keyPanSpeed, 0);
+          pan(-scope.keyPanSpeed, 0, 0);
           needsUpdate = true;
           break;
       }
@@ -729,7 +765,7 @@ class FlMainCameraControls extends EventDispatcher {
       }
 
       panDelta.subVectors(panEnd, panStart).multiplyScalar(scope.panSpeed);
-      pan(panDelta.x, panDelta.y);
+      pan(panDelta.x, panDelta.y, 0);
       panStart.copy(panEnd);
     }
 
@@ -1065,13 +1101,8 @@ class FlMainCameraControls extends EventDispatcher {
       return pointerPositions[pointer.pointerId];
     }
 
-    this.pan = (deltaX, deltaY) => {
-      pan(deltaX, deltaY);
-      scope.update();
-    };
-
-    this.pan = (deltaX, deltaY) => {
-      pan(deltaX, deltaY);
+    this.pan = (deltaX, deltaY, deltaZ) => {
+      pan(deltaX, deltaY, deltaZ);
       scope.update();
     };
 
@@ -1090,6 +1121,23 @@ class FlMainCameraControls extends EventDispatcher {
         dollyIn(dollyScale);
       } else {
         dollyOut(dollyScale);
+      }
+      scope.update();
+    };
+
+    this.point = (target: Vector3, position: Vector3) => {
+      scope.target.copy(target);
+      scope.object.position.copy(position);
+      scope.saveState();
+      scope.reset();
+    };
+
+    this.keyRotate = (angleX: number, angleY: number) => {
+      if (angleX !== 0) {
+        targetEuler.y -= angleX;
+      }
+      if (angleY !== 0) {
+        targetEuler.x -= angleY;
       }
       scope.update();
     };

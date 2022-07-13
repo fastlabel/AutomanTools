@@ -74,25 +74,27 @@ const reducer: () => Reducer<AnnotationClassState, ClassesAction> = () => {
       case 'add':
         if (state.status !== 'ready')
           throw new Error(`illegal state ${JSON.stringify(state)}`);
-        const added = state.data.concat([action.vo]);
-        return { ...state, data: added };
+        return { ...state, data: state.data.concat([action.vo]) };
       case 'update':
         if (state.status !== 'ready')
           throw new Error(`illegal state ${JSON.stringify(state)}`);
-        const updated = state.data.map((c) => {
-          if (c.id === action.vo.id) {
-            return action.vo;
-          }
-          return c;
-        });
-        return { ...state, status: 'ready', data: updated };
+        return {
+          ...state,
+          status: 'ready',
+          data: state.data.map((c) => {
+            if (c.id === action.vo.id) {
+              return action.vo;
+            }
+            return c;
+          }),
+        };
       case 'remove':
         if (state.status !== 'ready')
           throw new Error(`illegal state ${JSON.stringify(state)}`);
-        const removed = state.data.filter(
-          (c) => c.id !== action.annotationClassId
-        );
-        return { ...state, data: removed };
+        return {
+          ...state,
+          data: state.data.filter((c) => c.id !== action.annotationClassId),
+        };
       case 'fetch':
         if (state.status === 'saving')
           throw new Error(`illegal state ${JSON.stringify(state)}`);

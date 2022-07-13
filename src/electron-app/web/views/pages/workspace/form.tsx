@@ -5,12 +5,13 @@ import { FormUtil } from '@fl-three-editor/components/fields/form-util';
 import { FormAction, FormState } from '@fl-three-editor/components/fields/type';
 import { ProjectType } from '@fl-three-editor/types/const';
 import { WorkspaceUtil } from '@fl-three-editor/utils/workspace-util';
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import React, { FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({}));
+const useStyles = makeStyles(() => createStyles({}));
 
 type Props = {
   form: FormState<WorkspaceFormState>;

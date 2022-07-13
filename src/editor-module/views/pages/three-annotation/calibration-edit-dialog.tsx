@@ -1,21 +1,19 @@
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import React, { FC } from 'react';
 import DraggablePopover from '../../../components/draggable-popover';
 import FLTextField from '../../../components/fields/fl-text-field';
 import CameraCalibrationStore from '../../../stores/camera-calibration-store';
 
-type Props = {};
-
 /**
  * under developing. It's for debug tool.
  * @returns
  */
-const CalibrationEditDialog: FC<Props> = () => {
+const CalibrationEditDialog: FC = () => {
   const { open, form, dispatchForm } = CameraCalibrationStore.useContainer();
   return (
     <DraggablePopover open={open}>
-      <Box width={180} p={2}>
+      <Box component="div" width={180} p={2}>
         <Grid container direction="column" spacing={1}>
           <Grid item>
             <FLTextField

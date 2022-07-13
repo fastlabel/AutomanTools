@@ -1,12 +1,13 @@
 import { ApplicationConst } from '@fl-three-editor/application/const';
-import { createStyles, makeStyles } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -406,10 +407,10 @@ const StartPage: FC = () => {
       setSamplePcdFrames(
         await getDownloadItem('automan_sample_pcd_frames.zip')
       );
-      setM1MacAppLink(await getDownloadItem('apps/Automan-0.0.1-arm64.dmg'));
-      setIntelMacAppLink(await getDownloadItem('apps/Automan-0.0.1.dmg'));
+      setM1MacAppLink(await getDownloadItem('apps/Automan-0.0.2-arm64.dmg'));
+      setIntelMacAppLink(await getDownloadItem('apps/Automan-0.0.2.dmg'));
       setWindowsAppLink(
-        await getDownloadItem('apps/Automan-0.0.1-win32-installer.exe')
+        await getDownloadItem('apps/Automan-0.0.2-win32-installer.exe')
       );
     };
     getSamples();
@@ -432,21 +433,26 @@ const StartPage: FC = () => {
   };
 
   return (
-    <Box overflow="hidden">
+    <Box component="div" overflow="hidden">
       {/* Hero Section */}
-      <Box className={classes.heroSection}>
+      <Box component="div" className={classes.heroSection}>
         <img src={sideLeftImage} className={classes.heroSideLeftImage} />
         <img src={sideRightImage} className={classes.heroSideRightImage} />
-        <Box className={classes.container}>
-          <Box position="relative" mt={16}>
-            <Box position="absolute" top={0} left={0} zIndex={20}>
+        <Box component="div" className={classes.container}>
+          <Box component="div" position="relative" mt={16}>
+            <Box
+              component="div"
+              position="absolute"
+              top={0}
+              left={0}
+              zIndex={20}>
               <Typography variant="h3" className={classes.heroTitle}>
                 {ApplicationConst.name}
               </Typography>
               <Typography variant="h6" className={classes.heroCaption}>
                 Open source 3D Annotation Tools
               </Typography>
-              <Box display="flex" flexDirection="column" mt={8}>
+              <Box component="div" display="flex" flexDirection="column" mt={8}>
                 <Button
                   variant="contained"
                   className={classes.webDownloadButton}
@@ -464,7 +470,6 @@ const StartPage: FC = () => {
                   open={open}
                   anchorEl={anchorEl}
                   onClose={handleClose}
-                  getContentAnchorEl={null}
                   anchorOrigin={{
                     vertical: 'bottom',
                     horizontal: 'center',
@@ -477,7 +482,8 @@ const StartPage: FC = () => {
                     <Link
                       className={classes.appDownloadLink}
                       download
-                      href={windowsAppLink}>
+                      href={windowsAppLink}
+                      underline="hover">
                       For Windows
                     </Link>
                   </MenuItem>
@@ -485,7 +491,8 @@ const StartPage: FC = () => {
                     <Link
                       className={classes.appDownloadLink}
                       download
-                      href={intelMacAppLink}>
+                      href={intelMacAppLink}
+                      underline="hover">
                       For Mac with Intel processors
                     </Link>
                   </MenuItem>
@@ -493,7 +500,8 @@ const StartPage: FC = () => {
                     <Link
                       className={classes.appDownloadLink}
                       download
-                      href={m1MacAppLink}>
+                      href={m1MacAppLink}
+                      underline="hover">
                       For Mac with Apple M1
                     </Link>
                   </MenuItem>
@@ -505,12 +513,12 @@ const StartPage: FC = () => {
         </Box>
       </Box>
       {/* Copy Section */}
-      <Box className={classes.copySection}>
-        <Box className={classes.container}>
+      <Box component="div" className={classes.copySection}>
+        <Box component="div" className={classes.container}>
           <Typography variant="h3" className={classes.copyTitle}>
             {t('web_copy_title')}
           </Typography>
-          <Box mt={4} textAlign="center">
+          <Box component="div" mt={4} textAlign="center">
             <Typography variant="subtitle1" className={classes.copyCaption}>
               {t('web_copy_caption_1')}
             </Typography>
@@ -518,20 +526,20 @@ const StartPage: FC = () => {
               {t('web_copy_caption_2')}
             </Typography>
           </Box>
-          <Box className={classes.copyImageContainer}>
+          <Box component="div" className={classes.copyImageContainer}>
             <img src={copyImage} className={classes.copyImage} />
           </Box>
         </Box>
       </Box>
       {/* Data type Section */}
-      <Box className={classes.dataTypeSection}>
-        <Box className={classes.container}>
-          <Box mt={12}>
+      <Box component="div" className={classes.dataTypeSection}>
+        <Box component="div" className={classes.container}>
+          <Box component="div" mt={12}>
             <Typography variant="h3" className={classes.copyTitle}>
               {t('web_data_type_title')}
             </Typography>
           </Box>
-          <Box mt={4} textAlign="center">
+          <Box component="div" mt={4} textAlign="center">
             <Typography variant="subtitle1" className={classes.copyCaption}>
               {t('web_data_type_caption_1')}
             </Typography>
@@ -539,7 +547,7 @@ const StartPage: FC = () => {
               {t('web_data_type_caption_2')}
             </Typography>
           </Box>
-          <Box mt={7}>
+          <Box component="div" mt={7}>
             <Grid container className={classes.dataTypeBox}>
               <Grid item className={classes.dataTypeItem}>
                 <img className={classes.dataTypeImage} src={pcdImage} />
@@ -549,7 +557,8 @@ const StartPage: FC = () => {
                 <Link
                   className={classes.dataTypeSampleLink}
                   download
-                  href={samplePcd}>
+                  href={samplePcd}
+                  underline="hover">
                   {t('web_sample_download')}
                 </Link>
               </Grid>
@@ -561,7 +570,8 @@ const StartPage: FC = () => {
                 <Link
                   className={classes.dataTypeSampleLink}
                   download
-                  href={samplePcdImage}>
+                  href={samplePcdImage}
+                  underline="hover">
                   {t('web_sample_download')}
                 </Link>
               </Grid>
@@ -574,13 +584,14 @@ const StartPage: FC = () => {
                   className={classes.dataTypeSampleLink}
                   download
                   target="_self"
-                  href={samplePcdFrames}>
+                  href={samplePcdFrames}
+                  underline="hover">
                   {t('web_sample_download')}
                 </Link>
               </Grid>
             </Grid>
           </Box>
-          <Box mt={7} display="flex" justifyContent="center">
+          <Box component="div" mt={7} display="flex" justifyContent="center">
             <Button
               variant="contained"
               className={classes.dataTypeButton}
@@ -591,22 +602,24 @@ const StartPage: FC = () => {
         </Box>
       </Box>
       {/* Usage Section */}
-      <Box className={classes.usageSection}>
+      <Box component="div" className={classes.usageSection}>
         <img src={sideLeftImage} className={classes.usageSideLeftImage} />
         <img src={sideRightImage} className={classes.usageSideRightImage} />
-        <Box className={classes.container}>
+        <Box component="div" className={classes.container}>
           <Typography variant="h3" className={classes.usageTitle}>
             {t('web_usage_title')}
           </Typography>
-          <Box mt={7} className={classes.usageBox}>
-            <Box className={classes.usageItem}>
+          <Box component="div" mt={7} className={classes.usageBox}>
+            <Box component="div" className={classes.usageItem}>
               <Typography className={classes.usageItemTitle}>
                 {t('web_usage_new_title')}
               </Typography>
-              <Box className={classes.usageBar} height={210} />
-              <Box display="flex" mb={5}>
-                <Box className={classes.usageNum}>1</Box>
-                <Box ml={2}>
+              <Box component="div" className={classes.usageBar} height={210} />
+              <Box component="div" display="flex" mb={5}>
+                <Box component="div" className={classes.usageNum}>
+                  1
+                </Box>
+                <Box component="div" ml={2}>
                   <Typography className={classes.usageContentText}>
                     {t('web_usage_new_step_1')}
                   </Typography>
@@ -615,25 +628,34 @@ const StartPage: FC = () => {
                   </a>
                 </Box>
               </Box>
-              <Box display="flex" mb={5}>
-                <Box className={classes.usageNum}>2</Box>
-                <Box ml={2}>
+              <Box component="div" display="flex" mb={5}>
+                <Box component="div" className={classes.usageNum}>
+                  2
+                </Box>
+                <Box component="div" ml={2}>
                   <Typography className={classes.usageContentText}>
                     {t('web_usage_new_step_2')}
                   </Typography>
                 </Box>
               </Box>
-              <Box display="flex" mb={5}>
-                <Box className={classes.usageNum}>3</Box>
-                <Box ml={2}>
-                  <Box fontWeight="bold" className={classes.usageContentText}>
+              <Box component="div" display="flex" mb={5}>
+                <Box component="div" className={classes.usageNum}>
+                  3
+                </Box>
+                <Box component="div" ml={2}>
+                  <Box
+                    component="div"
+                    fontWeight="bold"
+                    className={classes.usageContentText}>
                     {t('web_usage_new_step_3')}
                   </Box>
                 </Box>
               </Box>
-              <Box display="flex">
-                <Box className={classes.usageNum}>4</Box>
-                <Box ml={2}>
+              <Box component="div" display="flex">
+                <Box component="div" className={classes.usageNum}>
+                  4
+                </Box>
+                <Box component="div" ml={2}>
                   <Typography className={classes.usageContentText}>
                     {t('web_usage_new_step_4')}
                   </Typography>
@@ -647,30 +669,39 @@ const StartPage: FC = () => {
               </Button>
             </Box>
 
-            <Box className={classes.usageItem}>
+            <Box component="div" className={classes.usageItem}>
               <Typography className={classes.usageItemTitle}>
                 {t('web_usage_edit_title')}
               </Typography>
-              <Box className={classes.usageBar} height={140} />
-              <Box display="flex" mb={5}>
-                <Box className={classes.usageNum}>1</Box>
-                <Box ml={2}>
+              <Box component="div" className={classes.usageBar} height={140} />
+              <Box component="div" display="flex" mb={5}>
+                <Box component="div" className={classes.usageNum}>
+                  1
+                </Box>
+                <Box component="div" ml={2}>
                   <Typography className={classes.usageContentText}>
                     {t('web_usage_edit_step_1')}
                   </Typography>
                 </Box>
               </Box>
-              <Box display="flex" mb={5}>
-                <Box className={classes.usageNum}>2</Box>
-                <Box ml={2}>
-                  <Box fontWeight="bold" className={classes.usageContentText}>
+              <Box component="div" display="flex" mb={5}>
+                <Box component="div" className={classes.usageNum}>
+                  2
+                </Box>
+                <Box component="div" ml={2}>
+                  <Box
+                    component="div"
+                    fontWeight="bold"
+                    className={classes.usageContentText}>
                     {t('web_usage_edit_step_2')}
                   </Box>
                 </Box>
               </Box>
-              <Box display="flex">
-                <Box className={classes.usageNum}>3</Box>
-                <Box ml={2}>
+              <Box component="div" display="flex">
+                <Box component="div" className={classes.usageNum}>
+                  3
+                </Box>
+                <Box component="div" ml={2}>
                   <Typography className={classes.usageContentText}>
                     {t('web_usage_edit_step_3')}
                   </Typography>
@@ -687,20 +718,22 @@ const StartPage: FC = () => {
         </Box>
       </Box>
       {/* Footer Section */}
-      <Box className={classes.footer}>
-        <Box className={classes.container}>
+      <Box component="div" className={classes.footer}>
+        <Box component="div" className={classes.container}>
           <Typography variant="h3" className={classes.footerLogo}>
             Automan
           </Typography>
-          <Link href="https://github.com/fastlabel/AutomanTools/">
+          <Link
+            href="https://github.com/fastlabel/AutomanTools/"
+            underline="hover">
             <img src={githubImage} className={classes.footerGithubImage} />
           </Link>
-          <Box mt={2}>
+          <Box component="div" mt={2}>
             <Typography variant="body1" className={classes.footerCaption}>
               {t('web_footer_caption')}
             </Typography>
           </Box>
-          <Box mt={8}>
+          <Box component="div" mt={8}>
             <Typography variant="body1" className={classes.copylight}>
               © FastLabel 2022
             </Typography>

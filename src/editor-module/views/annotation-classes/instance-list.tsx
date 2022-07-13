@@ -1,31 +1,32 @@
-import {
-  Collapse,
-  createStyles,
-  makeStyles,
-  Menu,
-  MenuItem,
-  Theme,
-} from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import MoreVertOutlinedIcon from '@material-ui/icons/MoreVertOutlined';
-import VisibilityOffOutlinedIcon from '@material-ui/icons/VisibilityOffOutlined';
-import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
+import ToggleOffIcon from '@mui/icons-material/ToggleOff';
+import ToggleOnIcon from '@mui/icons-material/ToggleOn';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import Collapse from '@mui/material/Collapse';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Typography from '@mui/material/Typography';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import React, { FC, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import FLTextField from '../../components/fields/fl-text-field';
 import { FormState } from '../../components/fields/type';
 import { UpdateTaskAnnotationCommand } from '../../stores/task-store';
-import { AnnotationType } from '../../types/const';
 import { TaskAnnotationVO } from '../../types/vo';
 import { FormatUtil } from '../../utils/format-util';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     flexGrow: {
       flexGrow: 1,
@@ -58,6 +59,9 @@ type Props = {
   ) => void;
   onClickToggleInvisible?: (item: TaskAnnotationVO, visible: boolean) => void;
   onUpdateTaskAnnotation?: (event: UpdateTaskAnnotationCommand) => void;
+  hasPoints?: (frameNo: string) => boolean;
+  onChangeFrameAppearance?: (item: TaskAnnotationVO) => void;
+  onChangeCurrentFrameAppearance?: (item: TaskAnnotationVO) => void;
 };
 
 const resolveMode = (selected: boolean, event: any) => {
@@ -77,6 +81,8 @@ const InstanceList: FC<Props> = ({
   onClickItem = (f) => f,
   onClickToggleInvisible,
   onUpdateTaskAnnotation = (f) => f,
+  onChangeFrameAppearance = (f) => f,
+  onChangeCurrentFrameAppearance = (f) => f,
 }) => {
   const styles = useStyles();
   const [t] = useTranslation();
@@ -97,119 +103,186 @@ const InstanceList: FC<Props> = ({
     setAnchor(null);
   }, []);
 
+  const [_disabledFrameSwitch] = useMemo(
+    () => [selectedItems?.size !== 1],
+    [selectedItems]
+  );
+
   const collapseContent = useMemo(
-    () => (item: TaskAnnotationVO) => {
-      const [
-        positionX,
-        positionY,
-        positionZ,
-        rotationX,
-        rotationY,
-        rotationZ,
-        sizeX,
-        sizeY,
-        sizeZ,
-      ] = item.points[frameNo] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
-      const data = {
-        positionX,
-        positionY,
-        positionZ,
-        rotationX,
-        rotationY,
-        rotationZ,
-        sizeX,
-        sizeY,
-        sizeZ,
-      };
-      const formObj: FormState<any> = { data };
-      return (
-        <Collapse in={true} timeout={100} unmountOnExit>
-          <List disablePadding>
-            <ListItem dense>
-              <FLTextField
-                mode="list"
-                readonly={true}
-                label={t('instanceList-label__positionX')}
-                form={['positionX', formObj]}
-              />
-            </ListItem>
-            <ListItem dense>
-              <FLTextField
-                mode="list"
-                readonly={true}
-                label={t('instanceList-label__positionY')}
-                form={['positionY', formObj]}
-              />
-            </ListItem>
-            <ListItem dense>
-              <FLTextField
-                mode="list"
-                readonly={true}
-                label={t('instanceList-label__positionZ')}
-                form={['positionZ', formObj]}
-              />
-            </ListItem>
-            <ListItem dense>
-              <FLTextField
-                mode="list"
-                readonly={true}
-                label={t('instanceList-label__rotationX')}
-                form={['rotationX', formObj]}
-              />
-            </ListItem>
-            <ListItem dense>
-              <FLTextField
-                mode="list"
-                readonly={true}
-                label={t('instanceList-label__rotationY')}
-                form={['rotationY', formObj]}
-              />
-            </ListItem>
-            <ListItem dense>
-              <FLTextField
-                mode="list"
-                readonly={true}
-                label={t('instanceList-label__rotationZ')}
-                form={['rotationZ', formObj]}
-              />
-            </ListItem>
-            <ListItem dense>
-              <FLTextField
-                mode="list"
-                readonly={true}
-                label={t('instanceList-label__sizeX')}
-                form={['sizeX', formObj]}
-              />
-            </ListItem>
-            <ListItem dense>
-              <FLTextField
-                mode="list"
-                readonly={true}
-                label={t('instanceList-label__sizeY')}
-                form={['sizeY', formObj]}
-              />
-            </ListItem>
-            <ListItem dense>
-              <FLTextField
-                mode="list"
-                readonly={true}
-                label={t('instanceList-label__sizeZ')}
-                form={['sizeZ', formObj]}
-              />
-            </ListItem>
-          </List>
-        </Collapse>
-      );
-    },
-    []
+    () =>
+      function CollapseContent(item: TaskAnnotationVO) {
+        const _hasPoints = !!item.points[frameNo];
+        const [
+          positionX,
+          positionY,
+          positionZ,
+          rotationX,
+          rotationY,
+          rotationZ,
+          sizeX,
+          sizeY,
+          sizeZ,
+        ] = item.points[frameNo] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
+        const data = {
+          positionX,
+          positionY,
+          positionZ,
+          rotationX,
+          rotationY,
+          rotationZ,
+          sizeX,
+          sizeY,
+          sizeZ,
+        };
+        const formObj: FormState<any> = { data };
+        return (
+          <Collapse in={true} timeout={100} unmountOnExit>
+            {multiFrame && (
+              <List dense disablePadding>
+                <ListItem dense>
+                  <IconButton
+                    color="default"
+                    size="small"
+                    onClick={() => onChangeFrameAppearance(item)}
+                    disabled={_disabledFrameSwitch}>
+                    {_hasPoints ? (
+                      <ToggleOnIcon fontSize="small" color="primary" />
+                    ) : (
+                      <ToggleOffIcon fontSize="small" />
+                    )}
+                  </IconButton>
+                  <Typography variant="body2">
+                    &nbsp;
+                    {_hasPoints
+                      ? t('sidePanel-action_label__annotationOff')
+                      : t('sidePanel-action_label__annotationOn')}
+                  </Typography>
+                  <Box flexGrow={1} />
+                </ListItem>
+                <ListItem dense>
+                  <IconButton
+                    color="default"
+                    size="small"
+                    onClick={() => onChangeCurrentFrameAppearance(item)}
+                    disabled={_disabledFrameSwitch}>
+                    {_hasPoints ? (
+                      <ToggleOnIcon fontSize="small" color="primary" />
+                    ) : (
+                      <ToggleOffIcon fontSize="small" />
+                    )}
+                  </IconButton>
+                  <Typography variant="body2">
+                    &nbsp;
+                    {_hasPoints
+                      ? t('sidePanel-action_label__annotationOffCurrent')
+                      : t('sidePanel-action_label__annotationOnCurrent')}
+                  </Typography>
+                  <Box flexGrow={1} />
+                </ListItem>
+              </List>
+            )}
+            <List disablePadding>
+              <ListItem dense>
+                <FLTextField
+                  mode="list"
+                  readonly={true}
+                  inputType="number"
+                  label={t('instanceList-label__positionX')}
+                  form={['positionX', formObj]}
+                />
+              </ListItem>
+              <ListItem dense>
+                <FLTextField
+                  mode="list"
+                  readonly={true}
+                  inputType="number"
+                  label={t('instanceList-label__positionY')}
+                  form={['positionY', formObj]}
+                />
+              </ListItem>
+              <ListItem dense>
+                <FLTextField
+                  mode="list"
+                  readonly={true}
+                  inputType="number"
+                  label={t('instanceList-label__positionZ')}
+                  form={['positionZ', formObj]}
+                />
+              </ListItem>
+              <ListItem dense>
+                <FLTextField
+                  mode="list"
+                  readonly={true}
+                  inputType="number"
+                  label={t('instanceList-label__rotationX')}
+                  form={['rotationX', formObj]}
+                />
+              </ListItem>
+              <ListItem dense>
+                <FLTextField
+                  mode="list"
+                  readonly={true}
+                  inputType="number"
+                  label={t('instanceList-label__rotationY')}
+                  form={['rotationY', formObj]}
+                />
+              </ListItem>
+              <ListItem dense>
+                <FLTextField
+                  mode="list"
+                  readonly={true}
+                  inputType="number"
+                  label={t('instanceList-label__rotationZ')}
+                  form={['rotationZ', formObj]}
+                />
+              </ListItem>
+              <ListItem dense>
+                <FLTextField
+                  mode="list"
+                  readonly={true}
+                  inputType="number"
+                  label={t('instanceList-label__sizeX')}
+                  form={['sizeX', formObj]}
+                />
+              </ListItem>
+              <ListItem dense>
+                <FLTextField
+                  mode="list"
+                  readonly={true}
+                  inputType="number"
+                  label={t('instanceList-label__sizeY')}
+                  form={['sizeY', formObj]}
+                />
+              </ListItem>
+              <ListItem dense>
+                <FLTextField
+                  mode="list"
+                  readonly={true}
+                  inputType="number"
+                  label={t('instanceList-label__sizeZ')}
+                  form={['sizeZ', formObj]}
+                />
+              </ListItem>
+            </List>
+          </Collapse>
+        );
+      },
+    [
+      frameNo,
+      multiFrame,
+      _disabledFrameSwitch,
+      t,
+      onChangeFrameAppearance,
+      onChangeCurrentFrameAppearance,
+    ]
   );
 
   const listItemRenderer = useMemo(
     () =>
-      (
+      function ListItemRenderer(
         item: TaskAnnotationVO,
         content?: (item: TaskAnnotationVO) => JSX.Element
-      ) => {
+      ) {
         const hasFrame = item.points[frameNo];
         const selected = selectedItems?.has(item.id) === true;
         const hidden = invisibleClasses?.has(item.id);
@@ -228,7 +301,7 @@ const InstanceList: FC<Props> = ({
               }>
               <span
                 style={{ backgroundColor: item.color }}
-                className={getClassTagStyle(item.type)}
+                className={styles.markCuboid}
               />
               <ListItemText
                 primary={item.title}
@@ -269,7 +342,15 @@ const InstanceList: FC<Props> = ({
           </React.Fragment>
         );
       },
-    [invisibleClasses, selectedItems]
+    [
+      frameNo,
+      styles,
+      handleClick,
+      invisibleClasses,
+      onClickItem,
+      onClickToggleInvisible,
+      selectedItems,
+    ]
   );
 
   const [disabledAddFrame, disabledRemoveFrame, disabledRemoveAll] =
@@ -281,18 +362,14 @@ const InstanceList: FC<Props> = ({
         return [disabledAddFrame, disabledRemoveFrame, false];
       }
       return [true, true, true];
-    }, [anchor]);
-
-  const getClassTagStyle = (type: AnnotationType): any => {
-    return styles.markCuboid;
-  };
+    }, [anchor, frameNo]);
 
   return (
     <>
       <List component="div" disablePadding>
         {selectedItems?.size === 1 && editingTaskAnnotation
           ? listItemRenderer(editingTaskAnnotation, collapseContent)
-          : instances.map((item, index) => listItemRenderer(item))}
+          : instances.map((item) => listItemRenderer(item))}
       </List>
       <Menu
         id="task-annotation-menu"

@@ -1,23 +1,25 @@
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
-import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined';
-import FilterDramaIcon from '@material-ui/icons/FilterDrama';
-import PanoramaOutlinedIcon from '@material-ui/icons/PanoramaOutlined';
-import PermDataSettingOutlinedIcon from '@material-ui/icons/PermDataSettingOutlined';
+import { Theme } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
+import FileCopyOutlinedIcon from '@mui/icons-material/FileCopyOutlined';
+import FilterDramaIcon from '@mui/icons-material/FilterDrama';
+import PanoramaOutlinedIcon from '@mui/icons-material/PanoramaOutlined';
+import PermDataSettingOutlinedIcon from '@mui/icons-material/PermDataSettingOutlined';
 import React, { FC, useMemo } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { FormUtil } from './form-util';
 import { FormAction, FormState } from './type';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     attachedDragzone: {
       minHeight: 184,
@@ -178,12 +180,12 @@ const FLFolderContentsField: FC<Props> = ({
 
   return (
     <React.Fragment>
-      <Box mb={1}>
+      <Box component="div" mb={1}>
         <Typography variant="body2" component="div">
           {label}
         </Typography>
       </Box>
-      <Box className={styles.itemContent}>
+      <Box component="div" className={styles.itemContent}>
         <div
           {...getRootProps({
             className: attached ? styles.attachedDragzone : styles.dragzone,

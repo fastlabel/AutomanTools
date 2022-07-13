@@ -2,10 +2,11 @@ import { FormUtil } from '@fl-three-editor/components/fields/form-util';
 import { FormAction, FormState } from '@fl-three-editor/components/fields/type';
 import { ProjectRepositoryContext } from '@fl-three-editor/repositories/project-repository';
 import { ProjectType } from '@fl-three-editor/types/const';
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useSnackbar } from 'notistack';
 import React, { FC, Reducer, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +15,7 @@ import { v4 as uuid } from 'uuid';
 import WorkspaceContext from '../../../context/workspace';
 import WorkspaceForm, { WorkspaceFormState } from './form';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       flexGrow: 1,
@@ -39,25 +40,22 @@ const formReducer: Reducer<FormState<WorkspaceFormState>, FormAction> = (
   state,
   action
 ) => {
+  let newState: WorkspaceFormState = {};
   switch (action.type) {
     case 'change':
-      let newState = FormUtil.update(action.name, action.value, state.data);
+      newState = FormUtil.update(action.name, action.value, state.data);
       if (action.name === 'type') {
         newState = FormUtil.update('targets', [], newState);
       }
-      const helper = { validState: 'valid' };
-
       if (
         newState.workspaceFolder &&
         newState.type &&
         newState.targets &&
         newState.targets.length > 0
       ) {
-        helper.validState = 'valid';
-      } else {
-        helper.validState = 'error';
+        return { data: newState, helper: { validState: 'valid' } };
       }
-      return { data: newState, helper };
+      return { data: newState, helper: { validState: 'error' } };
     case 'init':
       return { data: action.data, helper: {} };
   }

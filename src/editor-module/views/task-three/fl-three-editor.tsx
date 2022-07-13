@@ -1,11 +1,6 @@
-import {
-  Box,
-  createStyles,
-  Grid,
-  makeStyles,
-  Theme,
-  Typography,
-} from '@material-ui/core';
+import { Box, Grid, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Canvas, ThreeEvent } from '@react-three/fiber';
 import React, { createRef, FC, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,16 +13,13 @@ import FLMainControls from './fl-main-controls';
 import FLObjectControls from './fl-object-controls';
 import FLPcd from './fl-pcd';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       display: 'flex',
       height: '100%',
       flexDirection: 'column',
       backgroundColor: '#1a1a1a',
-    },
-    wrapTaskForm: {
-      padding: theme.spacing(2),
     },
     footer: {
       maxHeight: 360,
@@ -54,7 +46,7 @@ type Props = {
   bgSub?: JSX.Element;
   cameraHelper?: JSX.Element;
   position0?: Vector3;
-  targets?: TaskAnnotationVO[];
+  selectedTaskAnnotations?: TaskAnnotationVO[];
   preObject?: AnnotationClassVO;
   onClickObj?: (evt: ThreeEvent<MouseEvent>) => void;
   onPutObject?: (
@@ -67,6 +59,8 @@ type Props = {
 const C_RESIZE = { debounce: 100 };
 const C_DISTANCE = 5;
 
+const ANNOTATION_OPACITY = 50;
+
 const FLThreeEditor: FC<Props> = ({
   frameNo,
   annotations,
@@ -78,7 +72,7 @@ const FLThreeEditor: FC<Props> = ({
   pcd,
   bgSub,
   position0,
-  targets,
+  selectedTaskAnnotations,
   preObject,
   cameraHelper,
   onClickObj = (f) => f,
@@ -93,13 +87,17 @@ const FLThreeEditor: FC<Props> = ({
   const _cubeGroupRef = cubeGroupRef || createRef<Group>();
 
   useEffect(() => {
-    if (targets && targets.length === 1 && _cubeGroupRef.current) {
-      const vo = targets[0];
+    if (
+      selectedTaskAnnotations &&
+      selectedTaskAnnotations.length === 1 &&
+      _cubeGroupRef.current
+    ) {
+      const vo = selectedTaskAnnotations[0];
       setTarget(_cubeGroupRef.current.getObjectByName(vo.id));
     } else {
       setTarget(undefined);
     }
-  }, [_cubeGroupRef, targets]);
+  }, [_cubeGroupRef, selectedTaskAnnotations]);
 
   useEffect(() => {
     if (rootRef.current) {
@@ -122,7 +120,7 @@ const FLThreeEditor: FC<Props> = ({
   const orthographic = !!useOrthographicCamera;
   return (
     <div className={styles.root} ref={rootRef}>
-      <Box flexGrow={1} mt={2} mr={2} ml={2} mb={1}>
+      <Box component="div" flexGrow={1} mt={2} mr={2} ml={2} mb={1}>
         <Canvas
           orthographic={orthographic}
           camera={{
@@ -147,22 +145,24 @@ const FLThreeEditor: FC<Props> = ({
           )}
           <FLCubes
             ref={_cubeGroupRef}
+            selectedTaskAnnotations={selectedTaskAnnotations}
+            frameNo={frameNo}
             selectable={selectable}
             showLabel={showLabel}
-            frameNo={frameNo}
+            annotationOpacity={ANNOTATION_OPACITY}
             annotations={annotations}
             onClick={onClickObj}
           />
           {cameraHelper}
         </Canvas>
       </Box>
-      <Box mr={2} ml={2} mb={1}>
+      <Box component="div" mr={2} ml={2} mb={1}>
         <Grid container spacing={2} className={styles.footer}>
           <Grid item xs={4}>
-            <Box className={styles.footerLabel}>
+            <Box component="div" className={styles.footerLabel}>
               <Typography>{t('flThreeEditor-label__top')}</Typography>
             </Box>
-            <Box height={footerBoxH}>
+            <Box component="div" height={footerBoxH}>
               <Canvas
                 orthographic
                 camera={{
@@ -174,6 +174,7 @@ const FLThreeEditor: FC<Props> = ({
                 resize={C_RESIZE}>
                 {bgSub}
                 <FLObjectControls
+                  annotationOpacity={ANNOTATION_OPACITY}
                   control="top"
                   target={target}
                   onObjectChange={onObjectChange}
@@ -182,10 +183,10 @@ const FLThreeEditor: FC<Props> = ({
             </Box>
           </Grid>
           <Grid item xs={4}>
-            <Box className={styles.footerLabel}>
+            <Box component="div" className={styles.footerLabel}>
               <Typography>{t('flThreeEditor-label__side')}</Typography>
             </Box>
-            <Box height={footerBoxH}>
+            <Box component="div" height={footerBoxH}>
               <Canvas
                 orthographic
                 camera={{
@@ -197,6 +198,7 @@ const FLThreeEditor: FC<Props> = ({
                 resize={C_RESIZE}>
                 {bgSub}
                 <FLObjectControls
+                  annotationOpacity={ANNOTATION_OPACITY}
                   control="side"
                   target={target}
                   onObjectChange={onObjectChange}
@@ -205,10 +207,10 @@ const FLThreeEditor: FC<Props> = ({
             </Box>
           </Grid>
           <Grid item xs={4}>
-            <Box className={styles.footerLabel}>
+            <Box component="div" className={styles.footerLabel}>
               <Typography>{t('flThreeEditor-label__front')}</Typography>
             </Box>
-            <Box height={footerBoxH}>
+            <Box component="div" height={footerBoxH}>
               <Canvas
                 orthographic
                 camera={{
@@ -220,6 +222,7 @@ const FLThreeEditor: FC<Props> = ({
                 resize={C_RESIZE}>
                 {bgSub}
                 <FLObjectControls
+                  annotationOpacity={ANNOTATION_OPACITY}
                   control="front"
                   target={target}
                   onObjectChange={onObjectChange}

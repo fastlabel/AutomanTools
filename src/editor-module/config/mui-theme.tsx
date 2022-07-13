@@ -1,4 +1,4 @@
-import { createTheme } from '@material-ui/core/styles';
+import { createTheme } from '@mui/material/styles';
 
 // Create a theme instance.
 const muiTheme = createTheme({
@@ -8,40 +8,109 @@ const muiTheme = createTheme({
     },
     fontFamily: ['"Helvetica Neue"'].join(','),
   },
-  props: {
+  components: {
     MuiIconButton: {
-      tabIndex: -1,
+      defaultProps: {
+        tabIndex: -1,
+      },
     },
     MuiIcon: {
-      tabIndex: -1,
+      defaultProps: {
+        tabIndex: -1,
+      },
     },
     MuiListItem: {
-      tabIndex: -1,
+      defaultProps: {
+        tabIndex: -1,
+      },
     },
     MuiSlider: {
-      tabIndex: -1,
+      defaultProps: {
+        tabIndex: -1,
+      },
     },
     MuiPaper: {
-      variant: 'outlined',
+      defaultProps: {
+        variant: 'outlined',
+      },
     },
     MuiTable: {
-      size: 'small',
-    },
-    MuiInput: {
-      tabIndex: 1,
+      defaultProps: {
+        size: 'small',
+      },
     },
     MuiTextField: {
-      variant: 'outlined',
-      size: 'small',
-      InputProps: {
-        classes: {
-          input: "{'font-size': '0.875rem'}",
+      defaultProps: {
+        variant: 'outlined',
+        size: 'small',
+        InputProps: {
+          classes: {
+            input: "{'font-size': '0.875rem'}",
+          },
+        },
+        SelectProps: {
+          MenuProps: {
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'left',
+            },
+            transformOrigin: {
+              vertical: 'top',
+              horizontal: 'left',
+            },
+          },
         },
       },
     },
     MuiButton: {
-      variant: 'contained',
-      disableElevation: true,
+      defaultProps: {
+        variant: 'contained',
+        color: 'inherit',
+        disableElevation: true,
+      },
+      styleOverrides: {
+        root: {
+          '&.MuiButtonGroup-groupedOutlined': {
+            borderColor: 'rgba(0, 0, 0, 0.23)',
+            color: 'inherit',
+            '&:hover': {
+              backgroundColor: 'rgba(0, 0, 0, 0.04)',
+              borderColor: 'rgba(0, 0, 0, 0.23)',
+            },
+          },
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        head: {
+          cursor: 'default',
+        },
+      },
+    },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          cursor: 'pointer',
+        },
+      },
+    },
+    MuiToolbar: {
+      styleOverrides: {
+        root: {
+          paddingLeft: '16px !important',
+          paddingRight: '16px !important',
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        inputSizeSmall: {
+          paddingTop: '8.5px',
+          paddingBottom: '8.5px',
+          fontSize: '0.9rem',
+        },
+      },
     },
   },
   palette: {
@@ -55,31 +124,6 @@ const muiTheme = createTheme({
     },
     background: {
       default: '#fff',
-    },
-  },
-  overrides: {
-    MuiTableCell: {
-      head: {
-        cursor: 'default',
-      },
-    },
-    MuiLink: {
-      root: {
-        cursor: 'pointer',
-      },
-    },
-    MuiToolbar: {
-      root: {
-        paddingLeft: '16px !important',
-        paddingRight: '16px !important',
-      },
-    },
-    MuiOutlinedInput: {
-      inputMarginDense: {
-        paddingTop: '8.5px',
-        paddingBottom: '8.5px',
-        fontSize: '0.9rem',
-      },
     },
   },
 });

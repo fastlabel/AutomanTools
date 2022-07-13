@@ -1,9 +1,4 @@
-import {
-  ReactThreeFiber,
-  ThreeEvent,
-  useFrame,
-  useThree,
-} from '@react-three/fiber';
+import { ReactThreeFiber, ThreeEvent, useThree } from '@react-three/fiber';
 import * as React from 'react';
 import { useMemo } from 'react';
 import {
@@ -15,7 +10,7 @@ import {
   Scene,
   Vector3,
 } from 'three';
-import { AnnotationClassVO, TaskAnnotationVOPoints } from '../../types/vo';
+import { AnnotationClassVO, ThreePoints } from '../../types/vo';
 import FLCube from './fl-cube';
 
 type Prop = ReactThreeFiber.Overwrite<
@@ -36,10 +31,10 @@ type Prop = ReactThreeFiber.Overwrite<
 >;
 
 const FLAnnotationControls = React.forwardRef<FLAnnotationControlsImpl, Prop>(
-  (
+  function FLAnnotationControls(
     { camera, domElement, preObject, onPutObject = (f) => f, ...restProps },
     ref
-  ) => {
+  ) {
     const invalidate = useThree(({ invalidate }) => invalidate);
     const defaultCamera = useThree(({ camera }) => camera);
     const gl = useThree(({ gl }) => gl);
@@ -55,18 +50,13 @@ const FLAnnotationControls = React.forwardRef<FLAnnotationControlsImpl, Prop>(
       [explCamera, scene]
     );
 
-    useFrame(() => {
-      if (controls.enabled) {
-      }
-    });
-
     const points = useMemo(() => {
       if (preObject) {
         const { x, y, z } = preObject.defaultSize;
         return [0, 0, 0, 0, 0, 0, x, y, z];
       }
       return undefined;
-    }, [preObject]) as TaskAnnotationVOPoints;
+    }, [preObject]) as ThreePoints;
 
     React.useEffect(() => {
       controls.connect(explDomElement);

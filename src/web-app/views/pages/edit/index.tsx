@@ -7,20 +7,22 @@ import {
   TaskAnnotationOriginVO,
   TaskAnnotationVO,
 } from '@fl-three-editor/types/vo';
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useSnackbar } from 'notistack';
-import React, { FC, Reducer, useEffect, useReducer, useState } from 'react';
+import React, { FC, Reducer, useReducer, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import { ProjectWebRepository } from '../../../repositories/project-web-repository';
 import WorkspaceForm, { WorkspaceFormState } from './form';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       flexGrow: 1,
@@ -63,6 +65,7 @@ const isTaskAnnotations = (arrays: any[]) => {
   return true;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isAnnotationClasses = (arrays: any[]) => {
   if (!(arrays && typeof arrays.length === 'number')) {
     // is Array
@@ -89,14 +92,14 @@ const readJson = (files: File[]) => {
   return new Promise<{
     annotationClasses?: AnnotationClassVO[];
     taskAnnotations?: TaskAnnotationVO[];
-  }>((resolve, reject) => {
+  }>((resolve) => {
     const result: {
       annotationClasses?: AnnotationClassVO[];
       taskAnnotations?: TaskAnnotationVO[];
     } = {};
     Promise.all(
       files.map((f) => {
-        return new Promise<void>((resolve, reject) => {
+        return new Promise<void>((resolve) => {
           const reader = new FileReader();
           reader.onload = (ev: ProgressEvent<FileReader>) => {
             if (!ev.target) return;
@@ -133,24 +136,21 @@ const formReducerFactory: (
   >
 ) => Reducer<FormState<WorkspaceFormState>, FormAction> = (setEditResource) => {
   return (state, action) => {
+    let newState: WorkspaceFormState = {};
     switch (action.type) {
       case 'change':
-        let newState = FormUtil.update(action.name, action.value, state.data);
         if (action.name === 'type') {
           newState = FormUtil.update('targets', [], newState);
         } else if (action.name === 'editTargets') {
+          newState = FormUtil.update(action.name, action.value, state.data);
           readJson(action.value).then((res) => {
             setEditResource(res);
           });
         }
-        const helper = { validState: 'valid' };
-
         if (newState.type && newState.targets && newState.targets.length > 0) {
-          helper.validState = 'valid';
-        } else {
-          helper.validState = 'error';
+          return { data: newState, helper: { validState: 'valid' } };
         }
-        return { data: newState, helper };
+        return { data: newState, helper: { validState: 'error' } };
       case 'init':
         return { data: action.data, helper: {} };
     }
@@ -203,6 +203,7 @@ const EditPage: FC = () => {
     }
     projectRepository.setEditTarget(annotationClasses, taskAnnotations);
     projectRepository
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .create({ type, targets, projectId: uuid().toString() } as any)
       .then(({ projectId, errorCode }) => {
         if (errorCode) {
@@ -221,46 +222,43 @@ const EditPage: FC = () => {
     history.push('/');
   };
 
-  useEffect(() => {}, [form]);
-
   return (
-    <Box
-      className={classes.root}>
-        <Grid
-          container
-          justifyContent="center"
-          direction="column"
-          spacing={2}
-          className={classes.main}>
-          <Grid item className={classes.item}>
-            <Typography color="textSecondary" variant="h4">
-              {t('web_edit-header_label')}
-            </Typography>
-          </Grid>
-          <Grid item className={classes.item}>
-            <WorkspaceForm form={form} dispatchForm={dispatchForm} />
-          </Grid>
-          <Grid item className={classes.item}>
-            <Grid container justifyContent="space-between">
-              <Grid item>
-                {formStartPage && (
-                  <Button onClick={handleBack}>
-                    {t('web_workspaceForm-action_label__back')}
-                  </Button>
-                )}
-              </Grid>
-              <Grid item>
-                <Button
-                  variant="contained"
-                  disabled={form.helper.validState !== 'valid'}
-                  color="primary"
-                  onClick={handleCreate}>
-                  {t('web_edit-action_label_edit')}
+    <Box component="div" className={classes.root}>
+      <Grid
+        container
+        justifyContent="center"
+        direction="column"
+        spacing={2}
+        className={classes.main}>
+        <Grid item className={classes.item}>
+          <Typography color="textSecondary" variant="h4">
+            {t('web_edit-header_label')}
+          </Typography>
+        </Grid>
+        <Grid item className={classes.item}>
+          <WorkspaceForm form={form} dispatchForm={dispatchForm} />
+        </Grid>
+        <Grid item className={classes.item}>
+          <Grid container justifyContent="space-between">
+            <Grid item>
+              {formStartPage && (
+                <Button onClick={handleBack}>
+                  {t('web_workspaceForm-action_label__back')}
                 </Button>
-              </Grid>
+              )}
+            </Grid>
+            <Grid item>
+              <Button
+                variant="contained"
+                disabled={form.helper.validState !== 'valid'}
+                color="primary"
+                onClick={handleCreate}>
+                {t('web_edit-action_label_edit')}
+              </Button>
             </Grid>
           </Grid>
         </Grid>
+      </Grid>
     </Box>
   );
 };

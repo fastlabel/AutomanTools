@@ -1,6 +1,6 @@
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import Grid from '@material-ui/core/Grid';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import Grid from '@mui/material/Grid';
 import React, {
   FC,
   Reducer,
@@ -36,11 +36,10 @@ const formReducer: Reducer<FormState<AnnotationClassVO>, FormAction> = (
   switch (action.type) {
     case 'change':
       // TODO validation
-      const newState = {
+      return {
         data: FormUtil.update(action.name, action.value, state.data),
         helper: state.helper,
       };
-      return newState;
     case 'init':
       return { data: action.data, helper: {} };
   }
@@ -132,7 +131,7 @@ const ClassFormDialog: FC<Props> = ({ open, classVo, onClose, onSubmit }) => {
         </Grid>
       </FLDialogContent>
       <FLDialogActions>
-        <Button color="default" variant="text" onClick={handleClickSaveCreate}>
+        <Button variant="text" onClick={handleClickSaveCreate}>
           {t('classForm-action_label__saveCreate')}
         </Button>
         <Button onClick={handleClickSaveClose} variant="text" color="primary">

@@ -19,11 +19,10 @@ const formReducer: Reducer<FormState<CameraCalibration>, FormAction> = (
   switch (action.type) {
     case 'change':
       // TODO validation
-      const newState = {
+      return {
         data: FormUtil.update(action.name, action.value, state.data),
         helper: state.helper,
       };
-      return newState;
     case 'init':
       return { data: action.data, helper: {} };
   }
@@ -59,7 +58,7 @@ const useCameraCalibration = () => {
     const offsetX = cx - width / 2;
     const offsetY = cy - height / 2;
 
-    let fov = (2 * Math.atan(fullHeight / (2 * fy)) * 180) / Math.PI;
+    const fov = (2 * Math.atan(fullHeight / (2 * fy)) * 180) / Math.PI;
     const distance = 1000;
 
     updateCameraInternal((pre) => ({
