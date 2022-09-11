@@ -8,6 +8,8 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -53,6 +55,7 @@ const useStyles = makeStyles(() =>
       position: 'relative',
     },
     heroSection: {
+      padding: '0 32px',
       position: 'relative',
       background:
         'linear-gradient(301.64deg, #40A9F5 19.83%, #5288FC 40.74%, #377AFC 60.52%, #515DFF 79.3%)',
@@ -75,9 +78,6 @@ const useStyles = makeStyles(() =>
       width: '50%',
     },
     heroImage: {
-      position: 'absolute',
-      right: 0,
-      top: '-24px',
       zIndex: 20,
     },
     heroTitle: {
@@ -115,11 +115,34 @@ const useStyles = makeStyles(() =>
       letterSpacing: '0.02em',
       marginTop: 16,
     },
+    visitGitHubButton: {
+      borderRadius: '100vh',
+      backgroundColor: 'transparent',
+      border: '2px solid #FFF',
+      color: '#FFF',
+      fontWeight: 'bold',
+      height: 48,
+      width: 240,
+      fontSize: 16,
+      letterSpacing: '0.02em',
+      marginTop: 16,
+    },
+    visitGitHubButtonPrimary: {
+      borderRadius: '100vh',
+      backgroundColor: '#FFF',
+      color: '#1565C0',
+      fontWeight: 'bold',
+      height: 48,
+      width: 240,
+      fontSize: 16,
+      letterSpacing: '0.02em',
+    },
     appDownloadLink: {
       color: '#424242',
       fontWeight: 'bold',
     },
     copySection: {
+      padding: '0 32px',
       position: 'relative',
       backgroundColor: '#F5F5F5',
       display: 'flex',
@@ -166,7 +189,41 @@ const useStyles = makeStyles(() =>
       margin: '0 auto',
       zIndex: 20,
     },
+    featuresSection: {
+      padding: '0 32px',
+      position: 'relative',
+      backgroundColor: '#F5F5F5',
+      display: 'flex',
+      justifyContent: 'center',
+      paddingBottom: 160,
+      '&::after': {
+        content: '""',
+        display: 'block',
+        position: 'absolute',
+        zIndex: 1,
+        left: 0,
+        top: '-260px',
+        borderTop: '130px solid transparent',
+        borderLeft: '50vw solid transparent',
+        borderRight: '50vw solid #F5F5F5',
+        borderBottom: '130px solid #F5F5F5',
+      },
+    },
+    featuresTitle: {
+      fontSize: 32,
+      color: '#212121',
+      marginTop: 32,
+      fontWeight: 'bold',
+      textAlign: 'center',
+    },
+    featuresCaption: {
+      color: '#757575',
+      fontSize: 24,
+      lineHeight: '200%',
+      letterSpacing: '0.02em',
+    },
     dataTypeSection: {
+      padding: '0 32px',
       position: 'relative',
       backgroundColor: '#FFF',
       display: 'flex',
@@ -186,6 +243,7 @@ const useStyles = makeStyles(() =>
       },
     },
     dataTypeBox: {
+      justifyContent: 'center',
       gridTemplateRows: '1fr 1fr 1fr',
       gap: 60,
     },
@@ -226,6 +284,7 @@ const useStyles = makeStyles(() =>
       },
     },
     usageSection: {
+      padding: '0 32px',
       position: 'relative',
       backgroundColor: '#1E88E5',
       display: 'flex',
@@ -269,6 +328,7 @@ const useStyles = makeStyles(() =>
     usageBox: {
       display: 'flex',
       justifyContent: 'center',
+      flexWrap: 'wrap',
     },
     usageItem: {
       backgroundColor: '#FFF',
@@ -277,6 +337,7 @@ const useStyles = makeStyles(() =>
       height: 520,
       width: 360,
       margin: '0 20px',
+      marginBottom: '20px',
       padding: 24,
       position: 'relative',
     },
@@ -355,15 +416,13 @@ const useStyles = makeStyles(() =>
     },
     footer: {
       backgroundColor: '#FAFAFA',
-      padding: '60px 0',
+      padding: '48px 32px',
       display: 'flex',
       justifyContent: 'center',
     },
-    footerLogo: {
-      fontSize: 40,
-      color: '#424242',
-      fontWeight: 'bold',
-      letterSpacing: '0.04em',
+    footerLogo: {},
+    footerLogoFastLabelImage: {
+      width: 320,
     },
     footerCaption: {
       fontSize: 14,
@@ -386,6 +445,8 @@ const useStyles = makeStyles(() =>
 );
 
 const StartPage: FC = () => {
+  const theme = useTheme();
+  const isSmDown = useMediaQuery(theme.breakpoints.down('sm'));
   const [t] = useTranslation();
   const classes = useStyles();
   const history = useHistory();
@@ -439,13 +500,13 @@ const StartPage: FC = () => {
         <img src={sideLeftImage} className={classes.heroSideLeftImage} />
         <img src={sideRightImage} className={classes.heroSideRightImage} />
         <Box component="div" className={classes.container}>
-          <Box component="div" position="relative" mt={16}>
-            <Box
-              component="div"
-              position="absolute"
-              top={0}
-              left={0}
-              zIndex={20}>
+          <Box
+            component="div"
+            position="relative"
+            mt={16}
+            display="flex"
+            justifyContent="space-between">
+            <Box component="div" zIndex={20}>
               <Typography variant="h3" className={classes.heroTitle}>
                 {ApplicationConst.name}
               </Typography>
@@ -453,62 +514,94 @@ const StartPage: FC = () => {
                 Open source 3D Annotation Tools
               </Typography>
               <Box component="div" display="flex" flexDirection="column" mt={8}>
-                <Button
-                  variant="contained"
-                  className={classes.webDownloadButton}
-                  onClick={onClickStartButton}>
-                  {t('web_hero_start_button')}
-                </Button>
-                <Button
-                  variant="outlined"
-                  className={classes.appDownloadButton}
-                  onClick={handleClick}>
-                  {t('web_hero_download_button')}
-                </Button>
-                <Menu
-                  id="download-menu"
-                  open={open}
-                  anchorEl={anchorEl}
-                  onClose={handleClose}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                  }}>
-                  <MenuItem>
-                    <Link
-                      className={classes.appDownloadLink}
-                      download
-                      href={windowsAppLink}
-                      underline="hover">
-                      For Windows
-                    </Link>
-                  </MenuItem>
-                  <MenuItem>
-                    <Link
-                      className={classes.appDownloadLink}
-                      download
-                      href={intelMacAppLink}
-                      underline="hover">
-                      For Mac with Intel processors
-                    </Link>
-                  </MenuItem>
-                  <MenuItem>
-                    <Link
-                      className={classes.appDownloadLink}
-                      download
-                      href={m1MacAppLink}
-                      underline="hover">
-                      For Mac with Apple M1
-                    </Link>
-                  </MenuItem>
-                </Menu>
+                {isSmDown ? (
+                  <>
+                    <Button
+                      variant="outlined"
+                      className={classes.visitGitHubButtonPrimary}
+                      target="_blank"
+                      href="https://github.com/fastlabel/AutomanTools/">
+                      {t('web_hero_visit_github_button')}
+                    </Button>
+                    <Typography variant="h6" className={classes.heroCaption}>
+                      {t('web_hero_describe_for_mobile')}
+                    </Typography>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      variant="contained"
+                      className={classes.webDownloadButton}
+                      onClick={onClickStartButton}>
+                      {t('web_hero_start_button')}
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      className={classes.appDownloadButton}
+                      onClick={handleClick}>
+                      {t('web_hero_download_button')}
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      className={classes.visitGitHubButton}
+                      target="_blank"
+                      href="https://github.com/fastlabel/AutomanTools/">
+                      {t('web_hero_visit_github_button')}
+                    </Button>
+                    <Menu
+                      id="download-menu"
+                      open={open}
+                      anchorEl={anchorEl}
+                      onClose={handleClose}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'center',
+                      }}>
+                      <MenuItem>
+                        <Link
+                          className={classes.appDownloadLink}
+                          download
+                          href={windowsAppLink}
+                          underline="hover">
+                          For Windows
+                        </Link>
+                      </MenuItem>
+                      <MenuItem>
+                        <Link
+                          className={classes.appDownloadLink}
+                          download
+                          href={intelMacAppLink}
+                          underline="hover">
+                          For Mac with Intel processors
+                        </Link>
+                      </MenuItem>
+                      <MenuItem>
+                        <Link
+                          className={classes.appDownloadLink}
+                          download
+                          href={m1MacAppLink}
+                          underline="hover">
+                          For Mac with Apple M1
+                        </Link>
+                      </MenuItem>
+                    </Menu>
+                  </>
+                )}
               </Box>
             </Box>
-            <img className={classes.heroImage} src={hero} width={560} />
+            <Box
+              position="relative"
+              width="70%"
+              alignItems="center"
+              display="flex"
+              alignContent="center"
+              justifyContent="center">
+              <img className={classes.heroImage} src={hero} width={'90%'} />
+            </Box>
           </Box>
         </Box>
       </Box>
@@ -528,6 +621,45 @@ const StartPage: FC = () => {
           </Box>
           <Box component="div" className={classes.copyImageContainer}>
             <img src={copyImage} className={classes.copyImage} />
+          </Box>
+        </Box>
+      </Box>
+      {/* Features Section */}
+      <Box component="div" className={classes.featuresSection}>
+        <Box component="div" className={classes.container}>
+          <Typography variant="h3" className={classes.featuresTitle}>
+            {t('web_features_title')}
+          </Typography>
+          <Box
+            component="div"
+            mt={4}
+            textAlign="left"
+            ml="auto"
+            mr="auto"
+            maxWidth={560}>
+            <ul>
+              <li>
+                <Typography
+                  variant="subtitle1"
+                  className={classes.featuresCaption}>
+                  {t('web_features_caption_1')}
+                </Typography>
+              </li>
+              <li>
+                <Typography
+                  variant="subtitle1"
+                  className={classes.featuresCaption}>
+                  {t('web_features_caption_2')}
+                </Typography>
+              </li>
+              <li>
+                <Typography
+                  variant="subtitle1"
+                  className={classes.featuresCaption}>
+                  {t('web_features_caption_3')}
+                </Typography>
+              </li>
+            </ul>
           </Box>
         </Box>
       </Box>
@@ -593,6 +725,7 @@ const StartPage: FC = () => {
           </Box>
           <Box component="div" mt={7} display="flex" justifyContent="center">
             <Button
+              disabled={isSmDown}
               variant="contained"
               className={classes.dataTypeButton}
               onClick={onClickStartButton}>
@@ -662,6 +795,7 @@ const StartPage: FC = () => {
                 </Box>
               </Box>
               <Button
+                disabled={isSmDown}
                 variant="outlined"
                 className={classes.usageButton}
                 onClick={onClickStartButton}>
@@ -708,6 +842,7 @@ const StartPage: FC = () => {
                 </Box>
               </Box>
               <Button
+                disabled={isSmDown}
                 variant="outlined"
                 className={classes.usageButton}
                 onClick={onClickEditButton}>
@@ -728,12 +863,21 @@ const StartPage: FC = () => {
             underline="hover">
             <img src={githubImage} className={classes.footerGithubImage} />
           </Link>
-          <Box component="div" mt={2}>
+          <Box component="div" mt={1}>
             <Typography variant="body1" className={classes.footerCaption}>
               {t('web_footer_caption')}
             </Typography>
           </Box>
-          <Box component="div" mt={8}>
+          <Box component="div" mt={4}>
+            <Link target="_blank" href="https://fastlabel.ai/">
+              <img
+                alt=""
+                src="https://storage.googleapis.com/studio-design-assets/projects/rROnD8j2aA/s-672x116_v-fs_webp_1b7a017c-7fec-4cfb-a932-2a9e09853488_small.webp"
+                className={classes.footerLogoFastLabelImage}
+              />
+            </Link>
+          </Box>
+          <Box component="div" mt={1}>
             <Typography variant="body1" className={classes.copylight}>
               © FastLabel 2022
             </Typography>
