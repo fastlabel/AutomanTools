@@ -28,6 +28,8 @@
   "web_features_title": "Main features of Automan",
   "web_features_caption_1": "Sequence interpolation between frames",
   "web_features_caption_2": "3D data labeling",
+  "web_features_caption_2_1": "- Bird's-eye view display",
+  "web_features_caption_2_2": "- 3 view point display",
   "web_features_caption_3": "2D/3D calibration",
   "web_data_type_title": "Annotate 3D data in three different ways",
   "web_data_type_caption_1": "It supports not only annotation of pcd data, but also annotation",

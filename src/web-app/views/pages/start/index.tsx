@@ -10,6 +10,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import SvgIcon from '@mui/material/SvgIcon';
 
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +27,7 @@ import pcdImage from '../../../images/pcd.png';
 import pcdWithImage from '../../../images/pcd_image.png';
 import pcdFramesImage from '../../../images/pcd_frames.png';
 import githubImage from '../../../images/github.png';
+import GitHubIcon from './github-icon';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyC_1egYju9A0EpuJjKFzJ1trqzlmeoccEI',
@@ -221,6 +223,9 @@ const useStyles = makeStyles(() =>
       fontSize: 24,
       lineHeight: '200%',
       letterSpacing: '0.02em',
+    },
+    featuresLi: {
+      listStyleType: 'none',
     },
     dataTypeSection: {
       padding: '0 32px',
@@ -520,7 +525,8 @@ const StartPage: FC = () => {
                       variant="outlined"
                       className={classes.visitGitHubButtonPrimary}
                       target="_blank"
-                      href="https://github.com/fastlabel/AutomanTools/">
+                      href="https://github.com/fastlabel/AutomanTools/"
+                      startIcon={<GitHubIcon />}>
                       {t('web_hero_visit_github_button')}
                     </Button>
                     <Typography variant="h6" className={classes.heroCaption}>
@@ -545,7 +551,8 @@ const StartPage: FC = () => {
                       variant="outlined"
                       className={classes.visitGitHubButton}
                       target="_blank"
-                      href="https://github.com/fastlabel/AutomanTools/">
+                      href="https://github.com/fastlabel/AutomanTools/"
+                      startIcon={<GitHubIcon />}>
                       {t('web_hero_visit_github_button')}
                     </Button>
                     <Menu
@@ -650,6 +657,20 @@ const StartPage: FC = () => {
                   variant="subtitle1"
                   className={classes.featuresCaption}>
                   {t('web_features_caption_2')}
+                </Typography>
+              </li>
+              <li className={classes.featuresLi}>
+                <Typography
+                  variant="subtitle2"
+                  className={classes.featuresCaption}>
+                  {t('web_features_caption_2_1')}
+                </Typography>
+              </li>
+              <li className={classes.featuresLi}>
+                <Typography
+                  variant="subtitle2"
+                  className={classes.featuresCaption}>
+                  {t('web_features_caption_2_2')}
                 </Typography>
               </li>
               <li>

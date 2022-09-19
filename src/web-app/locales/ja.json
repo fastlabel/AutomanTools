@@ -28,6 +28,8 @@
   "web_features_title": "Automanの主な機能",
   "web_features_caption_1": "フレーム間の線形補完",
   "web_features_caption_2": "3Dのデータラベリング",
+  "web_features_caption_2_1": "- 鳥観図表示",
+  "web_features_caption_2_2": "- ３視点表示",
   "web_features_caption_3": "2D/3Dのキャリブレーション",
   "web_data_type_title": "3つの方法で3Dデータをアノテーション",
   "web_data_type_caption_1": "pcdデータのアノテーションだけでなく、画像と比較したアノテーションや、",
