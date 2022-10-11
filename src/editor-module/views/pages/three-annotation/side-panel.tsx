@@ -21,9 +21,9 @@ import { Resizable, ResizeCallback } from 're-resizable';
 import React, { FC, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import TaskStore from '../../../stores/task-store';
-import ClassList from '../../annotation-classes/class-list';
-import InstanceList from '../../annotation-classes/instance-list';
+import TaskStore from '@fl-three-editor/stores/task-store';
+import ClassList from '@fl-three-editor/views/annotation-classes/class-list';
+import InstanceList from '@fl-three-editor/views/annotation-classes/instance-list';
 
 type PanelTitleProps = {
   title: string;
@@ -75,6 +75,7 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
     updateTaskAnnotations,
     onChangeCurrentFrameAppearance,
     onChangeFrameAppearance,
+    startLabelView,
   } = TaskStore.useContainer();
 
   const [resetDialog, setResetDialog] = useState<boolean>(false);
@@ -250,6 +251,9 @@ const ThreeSidePanel: FC<Props> = ({ onConfigClassesClick }) => {
                 onUpdateTaskAnnotation={updateTaskAnnotations}
                 onChangeFrameAppearance={onChangeFrameAppearance}
                 onChangeCurrentFrameAppearance={onChangeCurrentFrameAppearance}
+                onClickLabelView={(item, frameNo) => {
+                  startLabelView(item, frameNo);
+                }}
               />
             </_PanelTitle>
           </Grid>

@@ -5,6 +5,7 @@ import createStyles from '@mui/styles/createStyles';
 import FrameButton, { FRAME_BUTTON_WIDTH, Mark } from './frame-bar-button';
 import { TaskAnnotationVO } from '@fl-three-editor/types/vo';
 import { TASK_SIDEBAR_WIDTH } from '../style-const';
+import { FormatUtil } from '@fl-three-editor/utils/format-util';
 
 const FRAME_BUTTONS_ROOT_LEFT_PADDING = 4;
 const FRAME_BUTTONS_ROOT_RIGHT_PADDING = 4;
@@ -47,7 +48,7 @@ const FrameBar: React.FC<Props> = ({
 
   const frameButtonProps = React.useCallback(
     (frame: number) => {
-      const frameNo = ('0000' + frame).slice(-4);
+      const frameNo = FormatUtil.number2FrameNo(frame);
       let color = 'gray';
       let hasCircle = false;
       const outlined = false;

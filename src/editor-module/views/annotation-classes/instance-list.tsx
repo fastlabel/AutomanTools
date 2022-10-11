@@ -6,8 +6,8 @@ import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
 import Collapse from '@mui/material/Collapse';
+import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -62,6 +62,7 @@ type Props = {
   hasPoints?: (frameNo: string) => boolean;
   onChangeFrameAppearance?: (item: TaskAnnotationVO) => void;
   onChangeCurrentFrameAppearance?: (item: TaskAnnotationVO) => void;
+  onClickLabelView?: (item: TaskAnnotationVO, frameNo: string) => void;
 };
 
 const resolveMode = (selected: boolean, event: any) => {
@@ -83,6 +84,7 @@ const InstanceList: FC<Props> = ({
   onUpdateTaskAnnotation = (f) => f,
   onChangeFrameAppearance = (f) => f,
   onChangeCurrentFrameAppearance = (f) => f,
+  onClickLabelView = (f) => f,
 }) => {
   const styles = useStyles();
   const [t] = useTranslation();
@@ -420,6 +422,19 @@ const InstanceList: FC<Props> = ({
           }}>
           {t('menu_item-label__removeAll')}
         </MenuItem>
+        {multiFrame && <Divider />}
+        {multiFrame && (
+          <MenuItem
+            disabled={disabledRemoveFrame}
+            onClick={() => {
+              if (anchor) {
+                onClickLabelView(anchor.vo, frameNo);
+              }
+              handleClose();
+            }}>
+            {t('menu_item-label__LabelView')}
+          </MenuItem>
+        )}
       </Menu>
     </>
   );

@@ -2,7 +2,7 @@ import { Box, Grid, Typography } from '@mui/material';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { Canvas, ThreeEvent } from '@react-three/fiber';
-import React, { createRef, FC, useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Euler, Event, Group, Object3D, Vector3 } from 'three';
 import { PCDResult } from '../../types/labos';
@@ -61,7 +61,7 @@ const C_DISTANCE = 5;
 
 const ANNOTATION_OPACITY = 50;
 
-const FLThreeEditor: FC<Props> = ({
+const FLThreeEditor: React.FC<Props> = ({
   frameNo,
   annotations,
   useOrthographicCamera,
@@ -81,12 +81,12 @@ const FLThreeEditor: FC<Props> = ({
 }) => {
   const styles = useStyles();
   const [t] = useTranslation();
-  const [near, far, zoom] = useMemo(() => [0.03, 20, 10], []);
-  const [target, setTarget] = useState<Object3D>();
-  const rootRef = createRef<HTMLDivElement>();
-  const _cubeGroupRef = cubeGroupRef || createRef<Group>();
+  const [near, far, zoom] = React.useMemo(() => [0.03, 20, 10], []);
+  const [target, setTarget] = React.useState<Object3D>();
+  const rootRef = React.createRef<HTMLDivElement>();
+  const _cubeGroupRef = cubeGroupRef || React.createRef<Group>();
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (
       selectedTaskAnnotations &&
       selectedTaskAnnotations.length === 1 &&
@@ -99,7 +99,7 @@ const FLThreeEditor: FC<Props> = ({
     }
   }, [_cubeGroupRef, selectedTaskAnnotations]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (rootRef.current) {
       const root = rootRef.current;
       const handleResize = () => {
