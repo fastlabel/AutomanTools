@@ -220,11 +220,7 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
     if (this.object !== undefined) {
       this.object.updateMatrixWorld();
 
-      if (this.object.parent === null) {
-        console.error(
-          'FLTransformControls: The attached 3D object must be a part of the scene graph.'
-        );
-      } else {
+      if (this.object.parent) {
         this.object.parent.matrixWorld.decompose(
           this.parentPosition,
           this.parentQuaternion,
@@ -344,9 +340,10 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
 
       this.offset.copy(this.pointEnd).sub(this.pointStart);
       this.offset
-        .applyQuaternion(this.parentQuaternionInv)
-        .divide(this.parentScale);
-
+        .applyQuaternion(this.parentQuaternionInv);
+      if(this.object?.parent){
+        this.offset.divide(this.parentScale);
+      }
       object.position.copy(this.offset).add(this.positionStart);
     } else if (this.axis === 'R_POINT') {
       this.rotationAxis.copy(this.eye);

@@ -3,20 +3,18 @@ import { Canvas } from '@react-three/fiber';
 import React from 'react';
 import { Euler, Group, Vector3 } from 'three';
 import { PCDResult } from '../../types/labos';
-import { TaskAnnotationVO } from '../../types/vo';
-import FLCubes from './fl-cubes';
 import { FlMainCameraControls } from './fl-main-camera-controls';
 import FLMainControls from './fl-main-controls';
 import FLPcd from './fl-pcd';
 
-const C_RESIZE = { debounce: 100 };
+const C_RESIZE = { debounce: 200 };
 
 const ANNOTATION_OPACITY = 50;
 
 type Props = {
   showLabel: boolean;
   targetFrameNo: string;
-  targetTaskAnnotation:TaskAnnotationVO;
+  framesObject: { [frameNo: string]: Group };
   pcd?: PCDResult;
   bgSub?: JSX.Element;
   cameraHelper?: JSX.Element;
@@ -26,14 +24,14 @@ type Props = {
 const FlLabelMainView: React.FC<Props> = ({
   showLabel,
   targetFrameNo,
-  targetTaskAnnotation,
+  framesObject,
   pcd,
   bgSub,
   cameraHelper,
   mainControlsRef,
 }) => {
-  const orthographic = true;
-  const _cubeGroupRef = React.createRef<Group>();
+  const orthographic = false;
+
   return (
     <Box component="div" flexGrow={1} mt={2} mr={2} ml={2} mb={1}>
       <Canvas
@@ -55,15 +53,7 @@ const FlLabelMainView: React.FC<Props> = ({
         ) : (
           bgSub
         )}
-        <FLCubes
-          ref={_cubeGroupRef}
-          selectedTaskAnnotations={[targetTaskAnnotation]}
-          frameNo={targetFrameNo}
-          selectable={false}
-          showLabel={showLabel}
-          annotationOpacity={ANNOTATION_OPACITY}
-          annotations={[targetTaskAnnotation]}
-        />
+        <primitive object={framesObject[targetFrameNo]}/>
         {cameraHelper}
       </Canvas>
     </Box>

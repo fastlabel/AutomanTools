@@ -4,12 +4,17 @@ import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import FlLabelSecondaryView from '@fl-three-editor/views/task-three/fl-label-secondary-view';
 import FLPcd from '@fl-three-editor/views/task-three/fl-pcd';
+import { Group } from 'three';
 
-const LabelSidePanel: React.FC = () => {
+type Props = {
+  framesObject: { [frameNo: string]: Group };
+};
+
+const LabelSidePanel: React.FC<Props> = ({ framesObject }) => {
   const { labelViewState, taskFrames } = TaskStore.useContainer();
   return (
     <>
-      <Stack height={"100vh"}>
+      <Stack height={'100vh'}>
         <Box component="div">
           {`${labelViewState?.selectedPage}/${labelViewState?.pageCount}`}
         </Box>
@@ -17,7 +22,7 @@ const LabelSidePanel: React.FC = () => {
           {`${labelViewState?.selectedFrame}/${labelViewState?.pageFrameCount}`}
         </Box>
         <Box component="div">{`${labelViewState?.pageFrames}`}</Box>
-        <Stack px={2} sx={{overflowY:"scroll"}}>
+        <Stack px={2} sx={{ overflowY: 'scroll' }}>
           {labelViewState?.pageFrames.map((frameNo) => {
             const taskFrame = taskFrames[frameNo];
             if (taskFrame.status === 'loaded') {
@@ -25,7 +30,7 @@ const LabelSidePanel: React.FC = () => {
                 <FlLabelSecondaryView
                   key={frameNo}
                   frameNo={frameNo}
-                  targetTaskAnnotation={labelViewState?.target}
+                  target={framesObject[frameNo]}
                   bgSub={<FLPcd pcd={taskFrame.pcdResource} baseSize={0.3} />}
                   onObjectChange={(event) => {
                     //

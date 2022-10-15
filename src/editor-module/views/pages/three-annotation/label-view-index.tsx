@@ -7,15 +7,17 @@ import Stack from '@mui/material/Stack';
 import React from 'react';
 import LabelSidePanel from './label-side-panel';
 import LabelToolBar from './label-tool-bar';
-import { PerspectiveCamera, Vector3 } from 'three';
+import { Group, PerspectiveCamera, Vector3 } from 'three';
 import PcdUtil from '@fl-three-editor/utils/pcd-util';
 import FLPcd from '@fl-three-editor/views/task-three/fl-pcd';
+import { buildFlCubeObject3d } from './../../task-three/fl-cube-model';
 
 const LabelViewIndex: React.FC = () => {
   const { calibrationCamera } = CameraCalibrationStore.useContainer();
 
   const mainControlsRef = React.createRef<FlMainCameraControls>();
-  const { taskToolBar, taskFrames, labelViewState } = TaskStore.useContainer();
+  const { taskRom, taskToolBar, taskFrames, labelViewState } =
+    TaskStore.useContainer();
 
   const resolveCameraHelper = React.useCallback(
     (calibrationCamera?: PerspectiveCamera) => {
@@ -54,6 +56,19 @@ const LabelViewIndex: React.FC = () => {
     return [undefined, undefined, undefined];
   }, [taskFrames, labelViewState]);
 
+  const framesObject: { [frameNo: string]: Group } = React.useMemo(() => {
+    const resultObj: { [frameNo: string]: Group } = {};
+    if (labelViewState && taskRom.status === 'loaded') {
+      taskRom.frames.forEach((frameNo) => {
+        resultObj[frameNo] = buildFlCubeObject3d(
+          labelViewState.target,
+          frameNo
+        );
+      });
+    }
+    return resultObj;
+  }, [taskRom, labelViewState]);
+
   if (!labelViewState) {
     return <></>;
   }
@@ -65,7 +80,7 @@ const LabelViewIndex: React.FC = () => {
           <FlLabelMainView
             showLabel={taskToolBar.showLabel}
             targetFrameNo={labelViewState.selectedFrame}
-            targetTaskAnnotation={labelViewState.target}
+            framesObject={framesObject}
             pcd={pcd}
             bgSub={pcdEditorObj}
             cameraHelper={resolveCameraHelper(calibrationCamera)}
@@ -74,7 +89,7 @@ const LabelViewIndex: React.FC = () => {
         </Stack>
       </Grid>
       <Grid item xs={7}>
-        <LabelSidePanel />
+        <LabelSidePanel framesObject={framesObject} />
       </Grid>
     </>
   );

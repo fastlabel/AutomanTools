@@ -82,6 +82,7 @@ const FLObjectControls: FC<{
       transformControls.detach();
       initCamera(orbitControls);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transformControls, target]);
 
   React.useEffect(() => {
