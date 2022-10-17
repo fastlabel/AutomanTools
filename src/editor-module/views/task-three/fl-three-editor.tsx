@@ -7,6 +7,13 @@ import { useTranslation } from 'react-i18next';
 import { Euler, Event, Group, Object3D, Vector3 } from 'three';
 import { PCDResult } from '../../types/labos';
 import { AnnotationClassVO, TaskAnnotationVO } from '../../types/vo';
+import {
+  ANNOTATION_OPACITY,
+  MAIN_C_RESIZE,
+  MAIN_FOOTER_BOX_H,
+  THREE_SX_PROPS,
+  THREE_STYLES,
+} from './fl-const';
 import FLCubes from './fl-cubes';
 import { FlMainCameraControls } from './fl-main-camera-controls';
 import FLMainControls from './fl-main-controls';
@@ -22,13 +29,13 @@ const useStyles = makeStyles(() =>
       backgroundColor: '#1a1a1a',
     },
     footer: {
-      maxHeight: 360,
+      maxHeight: MAIN_FOOTER_BOX_H,
     },
     footerLabel: {
       alignItems: 'center',
       justifyContent: 'center',
       display: 'flex',
-      backgroundColor: '#24303b',
+      backgroundColor: THREE_STYLES.baseBackgroundColor,
       color: '#bdc8d2',
     },
   })
@@ -55,11 +62,6 @@ type Props = {
   ) => void;
   onObjectChange?: (event: Event) => void;
 };
-
-const C_RESIZE = { debounce: 100 };
-const C_DISTANCE = 5;
-
-const ANNOTATION_OPACITY = 50;
 
 const FLThreeEditor: React.FC<Props> = ({
   frameNo,
@@ -129,8 +131,8 @@ const FLThreeEditor: React.FC<Props> = ({
             rotation: new Euler(0, 0, 0, 'ZXY'),
             zoom: orthographic ? 10 : undefined,
           }}
-          style={{ backgroundColor: 'black' }}
-          resize={C_RESIZE}>
+          style={THREE_SX_PROPS.canvasSx}
+          resize={MAIN_C_RESIZE}>
           <FLMainControls
             orthographic={orthographic}
             position0={position0}
@@ -170,8 +172,8 @@ const FLThreeEditor: React.FC<Props> = ({
                   far,
                   rotation: new Euler(0, 0, 0, 'ZXY'),
                 }}
-                style={{ backgroundColor: 'black' }}
-                resize={C_RESIZE}>
+                style={THREE_SX_PROPS.canvasSx}
+                resize={MAIN_C_RESIZE}>
                 {bgSub}
                 <FLObjectControls
                   annotationOpacity={ANNOTATION_OPACITY}
@@ -194,8 +196,8 @@ const FLThreeEditor: React.FC<Props> = ({
                   far,
                   rotation: new Euler(0, 0, 0, 'ZXY'),
                 }}
-                style={{ backgroundColor: 'black' }}
-                resize={C_RESIZE}>
+                style={THREE_SX_PROPS.canvasSx}
+                resize={MAIN_C_RESIZE}>
                 {bgSub}
                 <FLObjectControls
                   annotationOpacity={ANNOTATION_OPACITY}
@@ -218,8 +220,8 @@ const FLThreeEditor: React.FC<Props> = ({
                   far,
                   rotation: new Euler(0, 0, 0, 'ZXY'),
                 }}
-                style={{ backgroundColor: 'black' }}
-                resize={C_RESIZE}>
+                style={THREE_SX_PROPS.canvasSx}
+                resize={MAIN_C_RESIZE}>
                 {bgSub}
                 <FLObjectControls
                   annotationOpacity={ANNOTATION_OPACITY}

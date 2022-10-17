@@ -339,9 +339,8 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
       );
 
       this.offset.copy(this.pointEnd).sub(this.pointStart);
-      this.offset
-        .applyQuaternion(this.parentQuaternionInv);
-      if(this.object?.parent){
+      this.offset.applyQuaternion(this.parentQuaternionInv);
+      if (this.object?.parent) {
         this.offset.divide(this.parentScale);
       }
       object.position.copy(this.offset).add(this.positionStart);

@@ -3,7 +3,9 @@ import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import TaskStore, { TaskEditorViewMode } from '@fl-three-editor/stores/task-store';
+import TaskStore, {
+  TaskEditorViewMode,
+} from '@fl-three-editor/stores/task-store';
 import BaseViewIndex from './base-view-index';
 import ClassListDialog from './class-list-dialog';
 import ImageDialog from './image-dialog';

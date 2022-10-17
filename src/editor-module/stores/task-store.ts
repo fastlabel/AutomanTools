@@ -872,8 +872,8 @@ const useTask = () => {
     [taskFrame, taskRom, _updateTaskAnnotationsFunc]
   );
 
-  const startLabelView = React.useCallback(
-    (target: TaskAnnotationVO, frameNo: string) => {
+  const changePageLabelView = React.useCallback(
+    (target?: TaskAnnotationVO, frameNo?: string, page?: number) => {
       if (taskRom.status === 'loaded') {
         const _pageCount = Math.floor(
           taskRom.frames.length / LABEL_VIEW_PAGE_FRAME_SIZE
@@ -882,29 +882,55 @@ const useTask = () => {
           taskRom.frames.length % LABEL_VIEW_PAGE_FRAME_SIZE;
         const pageCount = _lastPageFrameCount ? _pageCount + 1 : _pageCount;
 
-        const frame = FormatUtil.frameNo2Number(frameNo);
-        const selectedPage =
-          Math.floor((frame - 1) / LABEL_VIEW_PAGE_FRAME_SIZE) + 1;
+        let selectedPage = 0;
+        let selectedFrame = '';
+        if (page) {
+          selectedPage = page;
+        } else if (frameNo) {
+          const frame = FormatUtil.frameNo2Number(frameNo);
+          selectedPage =
+            Math.floor((frame - 1) / LABEL_VIEW_PAGE_FRAME_SIZE) + 1;
+          selectedFrame = frameNo;
+        }
 
         const pageFrameCount =
           pageCount !== selectedPage
             ? LABEL_VIEW_PAGE_FRAME_SIZE
             : _lastPageFrameCount || LABEL_VIEW_PAGE_FRAME_SIZE;
 
-        const pageFrames = [];
+        const pageFrames: string[] = [];
         const offset = (selectedPage - 1) * LABEL_VIEW_PAGE_FRAME_SIZE;
         for (let i = 1; i <= pageFrameCount; i++) {
           pageFrames.push(FormatUtil.number2FrameNo(offset + i));
         }
+
+        if (!selectedFrame) {
+          selectedFrame = pageFrames[0];
+        }
+
         _setTaskEditorViewMode(TaskEditorViewMode.anno__multi_frame_view);
         _setLoadStatus('loading');
-        _setLabelViewState({
-          target,
-          selectedFrame: frameNo,
-          pageFrames,
-          pageFrameCount,
-          pageCount,
-          selectedPage,
+        _setLabelViewState((pre) => {
+          if (pre) {
+            return {
+              target: pre.target,
+              selectedFrame,
+              pageFrames,
+              pageFrameCount,
+              pageCount,
+              selectedPage,
+            };
+          } else if (target) {
+            return {
+              target,
+              selectedFrame,
+              pageFrames,
+              pageFrameCount,
+              pageCount,
+              selectedPage,
+            };
+          }
+          return pre;
         });
         _updateTaskFrames(
           pageFrames.reduce<{ [key: string]: TaskFrameState }>((r, frameNo) => {
@@ -917,9 +943,19 @@ const useTask = () => {
     [taskRom]
   );
 
-  const movePageLabelView = React.useCallback(() => {
-    //
-  }, []);
+  const startLabelView = React.useCallback(
+    (target: TaskAnnotationVO, frameNo: string) => {
+      changePageLabelView(target, frameNo);
+    },
+    [changePageLabelView]
+  );
+
+  const movePageLabelView = React.useCallback(
+    (page: number) => {
+      changePageLabelView(undefined, undefined, page);
+    },
+    [changePageLabelView]
+  );
 
   const endLabelView = React.useCallback(() => {
     _setTaskEditorViewMode(TaskEditorViewMode.base__normal);
@@ -1036,6 +1072,7 @@ const useTask = () => {
     taskEditorViewMode,
     labelViewState,
     startLabelView,
+    movePageLabelView,
     endLabelView,
     taskFrames,
   };

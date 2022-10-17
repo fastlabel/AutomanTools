@@ -1,12 +1,17 @@
-import { Box, Grid } from '@mui/material';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { Canvas } from '@react-three/fiber';
 import React from 'react';
 import { Euler, Event, Object3D } from 'three';
+import {
+  LABEL_BOX_H,
+  MAIN_C_RESIZE,
+  ANNOTATION_OPACITY,
+  THREE_SX_PROPS,
+} from './fl-const';
 import FLObjectControls from './fl-object-controls';
-
-const C_RESIZE = { debounce: 100 };
-const ANNOTATION_OPACITY = 50;
-const FOOTER_BOX_H = 240;
 
 type Props = {
   frameNo: string;
@@ -24,71 +29,74 @@ const FlLabelSecondaryView: React.FC<Props> = ({
   const [near, far] = React.useMemo(() => [0.03, 20], []);
 
   return (
-    <Grid container spacing={2} maxHeight={340} mb={2}>
-      <Grid item xs={4}>
-        <Box component="div" height={FOOTER_BOX_H}>
-          <Canvas
-            orthographic
-            camera={{
-              near,
-              far,
-              rotation: new Euler(0, 0, 0, 'ZXY'),
-            }}
-            style={{ backgroundColor: 'black' }}
-            resize={C_RESIZE}>
-            {bgSub}
-            <FLObjectControls
-              annotationOpacity={ANNOTATION_OPACITY}
-              control="top"
-              target={target}
-              onObjectChange={onObjectChange}
-            />
-          </Canvas>
-        </Box>
+    <Stack>
+      <Typography>{frameNo}</Typography>
+      <Grid container spacing={2} maxHeight={340} mb={2}>
+        <Grid item xs={4}>
+          <Box component="div" height={LABEL_BOX_H}>
+            <Canvas
+              orthographic
+              camera={{
+                near,
+                far,
+                rotation: new Euler(0, 0, 0, 'ZXY'),
+              }}
+              style={THREE_SX_PROPS.canvasSx}
+              resize={MAIN_C_RESIZE}>
+              {bgSub}
+              <FLObjectControls
+                annotationOpacity={ANNOTATION_OPACITY}
+                control="top"
+                target={target}
+                onObjectChange={onObjectChange}
+              />
+            </Canvas>
+          </Box>
+        </Grid>
+        <Grid item xs={4}>
+          <Box component="div" height={LABEL_BOX_H}>
+            <Canvas
+              orthographic
+              camera={{
+                near,
+                far,
+                rotation: new Euler(0, 0, 0, 'ZXY'),
+              }}
+              style={THREE_SX_PROPS.canvasSx}
+              resize={MAIN_C_RESIZE}>
+              {bgSub}
+              <FLObjectControls
+                annotationOpacity={ANNOTATION_OPACITY}
+                control="side"
+                target={target}
+                onObjectChange={onObjectChange}
+              />
+            </Canvas>
+          </Box>
+        </Grid>
+        <Grid item xs={4}>
+          <Box component="div" height={LABEL_BOX_H}>
+            <Canvas
+              orthographic
+              camera={{
+                near,
+                far,
+                rotation: new Euler(0, 0, 0, 'ZXY'),
+              }}
+              style={THREE_SX_PROPS.canvasSx}
+              resize={MAIN_C_RESIZE}>
+              {bgSub}
+              <FLObjectControls
+                annotationOpacity={ANNOTATION_OPACITY}
+                control="front"
+                target={target}
+                onObjectChange={onObjectChange}
+              />
+            </Canvas>
+          </Box>
+        </Grid>
       </Grid>
-      <Grid item xs={4}>
-        <Box component="div" height={FOOTER_BOX_H}>
-          <Canvas
-            orthographic
-            camera={{
-              near,
-              far,
-              rotation: new Euler(0, 0, 0, 'ZXY'),
-            }}
-            style={{ backgroundColor: 'black' }}
-            resize={C_RESIZE}>
-            {bgSub}
-            <FLObjectControls
-              annotationOpacity={ANNOTATION_OPACITY}
-              control="side"
-              target={target}
-              onObjectChange={onObjectChange}
-            />
-          </Canvas>
-        </Box>
-      </Grid>
-      <Grid item xs={4}>
-        <Box component="div" height={FOOTER_BOX_H}>
-          <Canvas
-            orthographic
-            camera={{
-              near,
-              far,
-              rotation: new Euler(0, 0, 0, 'ZXY'),
-            }}
-            style={{ backgroundColor: 'black' }}
-            resize={C_RESIZE}>
-            {bgSub}
-            <FLObjectControls
-              annotationOpacity={ANNOTATION_OPACITY}
-              control="front"
-              target={target}
-              onObjectChange={onObjectChange}
-            />
-          </Canvas>
-        </Box>
-      </Grid>
-    </Grid>
+    </Stack>
   );
 };
 export default FlLabelSecondaryView;

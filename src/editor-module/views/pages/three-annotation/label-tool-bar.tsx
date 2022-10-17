@@ -8,10 +8,8 @@ import { useTranslation } from 'react-i18next';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const LabelToolBar: React.FC = () => {
-    const [t] = useTranslation();
-    const {
-       endLabelView
-      } = TaskStore.useContainer();
+  const [t] = useTranslation();
+  const { endLabelView } = TaskStore.useContainer();
 
   return (
     <ToolBar>

@@ -3,13 +3,10 @@ import { Canvas } from '@react-three/fiber';
 import React from 'react';
 import { Euler, Group, Vector3 } from 'three';
 import { PCDResult } from '../../types/labos';
+import { LABEL_C_RESIZE, THREE_STYLES, THREE_SX_PROPS } from './fl-const';
 import { FlMainCameraControls } from './fl-main-camera-controls';
 import FLMainControls from './fl-main-controls';
 import FLPcd from './fl-pcd';
-
-const C_RESIZE = { debounce: 200 };
-
-const ANNOTATION_OPACITY = 50;
 
 type Props = {
   showLabel: boolean;
@@ -30,10 +27,35 @@ const FlLabelMainView: React.FC<Props> = ({
   cameraHelper,
   mainControlsRef,
 }) => {
+  const rootRef = React.createRef<HTMLDivElement>();
   const orthographic = false;
 
+  React.useEffect(() => {
+    if (rootRef.current) {
+      const root = rootRef.current;
+      const handleResize = () => {
+        const canvas = root.getElementsByTagName('canvas') as any;
+        for (const c of canvas) {
+          c.width = 0;
+          c.height = 0;
+          c.style.width = '';
+          c.style.height = '';
+        }
+      };
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, [rootRef]);
+
   return (
-    <Box component="div" flexGrow={1} mt={2} mr={2} ml={2} mb={1}>
+    <Box
+      ref={rootRef}
+      component="div"
+      flexGrow={1}
+      px={2}
+      pt={2}
+      pb={1}
+      sx={{ backgroundColor: THREE_STYLES.baseBackgroundColor }}>
       <Canvas
         orthographic={orthographic}
         camera={{
@@ -42,8 +64,8 @@ const FlLabelMainView: React.FC<Props> = ({
           rotation: new Euler(0, 0, 0, 'ZXY'),
           zoom: orthographic ? 10 : undefined,
         }}
-        style={{ backgroundColor: 'black' }}
-        resize={C_RESIZE}>
+        style={THREE_SX_PROPS.canvasSx}
+        resize={LABEL_C_RESIZE}>
         <FLMainControls
           orthographic={orthographic}
           mainControlsRef={mainControlsRef}
@@ -53,7 +75,7 @@ const FlLabelMainView: React.FC<Props> = ({
         ) : (
           bgSub
         )}
-        <primitive object={framesObject[targetFrameNo]}/>
+        <primitive object={framesObject[targetFrameNo]} />
         {cameraHelper}
       </Canvas>
     </Box>

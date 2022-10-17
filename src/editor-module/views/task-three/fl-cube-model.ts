@@ -1,5 +1,16 @@
 import { TaskAnnotationVO, ThreePoints } from '@fl-three-editor/types/vo';
-import { Group, Vector3, Mesh, BoxGeometry, MeshBasicMaterial, Object3D, BufferGeometry, BufferAttribute, LineSegments, LineBasicMaterial } from 'three';
+import {
+  Group,
+  Vector3,
+  Mesh,
+  BoxGeometry,
+  MeshBasicMaterial,
+  Object3D,
+  BufferGeometry,
+  BufferAttribute,
+  LineSegments,
+  LineBasicMaterial,
+} from 'three';
 
 export const buildFlCubeObject3d = (
   taskAnnotationVo: TaskAnnotationVO,
@@ -64,7 +75,9 @@ export const buildFlCubeObject3d = (
   return root;
 };
 
-export const extractFlCubeObject3d = (flCube: Group | Object3D): ThreePoints => {
+export const extractFlCubeObject3d = (
+  flCube: Group | Object3D
+): ThreePoints => {
   return [
     flCube.position.x,
     flCube.position.y,
