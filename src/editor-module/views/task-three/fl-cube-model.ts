@@ -78,6 +78,20 @@ export const buildFlCubeObject3d = (
 export const extractFlCubeObject3d = (
   flCube: Group | Object3D
 ): ThreePoints => {
+  if (flCube.children[0] === undefined) {
+    console.error(flCube);
+    return [
+      flCube.position.x,
+      flCube.position.y,
+      flCube.position.z,
+      flCube.rotation.x,
+      flCube.rotation.y,
+      flCube.rotation.z,
+      1,
+      1,
+      1,
+    ];
+  }
   return [
     flCube.position.x,
     flCube.position.y,
@@ -89,4 +103,21 @@ export const extractFlCubeObject3d = (
     flCube.children[0].scale.y,
     flCube.children[0].scale.z,
   ];
+};
+
+export const updateFlCubeObject3d = (
+  flCube: Group | Object3D,
+  points: ThreePoints
+): void => {
+  if (flCube.children[0] === undefined) {
+    console.error(flCube);
+  }
+  const [px, py, pz, ax, ay, az, sx, sy, sz] = points;
+  flCube.position.setX(px);
+  flCube.position.setY(py);
+  flCube.position.setZ(pz);
+  flCube.rotation.set(ax, ay, az);
+  flCube.children[0].scale.setX(sx);
+  flCube.children[0].scale.setY(sy);
+  flCube.children[0].scale.setZ(sz);
 };

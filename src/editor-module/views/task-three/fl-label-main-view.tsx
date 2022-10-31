@@ -1,29 +1,50 @@
 import { Box } from '@mui/material';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
 import React from 'react';
 import { Euler, Group, Vector3 } from 'three';
 import { PCDResult } from '../../types/labos';
 import { LABEL_C_RESIZE, THREE_STYLES, THREE_SX_PROPS } from './fl-const';
 import { FlMainCameraControls } from './fl-main-camera-controls';
 import FLMainControls from './fl-main-controls';
-import FLPcd from './fl-pcd';
+import { FlPcdPoints } from './fl-pcd-points';
+
+type ResetEffectProps = {
+  pcd?: PCDResult;
+  target?: Group;
+  baseSize?: number;
+};
+
+const ResetEffect: React.FC<ResetEffectProps> = ({ pcd, target, baseSize }) => {
+  const gl = useThree((state) => state.gl);
+  const scene = useThree((state) => state.scene);
+  React.useEffect(() => {
+    scene.clear();
+    if (target) {
+      scene.add(target);
+    }
+    if (pcd) {
+      const points = FlPcdPoints.buildPointsMesh(pcd, baseSize);
+      scene.add(points);
+    }
+    gl.clear();
+    gl.resetState();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target, gl, scene]);
+  return <></>;
+};
 
 type Props = {
-  showLabel: boolean;
-  targetFrameNo: string;
-  framesObject: { [frameNo: string]: Group };
+  position0?: Vector3;
+  target?: Group;
   pcd?: PCDResult;
-  bgSub?: JSX.Element;
   cameraHelper?: JSX.Element;
   mainControlsRef?: React.RefObject<FlMainCameraControls>;
 };
 
 const FlLabelMainView: React.FC<Props> = ({
-  showLabel,
-  targetFrameNo,
-  framesObject,
+  position0,
+  target,
   pcd,
-  bgSub,
   cameraHelper,
   mainControlsRef,
 }) => {
@@ -67,15 +88,15 @@ const FlLabelMainView: React.FC<Props> = ({
         style={THREE_SX_PROPS.canvasSx}
         resize={LABEL_C_RESIZE}>
         <FLMainControls
+          position0={position0}
           orthographic={orthographic}
           mainControlsRef={mainControlsRef}
         />
-        {pcd ? (
-          <FLPcd pcd={pcd} baseSize={orthographic ? 0.3 : 0.015} />
-        ) : (
-          bgSub
-        )}
-        <primitive object={framesObject[targetFrameNo]} />
+        <ResetEffect
+          target={target}
+          pcd={pcd}
+          baseSize={orthographic ? 0.3 : 0.015}
+        />
         {cameraHelper}
       </Canvas>
     </Box>

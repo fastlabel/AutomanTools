@@ -1,3 +1,4 @@
+import debounce from 'lodash.debounce';
 import {
   BufferGeometry,
   Camera,
@@ -98,6 +99,10 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
   private objectChangeEvent = { type: 'objectChange' };
 
   private orbit: FLObjectCameraControls;
+  private debounceDispatchEvent: (event: {
+    type: string;
+    [attachment: string]: any;
+  }) => void;
 
   constructor(
     camera: TCamera,
@@ -178,6 +183,8 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
       'pointerup',
       this.onPointerUp
     );
+
+    this.debounceDispatchEvent = debounce(this.dispatchEvent, 500);
   }
 
   private intersectObjectWithRay = (
@@ -471,7 +478,7 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
     }
 
     this.dispatchEvent(this.changeEvent);
-    this.dispatchEvent(this.objectChangeEvent);
+    this.debounceDispatchEvent(this.objectChangeEvent);
   };
 
   private pointerUp = (pointer: FLTransformControlsPointerObject): void => {

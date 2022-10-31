@@ -16,20 +16,37 @@ import FLObjectControls from './fl-object-controls';
 type Props = {
   frameNo: string;
   target: Object3D;
+  onClickCapture: (event: Event, frameNo: string) => void;
+  selected: boolean;
   bgSub?: JSX.Element;
-  onObjectChange?: (event: Event) => void;
+  onObjectChange: (event: Event, frameNo: string) => void;
 };
 
 const FlLabelSecondaryView: React.FC<Props> = ({
   frameNo,
   target,
+  onClickCapture,
+  selected,
   bgSub,
   onObjectChange,
 }) => {
   const [near, far] = React.useMemo(() => [0.03, 20], []);
-
+  const handleObjectChange = React.useCallback(
+    (event) => onObjectChange(event, frameNo),
+    [frameNo, onObjectChange]
+  );
   return (
-    <Stack>
+    <Stack
+      p={1}
+      onClickCapture={(event) => {
+        onClickCapture(event, frameNo);
+      }}
+      sx={{
+        backgroundColor: selected ? '#595959' : undefined,
+        ':hover': {
+          backgroundColor: '#757575',
+        },
+      }}>
       <Typography>{frameNo}</Typography>
       <Grid container spacing={2} maxHeight={340} mb={2}>
         <Grid item xs={4}>
@@ -48,7 +65,7 @@ const FlLabelSecondaryView: React.FC<Props> = ({
                 annotationOpacity={ANNOTATION_OPACITY}
                 control="top"
                 target={target}
-                onObjectChange={onObjectChange}
+                onObjectChange={handleObjectChange}
               />
             </Canvas>
           </Box>
@@ -69,7 +86,7 @@ const FlLabelSecondaryView: React.FC<Props> = ({
                 annotationOpacity={ANNOTATION_OPACITY}
                 control="side"
                 target={target}
-                onObjectChange={onObjectChange}
+                onObjectChange={handleObjectChange}
               />
             </Canvas>
           </Box>
@@ -90,7 +107,7 @@ const FlLabelSecondaryView: React.FC<Props> = ({
                 annotationOpacity={ANNOTATION_OPACITY}
                 control="front"
                 target={target}
-                onObjectChange={onObjectChange}
+                onObjectChange={handleObjectChange}
               />
             </Canvas>
           </Box>

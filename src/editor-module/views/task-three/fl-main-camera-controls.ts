@@ -103,6 +103,7 @@ class FlMainCameraControls extends EventDispatcher {
   rotate: (angleX: number, angleY: number) => void;
   dolly: (dollyScale: number, out?: true) => void;
   point: (target: Vector3, position: Vector3) => void;
+  keypan: (deltaX: number, deltaY: number, deltaZ: number) => void;
   keyRotate: (angleX: number, angleY: number) => void;
 
   constructor(object: Camera, domElement?: HTMLElement) {
@@ -1121,6 +1122,16 @@ class FlMainCameraControls extends EventDispatcher {
         dollyIn(dollyScale);
       } else {
         dollyOut(dollyScale);
+      }
+      scope.update();
+    };
+
+    this.keypan = (deltaX, deltaY, deltaZ) => {
+      if (deltaY) {
+        panOffset.setY(deltaY);
+      }
+      if (deltaZ) {
+        panOffset.setZ(deltaZ);
       }
       scope.update();
     };

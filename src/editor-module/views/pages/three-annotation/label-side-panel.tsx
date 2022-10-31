@@ -1,28 +1,45 @@
-import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined';
-import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
-import React from 'react';
-import TaskStore from '@fl-three-editor/stores/task-store';
-import Stack from '@mui/material/Stack';
-import Box from '@mui/material/Box';
-import FlLabelSecondaryView from '@fl-three-editor/views/task-three/fl-label-secondary-view';
-import FLPcd from '@fl-three-editor/views/task-three/fl-pcd';
-import { Group } from 'three';
-import Typography from '@mui/material/Typography';
+import ToolBar from '@fl-three-editor/components/tool-bar';
 import ToolBarButton, {
   ToolBarBoxButtonThemeProvider,
 } from '@fl-three-editor/components/tool-bar-button';
-import ToolBar from '@fl-three-editor/components/tool-bar';
-import { useTranslation } from 'react-i18next';
+import TaskStore from '@fl-three-editor/stores/task-store';
+import { ThreePoints } from '@fl-three-editor/types/vo';
+import { FlCubeUtil } from '@fl-three-editor/utils/fl-cube-util';
+import { InterpolationUtil } from '@fl-three-editor/utils/interpolation-util';
 import { THREE_STYLES } from '@fl-three-editor/views/task-three/fl-const';
+import FlLabelSecondaryView from '@fl-three-editor/views/task-three/fl-label-secondary-view';
+import FLPcd from '@fl-three-editor/views/task-three/fl-pcd';
+import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined';
+import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { Group } from 'three';
+import { extractFlCubeObject3d } from '@fl-three-editor/views/task-three/fl-cube-model';
 
 type Props = {
   framesObject: { [frameNo: string]: Group };
+  framesPoints: { [frameNo: string]: ThreePoints };
+  onUpdateFramesPoints: (framesPoints: {
+    [frameNo: string]: ThreePoints;
+  }) => void;
 };
 
-const LabelSidePanel: React.FC<Props> = ({ framesObject }) => {
+const LabelSidePanel: React.FC<Props> = ({
+  framesObject,
+  framesPoints,
+  onUpdateFramesPoints,
+}) => {
   const [t] = useTranslation();
-  const { labelViewState, taskFrames, movePageLabelView } =
-    TaskStore.useContainer();
+  const {
+    taskToolBar,
+    labelViewState,
+    taskFrames,
+    movePageLabelView,
+    moveFrameNoLabelView,
+  } = TaskStore.useContainer();
 
   const [
     disabledBack,
@@ -82,8 +99,8 @@ const LabelSidePanel: React.FC<Props> = ({ framesObject }) => {
         </ToolBar>
 
         <Stack
-          px={2}
-          pt={1}
+          px={1}
+          minHeight="calc(100vh - 42px)"
           sx={{
             overflowY: 'scroll',
             backgroundColor: THREE_STYLES.baseBackgroundColor,
@@ -96,10 +113,28 @@ const LabelSidePanel: React.FC<Props> = ({ framesObject }) => {
                 <FlLabelSecondaryView
                   key={frameNo}
                   frameNo={frameNo}
+                  selected={frameNo === labelViewState?.selectedFrame}
                   target={framesObject[frameNo]}
+                  onClickCapture={(event, frameNo) => {
+                    moveFrameNoLabelView(frameNo);
+                  }}
                   bgSub={<FLPcd pcd={taskFrame.pcdResource} baseSize={0.3} />}
-                  onObjectChange={(event) => {
-                    //
+                  onObjectChange={(event, frameNo) => {
+                    const changedObj = event.target.object;
+                    const newPoints = FlCubeUtil.getPointsVo(changedObj);
+                    const newFramesPoints = { ...framesPoints };
+                    if (labelViewState && taskToolBar.interpolation) {
+                      InterpolationUtil.interpolation3D(
+                        frameNo,
+                        labelViewState.target.pointsMeta,
+                        newFramesPoints,
+                        framesObject,
+                        newPoints
+                      );
+                      onUpdateFramesPoints(newFramesPoints);
+                    } else {
+                      newFramesPoints[frameNo] = newPoints;
+                    }
                   }}
                 />
               );
