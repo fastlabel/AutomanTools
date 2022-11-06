@@ -1,3 +1,4 @@
+import { AppContext } from '@fl-three-editor/application/app-context';
 import { ProjectRepositoryContext } from '@fl-three-editor/repositories/project-repository';
 import AnnotationClassStore from '@fl-three-editor/stores/annotation-class-store';
 import CameraCalibrationStore from '@fl-three-editor/stores/camera-calibration-store';
@@ -20,30 +21,32 @@ export const App = (): JSX.Element => {
   return (
     <ProjectRepositoryContext.Provider value={projectFsRepository}>
       <SnackbarProvider maxSnack={3} hideIconVariant>
-        <div className="container">
-          <Router>
-            <TitleBar />
-            <div className={'content'}>
-              <Switch>
-                <Route path="/threeannotation/:projectId">
-                  <TaskStore.Provider>
-                    <AnnotationClassStore.Provider>
-                      <CameraCalibrationStore.Provider>
-                        <ThreeAnnotationPage height="100%" />
-                      </CameraCalibrationStore.Provider>
-                    </AnnotationClassStore.Provider>
-                  </TaskStore.Provider>
-                </Route>
-                <Route path="/workspace">
-                  <WorkspacePage />
-                </Route>
-                <Route path="/">
-                  <StartPage />
-                </Route>
-              </Switch>
-            </div>
-          </Router>
-        </div>
+        <AppContext.Provider value={{ mode: 'electron' }}>
+          <div className="container">
+            <Router>
+              <TitleBar />
+              <div className={'content'}>
+                <Switch>
+                  <Route path="/threeannotation/:projectId">
+                    <TaskStore.Provider>
+                      <AnnotationClassStore.Provider>
+                        <CameraCalibrationStore.Provider>
+                          <ThreeAnnotationPage height="100%" />
+                        </CameraCalibrationStore.Provider>
+                      </AnnotationClassStore.Provider>
+                    </TaskStore.Provider>
+                  </Route>
+                  <Route path="/workspace">
+                    <WorkspacePage />
+                  </Route>
+                  <Route path="/">
+                    <StartPage />
+                  </Route>
+                </Switch>
+              </div>
+            </Router>
+          </div>
+        </AppContext.Provider>
       </SnackbarProvider>
     </ProjectRepositoryContext.Provider>
   );

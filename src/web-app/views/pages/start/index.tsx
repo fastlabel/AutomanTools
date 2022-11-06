@@ -680,6 +680,13 @@ const StartPage: FC = () => {
                   {t('web_features_caption_3')}
                 </Typography>
               </li>
+              <li>
+                <Typography
+                  variant="subtitle1"
+                  className={classes.featuresCaption}>
+                  {t('web_features_caption_4')}
+                </Typography>
+              </li>
             </ul>
           </Box>
         </Box>

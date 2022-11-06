@@ -1,3 +1,4 @@
+import { AppContext } from '@fl-three-editor/application/app-context';
 import { ProjectRepositoryContext } from '@fl-three-editor/repositories/project-repository';
 import AnnotationClassStore from '@fl-three-editor/stores/annotation-class-store';
 import CameraCalibrationStore from '@fl-three-editor/stores/camera-calibration-store';
@@ -18,33 +19,35 @@ export const App = (): JSX.Element => {
   return (
     <ProjectRepositoryContext.Provider value={projectWebRepository}>
       <SnackbarProvider maxSnack={3} hideIconVariant>
-        <div className="container">
-          <Router>
-            <div className={'content'}>
-              <Switch>
-                <Route path="/threeannotation/:projectId">
-                  <TaskStore.Provider>
-                    <AnnotationClassStore.Provider>
-                      <CameraCalibrationStore.Provider>
-                        <ThreeAnnotationPage />
-                      </CameraCalibrationStore.Provider>
-                    </AnnotationClassStore.Provider>
-                  </TaskStore.Provider>
-                </Route>
-                <Route path="/new">
-                  <NewPage />
-                </Route>
-                <Route path="/edit">
-                  <EditPage />
-                </Route>
-                <Route path="/">
-                  <StartPage />
-                </Route>
-                <Route component={StartPage} />
-              </Switch>
-            </div>
-          </Router>
-        </div>
+        <AppContext.Provider value={{ mode: 'web' }}>
+          <div className="container">
+            <Router>
+              <div className={'content'}>
+                <Switch>
+                  <Route path="/threeannotation/:projectId">
+                    <TaskStore.Provider>
+                      <AnnotationClassStore.Provider>
+                        <CameraCalibrationStore.Provider>
+                          <ThreeAnnotationPage />
+                        </CameraCalibrationStore.Provider>
+                      </AnnotationClassStore.Provider>
+                    </TaskStore.Provider>
+                  </Route>
+                  <Route path="/new">
+                    <NewPage />
+                  </Route>
+                  <Route path="/edit">
+                    <EditPage />
+                  </Route>
+                  <Route path="/">
+                    <StartPage />
+                  </Route>
+                  <Route component={StartPage} />
+                </Switch>
+              </div>
+            </Router>
+          </div>
+        </AppContext.Provider>
       </SnackbarProvider>
     </ProjectRepositoryContext.Provider>
   );

@@ -1,8 +1,10 @@
+import { useContextApp } from '@fl-three-editor/application/app-context';
 import CameraCalibrationStore from '@fl-three-editor/stores/camera-calibration-store';
 import TaskStore from '@fl-three-editor/stores/task-store';
 import { PCDResult } from '@fl-three-editor/types/labos';
 import { ThreePoints } from '@fl-three-editor/types/vo';
 import PcdUtil from '@fl-three-editor/utils/pcd-util';
+import { ViewUtils } from '@fl-three-editor/utils/view-util';
 import FlLabelMainView from '@fl-three-editor/views/task-three/fl-label-main-view';
 import { FlMainCameraControls } from '@fl-three-editor/views/task-three/fl-main-camera-controls';
 import Grid from '@mui/material/Grid';
@@ -17,6 +19,7 @@ import LabelSidePanel from './label-side-panel';
 import LabelToolBar from './label-tool-bar';
 
 const LabelViewIndex: React.FC = () => {
+  const { mode } = useContextApp();
   const { calibrationCamera } = CameraCalibrationStore.useContainer();
 
   const mainControlsRef = React.createRef<FlMainCameraControls>();
@@ -110,7 +113,11 @@ const LabelViewIndex: React.FC = () => {
   return (
     <>
       <Grid item xs={5}>
-        <Stack height="100vh">
+        <Stack
+          height={`calc(100vh - ${ViewUtils.offsetHeight(
+            0,
+            mode === 'electron'
+          )})`}>
           <LabelToolBar
             onEndLabelView={() => {
               const points = Object.keys(framesObject).reduce<{

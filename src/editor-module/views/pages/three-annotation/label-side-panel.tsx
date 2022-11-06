@@ -6,6 +6,7 @@ import TaskStore from '@fl-three-editor/stores/task-store';
 import { ThreePoints } from '@fl-three-editor/types/vo';
 import { FlCubeUtil } from '@fl-three-editor/utils/fl-cube-util';
 import { InterpolationUtil } from '@fl-three-editor/utils/interpolation-util';
+import { ViewUtils } from '@fl-three-editor/utils/view-util';
 import { THREE_STYLES } from '@fl-three-editor/views/task-three/fl-const';
 import FlLabelSecondaryView from '@fl-three-editor/views/task-three/fl-label-secondary-view';
 import FLPcd from '@fl-three-editor/views/task-three/fl-pcd';
@@ -17,6 +18,7 @@ import Typography from '@mui/material/Typography';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Group } from 'three';
+import { useContextApp } from './../../../application/app-context';
 
 type Props = {
   framesObject: { [frameNo: string]: Group };
@@ -31,6 +33,7 @@ const LabelSidePanel: React.FC<Props> = ({
   framesPoints,
   onUpdateFramesPoints,
 }) => {
+  const { mode } = useContextApp();
   const [t] = useTranslation();
   const {
     taskToolBar,
@@ -71,7 +74,11 @@ const LabelSidePanel: React.FC<Props> = ({
 
   return (
     <>
-      <Stack height={'100vh'}>
+      <Stack
+        height={`calc(100vh - ${ViewUtils.offsetHeight(
+          0,
+          mode === 'electron'
+        )})`}>
         <ToolBar>
           <Box component="div" mr="auto" />
           <ToolBarBoxButtonThemeProvider>
@@ -103,7 +110,10 @@ const LabelSidePanel: React.FC<Props> = ({
 
         <Stack
           px={1}
-          minHeight="calc(100vh - 42px)"
+          height={`calc(100vh - ${ViewUtils.offsetHeight(
+            42,
+            mode === 'electron'
+          )})`}
           sx={{
             overflowY: 'scroll',
             backgroundColor: THREE_STYLES.baseBackgroundColor,

@@ -31,6 +31,7 @@
   "web_features_caption_2_1": "- Bird's-eye view display",
   "web_features_caption_2_2": "- 3 view point display",
   "web_features_caption_3": "2D/3D calibration",
+  "web_features_caption_4": "Adjust an annotation with multi frames [Label View]",
   "web_data_type_title": "Annotate 3D data in three different ways",
   "web_data_type_caption_1": "It supports not only annotation of pcd data, but also annotation",
   "web_data_type_caption_2": "in comparison with images and It can also be used to annotate continuous 3D data.",
