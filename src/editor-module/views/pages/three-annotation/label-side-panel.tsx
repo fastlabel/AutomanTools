@@ -17,7 +17,6 @@ import Typography from '@mui/material/Typography';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Group } from 'three';
-import { extractFlCubeObject3d } from '@fl-three-editor/views/task-three/fl-cube-model';
 
 type Props = {
   framesObject: { [frameNo: string]: Group };
@@ -36,6 +35,7 @@ const LabelSidePanel: React.FC<Props> = ({
   const {
     taskToolBar,
     labelViewState,
+    labelViewPageState,
     taskFrames,
     movePageLabelView,
     moveFrameNoLabelView,
@@ -50,9 +50,10 @@ const LabelSidePanel: React.FC<Props> = ({
     let _disabledBack = false;
     let _disabledNext = false;
     let _currentPage = 0;
-    if (labelViewState) {
-      const { selectedPage, pageCount } = labelViewState;
-      _disabledBack = selectedPage <= 1;
+    if (labelViewState && labelViewPageState) {
+      const { pageCount } = labelViewState;
+      const { selectedPage } = labelViewPageState;
+      _disabledBack = selectedPage <= 0;
       _disabledNext = selectedPage >= pageCount;
       _currentPage = selectedPage;
     }
@@ -66,7 +67,7 @@ const LabelSidePanel: React.FC<Props> = ({
         movePageLabelView(_currentPage + 1);
       },
     ];
-  }, [labelViewState, movePageLabelView]);
+  }, [labelViewState, labelViewPageState, movePageLabelView]);
 
   return (
     <>
@@ -86,7 +87,9 @@ const LabelSidePanel: React.FC<Props> = ({
               display="flex"
               justifyContent="center">
               <Typography variant="body1">
-                {`${labelViewState?.selectedPage}/${labelViewState?.pageCount}`}
+                {`${(labelViewPageState?.selectedPage || 0) + 1}/${
+                  labelViewState?.pageCount
+                }`}
               </Typography>
             </Box>
             <ToolBarButton
@@ -106,14 +109,14 @@ const LabelSidePanel: React.FC<Props> = ({
             backgroundColor: THREE_STYLES.baseBackgroundColor,
             color: '#fff',
           }}>
-          {labelViewState?.pageFrames.map((frameNo) => {
+          {labelViewPageState?.pageFrames.map((frameNo) => {
             const taskFrame = taskFrames[frameNo];
             if (taskFrame.status === 'loaded') {
               return (
                 <FlLabelSecondaryView
                   key={frameNo}
                   frameNo={frameNo}
-                  selected={frameNo === labelViewState?.selectedFrame}
+                  selected={frameNo === labelViewPageState?.selectedFrame}
                   target={framesObject[frameNo]}
                   onClickCapture={(event, frameNo) => {
                     moveFrameNoLabelView(frameNo);

@@ -25,6 +25,7 @@ const LabelViewIndex: React.FC = () => {
     taskRom,
     taskFrames,
     labelViewState,
+    labelViewPageState,
     endLabelView,
     updateTaskAnnotations,
   } = TaskStore.useContainer();
@@ -44,7 +45,7 @@ const LabelViewIndex: React.FC = () => {
   const [position0, setPosition0] = React.useState<Vector3>();
 
   React.useEffect(() => {
-    const targetFrameNo = labelViewState?.selectedFrame || '';
+    const targetFrameNo = labelViewPageState?.selectedFrame || '';
     const targetFrame = taskFrames[targetFrameNo];
     if (
       targetFrame &&
@@ -67,7 +68,7 @@ const LabelViewIndex: React.FC = () => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [taskFrames, labelViewState]);
+  }, [taskFrames, labelViewPageState]);
 
   const [currentPoints, setCurrentPoints] = React.useState<{
     [frameNo: string]: ThreePoints;
@@ -79,11 +80,9 @@ const LabelViewIndex: React.FC = () => {
     const resultPoints: { [frameNo: string]: ThreePoints } = {};
     if (labelViewState && taskRom.status === 'loaded') {
       taskRom.frames.forEach((frameNo) => {
-        resultObj[frameNo] = buildFlCubeObject3d(
-          labelViewState.target,
-          frameNo
-        );
-        if (labelViewState.target.points[frameNo]) {
+        const flCube = buildFlCubeObject3d(labelViewState.target, frameNo);
+        if (flCube) {
+          resultObj[frameNo] = flCube;
           resultPoints[frameNo] = labelViewState.target.points[
             frameNo
           ].concat() as ThreePoints;
@@ -95,17 +94,17 @@ const LabelViewIndex: React.FC = () => {
   }, []);
 
   const target = React.useMemo(() => {
-    if (labelViewState) {
-      return framesObject[labelViewState.selectedFrame];
+    if (labelViewPageState) {
+      return framesObject[labelViewPageState.selectedFrame];
     }
     return undefined;
-  }, [framesObject, labelViewState]);
+  }, [framesObject, labelViewPageState]);
 
   React.useEffect(() => {
     setCurrentPoints(framesPoints);
   }, [framesPoints]);
 
-  if (!labelViewState) {
+  if (!labelViewState || !labelViewPageState) {
     return <></>;
   }
   return (

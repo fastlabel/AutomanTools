@@ -15,9 +15,13 @@ import {
 export const buildFlCubeObject3d = (
   taskAnnotationVo: TaskAnnotationVO,
   frameNo: string
-): Group => {
+): Group | undefined => {
+  const points = taskAnnotationVo.points[frameNo];
+  if (!points) {
+    return undefined;
+  }
   const id = taskAnnotationVo.id;
-  const [px, py, pz, ax, ay, az, sx, sy, sz] = taskAnnotationVo.points[frameNo];
+  const [px, py, pz, ax, ay, az, sx, sy, sz] = points;
   const color = taskAnnotationVo.color;
 
   // dAssistance
