@@ -11,6 +11,7 @@ const STORE_KEY = [
   'id',
   'annotationClassId',
   'points',
+  'pointsMeta',
   'createdAt',
   'updatedAt',
 ];
