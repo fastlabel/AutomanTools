@@ -371,26 +371,26 @@ export class FLTransformControlsGizmo extends Object3D {
     Object.keys(gizmoMap).forEach((name) => {
       gizmoMap[name].forEach((item) => {
         const [base, position, rotation] = item;
-        const object = base.clone();
+        const _object = base.clone();
         // name and tag properties are essential for picking and updating logic.
-        object.name = name;
+        _object.name = name;
 
         if (position) {
-          object.position.set(position[0], position[1], position[2]);
+          _object.position.set(position[0], position[1], position[2]);
         }
         if (rotation) {
-          object.rotation.set(rotation[0], rotation[1], rotation[2]);
+          _object.rotation.set(rotation[0], rotation[1], rotation[2]);
         }
-        object.updateMatrix();
-        if (object.geometry.type === 'PlaneGeometry') {
-          const tempGeometry = object.geometry.clone();
-          tempGeometry.applyMatrix4(object.matrix);
-          object.geometry = tempGeometry;
-          object.renderOrder = Infinity;
-          object.position.set(0, 0, 0);
-          object.rotation.set(0, 0, 0);
+        _object.updateMatrix();
+        if (_object.geometry.type === 'PlaneGeometry') {
+          const tempGeometry = _object.geometry.clone();
+          tempGeometry.applyMatrix4(_object.matrix);
+          _object.geometry = tempGeometry;
+          _object.renderOrder = Infinity;
+          _object.position.set(0, 0, 0);
+          _object.rotation.set(0, 0, 0);
         }
-        gizmo.add(object);
+        gizmo.add(_object);
       });
     });
     return gizmo;

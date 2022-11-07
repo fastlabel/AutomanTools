@@ -19,12 +19,12 @@ import { useSnackbar } from 'notistack';
 import React, { FC, useContext, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import ToolBar from '../../../components/tool-bar';
+import ToolBar from '@fl-three-editor/components/tool-bar';
 import ToolBarButton, {
   ToolBarBoxButtonThemeProvider,
-} from '../../../components/tool-bar-button';
-import { ProjectRepositoryContext } from '../../../repositories/project-repository';
-import TaskStore from '../../../stores/task-store';
+} from '@fl-three-editor/components/tool-bar-button';
+import { ProjectRepositoryContext } from '@fl-three-editor/repositories/project-repository';
+import TaskStore from '@fl-three-editor/stores/task-store';
 import DynamicFeedIcon from '@mui/icons-material/DynamicFeed';
 
 const ThreeToolbar: FC = () => {

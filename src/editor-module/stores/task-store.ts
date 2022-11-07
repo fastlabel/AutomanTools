@@ -1,18 +1,27 @@
+import { InterpolationUtil } from '@fl-three-editor/utils/interpolation-util';
 import { MathUtil } from '@fl-three-editor/utils/math-util';
 import { throttle } from 'lodash';
-import { stringify } from 'querystring';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import { createContainer } from 'unstated-next';
 import { ProjectRepositoryContext } from '../repositories/project-repository';
 import {
   AnnotationClassVO,
   TaskAnnotationVO,
-  ThreePoints,
   TaskFrameVO,
   TaskROMVO,
+  ThreePoints,
   ThreePointsMeta,
 } from '../types/vo';
 import { TaskAnnotationUtil } from './../utils/task-annotation-util';
+
+const LABEL_VIEW_PAGE_FRAME_SIZE = 4;
+
+export enum TaskEditorViewMode {
+  base__normal = 'base__normal',
+  anno__multi_frame_view = 'anno__multi_frame_view',
+}
+
+export type LoadStatus = 'none' | 'loading' | 'loaded';
 
 export type TaskToolbar = {
   useOrthographicCamera: boolean;
@@ -58,6 +67,19 @@ export type TopicImageDialogState = {
   currentImageData?: any;
   hasNext?: boolean;
   hasPrev?: boolean;
+};
+
+export type LabelViewState = {
+  target: TaskAnnotationVO;
+  pageFramesItems: string[][];
+  pageCount: number;
+};
+
+export type LabelViewPageState = {
+  pageFrames: string[];
+  pageFrameCount: number;
+  selectedFrame: string;
+  selectedPage: number;
 };
 
 export type TaskEditorState = {
@@ -113,42 +135,60 @@ export type UpdateTaskAnnotationsCommand =
       };
     }
   | {
+      type: 'updateTaskAnnotation';
+      vo: TaskAnnotationVO;
+    }
+  | {
       type: 'updateAttr';
     }
   | UpdateTaskAnnotationCommand;
 
 const useTask = () => {
   const [isTaskAnnotationUpdated, setIsTaskAnnotationUpdated] =
-    useState<boolean>(false);
-  const projectRepository = useContext(ProjectRepositoryContext);
-  const [pageStatus, _updatePageStatus] = useState<
+    React.useState<boolean>(false);
+  const projectRepository = React.useContext(ProjectRepositoryContext);
+  const [pageStatus, _updatePageStatus] = React.useState<
     'preparing' | 'loading' | 'ready' | 'saving'
   >('preparing');
 
-  const [taskRom, _updateTaskRom] = useState<TaskROMState>({ status: 'none' });
+  const [taskRom, _updateTaskRom] = React.useState<TaskROMState>({
+    status: 'none',
+  });
 
-  const [taskAnnotations, _innerUpdateTaskAnnotations] = useState<
+  const [taskAnnotations, _innerUpdateTaskAnnotations] = React.useState<
     TaskAnnotationVO[]
   >([]);
 
-  const [taskFrame, _updateTaskFrame] = useState<TaskFrameState>({
+  const [taskFrame, _updateTaskFrame] = React.useState<TaskFrameState>({
     status: 'none',
   });
 
   const [topicImageDialog, _updateTopicImageDialog] =
-    useState<TopicImageDialogState>({
+    React.useState<TopicImageDialogState>({
       open: false,
       topicIds: [],
       currentIndex: -1,
     });
 
-  const [taskEditor, _updateTaskEditor] = useState<TaskEditorState>({
+  const [taskEditor, _updateTaskEditor] = React.useState<TaskEditorState>({
     pageMode: 'threeEdit',
     editorState: { mode: 'neutral', selectingTaskAnnotations: [] },
   });
 
   const [editingTaskAnnotation, _setEditingTaskAnnotation] =
-    useState<TaskAnnotationVO>();
+    React.useState<TaskAnnotationVO>();
+
+  // for label view
+  const [taskEditorViewMode, _setTaskEditorViewMode] = React.useState(
+    TaskEditorViewMode.base__normal
+  );
+  const [labelViewState, _setLabelViewState] = React.useState<LabelViewState>();
+  const [labelViewPageState, _setLabelViewPageState] =
+    React.useState<LabelViewPageState>();
+  const [taskFrames, _updateTaskFrames] = React.useState<{
+    [key: string]: TaskFrameState;
+  }>({});
+  const [loadStatus, _setLoadStatus] = React.useState<LoadStatus>('none');
 
   const _updateEditingTaskAnnotation = throttle(
     (newVo: TaskAnnotationVO | undefined) => {
@@ -157,7 +197,7 @@ const useTask = () => {
     500
   );
 
-  const _updateTaskAnnotations = useCallback(
+  const _updateTaskAnnotations = React.useCallback(
     (taskAnnotations: TaskAnnotationVO[]) => {
       _innerUpdateTaskAnnotations(taskAnnotations);
       if (taskEditor.editorState.mode === 'selecting_taskAnnotation') {
@@ -187,21 +227,21 @@ const useTask = () => {
     ]
   );
 
-  const _updateTaskAnnotationsFunc = useCallback(
+  const _updateTaskAnnotationsFunc = React.useCallback(
     (func: (prev: TaskAnnotationVO[]) => TaskAnnotationVO[]) => {
       _updateTaskAnnotations(func(taskAnnotations));
     },
     [_updateTaskAnnotations, taskAnnotations]
   );
 
-  const [taskToolBar, updateTaskToolBar] = useState<TaskToolbar>({
+  const [taskToolBar, updateTaskToolBar] = React.useState<TaskToolbar>({
     useOrthographicCamera: false,
     selectMode: 'select',
     showLabel: false,
     interpolation: true,
   });
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (taskRom.status === 'loading' || taskFrame.status === 'loading') {
       _updatePageStatus('loading');
       return;
@@ -218,7 +258,7 @@ const useTask = () => {
   }, [taskRom.status, taskFrame.status]);
 
   // load frameNo
-  useEffect(() => {
+  React.useEffect(() => {
     if (taskFrame.status === 'loading' && taskRom.status === 'loaded') {
       const { projectId, taskId, pcdTopicId, imageTopics } = taskRom;
       const frameNo = taskFrame.currentFrame;
@@ -246,7 +286,7 @@ const useTask = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [taskFrame]);
 
-  const frameNoSet = useMemo(() => {
+  const frameNoSet = React.useMemo(() => {
     if (taskRom.status !== 'loaded' || taskFrame.status !== 'loaded') {
       return undefined;
     }
@@ -257,7 +297,7 @@ const useTask = () => {
     };
   }, [taskRom, taskFrame]);
 
-  const resetSelectMode = useCallback(() => {
+  const resetSelectMode = React.useCallback(() => {
     _updateTaskEditor((prev) => {
       return {
         ...prev,
@@ -271,7 +311,7 @@ const useTask = () => {
   }, [_updateTaskEditor]);
 
   // Task Store Event
-  const open = useCallback(
+  const open = React.useCallback(
     (projectId: string, taskId: string, frameNo?: string) => {
       _updateTopicImageDialog({
         open: false,
@@ -296,7 +336,7 @@ const useTask = () => {
     ]
   );
 
-  const reopen = useCallback(() => {
+  const reopen = React.useCallback(() => {
     _updateTaskFrame((pre) => ({ ...pre, status: 'none' }));
     setTimeout(() => {
       // workaround reset camera
@@ -304,7 +344,7 @@ const useTask = () => {
     }, 50);
   }, [_updateTaskFrame]);
 
-  const fetchAnnotationClasses = useCallback(
+  const fetchAnnotationClasses = React.useCallback(
     (projectId: string) => {
       // this way will be removed when support project.
       _updatePageStatus('loading');
@@ -328,7 +368,7 @@ const useTask = () => {
     ]
   );
 
-  const openImageDialog = useCallback(
+  const openImageDialog = React.useCallback(
     (open: boolean) => {
       _updateTopicImageDialog((prev) => {
         if (taskFrame.status !== 'loaded' || taskRom.status !== 'loaded')
@@ -355,7 +395,7 @@ const useTask = () => {
     [taskRom, taskFrame]
   );
 
-  const moveTopicImage = useCallback(
+  const moveTopicImage = React.useCallback(
     (command: 'next' | 'prev') => {
       _updateTopicImageDialog((prev) => {
         if (taskFrame.status !== 'loaded') return prev;
@@ -386,7 +426,7 @@ const useTask = () => {
     [taskFrame]
   );
 
-  const changeFrame = useCallback(
+  const changeFrame = React.useCallback(
     (frameNo: string) => {
       if (taskRom.status !== 'loaded') return;
       _updateTaskFrame((pre) => ({
@@ -398,7 +438,7 @@ const useTask = () => {
     [taskRom, _updateTaskFrame]
   );
 
-  const saveFrameTaskAnnotations = useCallback(() => {
+  const saveFrameTaskAnnotations = React.useCallback(() => {
     _updatePageStatus('saving');
     projectRepository.saveFrameTaskAnnotations(taskAnnotations).then(() => {
       _updatePageStatus('ready');
@@ -406,7 +446,7 @@ const useTask = () => {
     });
   }, [projectRepository, taskAnnotations, _updatePageStatus]);
 
-  const updateTaskAnnotations = useCallback(
+  const updateTaskAnnotations = React.useCallback(
     (param: UpdateTaskAnnotationsCommand) => {
       // ${updateTaskAnnotations}$ commands:[{command:'move'|'updateAttr', params for command}]
       //   move points
@@ -426,87 +466,12 @@ const useTask = () => {
             newTaskVo.pointsMeta[param.frameNo] = { autogenerated: false };
 
             if (taskToolBar.interpolation) {
-              // interpolation UPDATE START
-              const changedFrameNo = param.frameNo;
-              const pointsMeta = newTaskVo.pointsMeta;
-              const { updateBaseFrame, copyTargets, updateTargets } =
-                Object.keys(newTaskVo.points)
-                  .sort()
-                  .reduce<{
-                    lower: boolean;
-                    end: boolean;
-                    updateBaseFrame: string;
-                    prevFrameNo: number;
-                    copyTargets: string[];
-                    updateTargets: string[];
-                  }>(
-                    (prev, frameNo) => {
-                      if (prev.end) {
-                        return prev;
-                      }
-                      prev.lower = frameNo < changedFrameNo;
-                      if (changedFrameNo === frameNo) {
-                        prev.prevFrameNo = parseInt(frameNo);
-                        return prev;
-                      }
-
-                      const intFrameNo = parseInt(frameNo);
-                      if (
-                        (prev.prevFrameNo !== -1 &&
-                          prev.prevFrameNo + 1 !== intFrameNo) ||
-                        !pointsMeta[frameNo].autogenerated
-                      ) {
-                        if (prev.lower) {
-                          prev.prevFrameNo = -1;
-                          prev.updateTargets.length = 0;
-                          prev.updateBaseFrame = frameNo;
-                        } else {
-                          prev.end = true;
-                        }
-                        return prev;
-                      }
-                      if (prev.lower) {
-                        prev.updateTargets.push(frameNo);
-                      } else {
-                        prev.copyTargets.push(frameNo);
-                      }
-                      prev.prevFrameNo = intFrameNo;
-                      return prev;
-                    },
-                    {
-                      lower: true,
-                      end: false,
-                      prevFrameNo: -1,
-                      updateBaseFrame: '',
-                      copyTargets: [],
-                      updateTargets: [],
-                    }
-                  );
-              copyTargets.forEach((frameNo) => {
-                newTaskVo.points[frameNo] = newPoints;
-              });
-
-              const updatedFrameCount = updateTargets.length;
-              if (updatedFrameCount > 0) {
-                const basePoints = newTaskVo.points[updateBaseFrame];
-                // calc diffs
-                const diffPoints = basePoints.map(
-                  (value, index) => value - newPoints[index]
-                );
-                // to each frame amount
-                const frameAmountPoints = diffPoints.map((value) =>
-                  MathUtil.round(value !== 0 ? value / updatedFrameCount : 0)
-                );
-                updateTargets.reduce((prev, frameNo) => {
-                  // add amount
-                  const added = prev.map(
-                    (value, index) => value - frameAmountPoints[index]
-                  ) as ThreePoints;
-                  newTaskVo.points[frameNo] = added;
-                  return added;
-                }, basePoints);
-              }
-              // interpolation UPDATE END
+              InterpolationUtil.interpolation(
+                param.frameNo,
+                newTaskVo.pointsMeta,
+                newTaskVo.points,
+                newPoints
+              );
             }
             prev[i] = newTaskVo;
             _updateEditingTaskAnnotation(newTaskVo);
@@ -552,6 +517,15 @@ const useTask = () => {
         _updateTaskAnnotationsFunc((prev) =>
           prev.filter((i) => i.id !== param.id)
         );
+      } else if (param.type === 'updateTaskAnnotation') {
+        _updateTaskAnnotationsFunc((prev) =>
+          prev.map((_vo) => {
+            if (_vo.id === param.vo.id) {
+              return param.vo;
+            }
+            return _vo;
+          })
+        );
       }
     },
     [
@@ -562,14 +536,14 @@ const useTask = () => {
     ]
   );
 
-  const addTaskAnnotations = useCallback(
+  const addTaskAnnotations = React.useCallback(
     (vos: TaskAnnotationVO[]) => {
       _updateTaskAnnotationsFunc((prev) => prev.concat(vos));
     },
     [_updateTaskAnnotationsFunc]
   );
 
-  const copyFrameTaskAnnotations = useCallback(
+  const copyFrameTaskAnnotations = React.useCallback(
     (targetId?: string) => {
       if (!frameNoSet) return;
       _updateTaskAnnotationsFunc((prev) => {
@@ -587,7 +561,7 @@ const useTask = () => {
   // ${changeVisibleLabel}
   // ${changePointerMode}
 
-  const changePageMode = useCallback(
+  const changePageMode = React.useCallback(
     (pageMode: 'threeEdit' | 'classesList') => {
       _updateTaskEditor((prev) => {
         return {
@@ -599,7 +573,7 @@ const useTask = () => {
     [_updateTaskEditor]
   );
 
-  const selectAnnotationClass = useCallback(
+  const selectAnnotationClass = React.useCallback(
     (vo: AnnotationClassVO) => {
       _updateTaskEditor((prev) => {
         return {
@@ -615,7 +589,7 @@ const useTask = () => {
     [_updateTaskEditor]
   );
 
-  const selectTaskAnnotations = useCallback(
+  const selectTaskAnnotations = React.useCallback(
     (vo: TaskAnnotationVO[], mode?: 'add' | 'remove' | 'single' | 'clear') => {
       _updateTaskEditor((prev) => {
         let annotations = prev.editorState
@@ -648,7 +622,7 @@ const useTask = () => {
     [_updateEditingTaskAnnotation]
   );
 
-  const onChangeCurrentFrameAppearance = useCallback(
+  const onChangeCurrentFrameAppearance = React.useCallback(
     (taskAnnotation: TaskAnnotationVO) => {
       if (taskFrame.status !== 'loaded') {
         return;
@@ -712,7 +686,7 @@ const useTask = () => {
     [taskFrame, _updateTaskAnnotationsFunc]
   );
 
-  const onChangeFrameAppearance = useCallback(
+  const onChangeFrameAppearance = React.useCallback(
     (taskAnnotation: TaskAnnotationVO) => {
       const newTaskAnnotation = Object.assign({}, taskAnnotation);
       const newPoints = {} as { [key: string]: ThreePoints };
@@ -842,6 +816,174 @@ const useTask = () => {
     [taskFrame, taskRom, _updateTaskAnnotationsFunc]
   );
 
+  const startLabelView = React.useCallback(
+    (target: TaskAnnotationVO, frameNo: string) => {
+      if (taskRom.status === 'loaded' && target) {
+        const pageFramesItems = taskRom.frames.reduce<{
+          res: string[][];
+          preFrames?: string[];
+        }>(
+          (pre, frameNo) => {
+            if (target.points[frameNo]) {
+              if (
+                pre.preFrames &&
+                pre.preFrames.length <= LABEL_VIEW_PAGE_FRAME_SIZE
+              ) {
+                pre.preFrames.push(frameNo);
+                return pre;
+              } else {
+                const preFrames: string[] = [frameNo];
+                pre.res.push(preFrames);
+                return { res: pre.res, preFrames };
+              }
+            }
+            return { res: pre.res };
+          },
+          { res: [] }
+        ).res;
+
+        const selectedFrame = frameNo;
+        const selectedPage = pageFramesItems.findIndex((_frames) =>
+          _frames.includes(frameNo)
+        );
+        if (selectedPage === undefined) {
+          // no frame data
+          return;
+        }
+        const pageFrames = pageFramesItems[selectedPage];
+        const pageFrameCount = pageFrames.length;
+
+        _setTaskEditorViewMode(TaskEditorViewMode.anno__multi_frame_view);
+        _setLoadStatus('loading');
+        _setLabelViewState({
+          target,
+          pageFramesItems,
+          pageCount: pageFramesItems.length,
+        });
+        _setLabelViewPageState({
+          pageFrames,
+          pageFrameCount,
+          selectedFrame,
+          selectedPage,
+        });
+        _updateTaskFrame((pre) => ({ ...pre, currentFrame: selectedFrame }));
+        _updateTaskFrames(
+          pageFrames.reduce<{ [key: string]: TaskFrameState }>((r, frameNo) => {
+            r[frameNo] = { status: 'none' };
+            return r;
+          }, {})
+        );
+      }
+    },
+    [taskRom]
+  );
+
+  const movePageLabelView = React.useCallback(
+    (page: number) => {
+      if (labelViewState) {
+        const { pageFramesItems } = labelViewState;
+        const pageFrames = pageFramesItems[page];
+        const pageFrameCount = pageFrames.length;
+        const selectedFrame = pageFrames[0];
+        _setLoadStatus('loading');
+        _setLabelViewPageState({
+          pageFrames,
+          pageFrameCount,
+          selectedFrame,
+          selectedPage: page,
+        });
+        _updateTaskFrame((pre) => ({ ...pre, currentFrame: selectedFrame }));
+        _updateTaskFrames(
+          pageFrames.reduce<{ [key: string]: TaskFrameState }>((r, frameNo) => {
+            r[frameNo] = { status: 'none' };
+            return r;
+          }, {})
+        );
+      }
+    },
+    [labelViewState]
+  );
+
+  const moveFrameNoLabelView = React.useCallback((frameNo: string) => {
+    _updateTaskFrame((pre) => ({ ...pre, currentFrame: frameNo }));
+    _setLabelViewPageState((pre) => {
+      const preObj = pre as LabelViewPageState;
+      return { ...preObj, selectedFrame: frameNo };
+    });
+  }, []);
+
+  const endLabelView = React.useCallback(() => {
+    _setTaskEditorViewMode(TaskEditorViewMode.base__normal);
+    _setLabelViewState(undefined);
+    _updateTaskFrames({});
+  }, []);
+
+  React.useEffect(() => {
+    if (taskFrame.status === 'loading' && taskRom.status === 'loaded') {
+      const { projectId, taskId, pcdTopicId, imageTopics } = taskRom;
+      const frameNo = taskFrame.currentFrame;
+      const _imageTopics = imageTopics.reduce((r, t) => {
+        r[t.topicId] = t.extension;
+        return r;
+      }, {} as any);
+      projectRepository
+        .loadFrameResource(projectId, taskId, frameNo, pcdTopicId, _imageTopics)
+        .then((vo) => {
+          _updateTaskFrame({ ...vo, status: 'loaded' });
+          _updateTopicImageDialog((prev) => {
+            if (taskRom.status !== 'loaded') return prev;
+
+            const newState = { ...prev };
+            if (newState.currentTopicId) {
+              newState.currentImageData =
+                vo.imageResources[newState.currentTopicId];
+            }
+            return newState;
+          });
+        });
+      return;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [taskFrame]);
+
+  React.useEffect(() => {
+    if (loadStatus === 'loading' && taskRom.status === 'loaded') {
+      // TODO consider about imageTopics spec in label view
+      const { projectId, taskId, pcdTopicId } = taskRom;
+      const loadedFrames: string[] = [];
+      const pageFrames = labelViewPageState?.pageFrames || [];
+      pageFrames.forEach((_pageFrame) => {
+        if (taskFrames[_pageFrame].status === 'none') {
+          _updateTaskFrames((pre) => {
+            const newTaskFrames = { ...pre };
+            newTaskFrames[_pageFrame] = {
+              currentFrame: _pageFrame,
+              status: 'loading',
+            };
+            return newTaskFrames;
+          });
+          projectRepository
+            .loadFrameResource(projectId, taskId, _pageFrame, pcdTopicId)
+            .then((vo) => {
+              _updateTaskFrames((pre) => {
+                const newTaskFrames = { ...pre };
+                newTaskFrames[_pageFrame] = { ...vo, status: 'loaded' };
+                return newTaskFrames;
+              });
+            });
+        } else if (taskFrames[_pageFrame].status === 'loading') {
+          //
+        } else if (taskFrames[_pageFrame].status === 'loaded') {
+          loadedFrames.push(_pageFrame);
+        }
+      });
+      if (loadedFrames.length === pageFrames.length) {
+        _setLoadStatus('loaded');
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [taskFrames, loadStatus]);
+
   return {
     isTaskAnnotationUpdated,
     setIsTaskAnnotationUpdated,
@@ -881,6 +1023,17 @@ const useTask = () => {
 
     onChangeCurrentFrameAppearance,
     onChangeFrameAppearance,
+
+    // #
+    taskEditorViewMode,
+    labelViewState,
+    labelViewPageState,
+    startLabelView,
+    movePageLabelView,
+    moveFrameNoLabelView,
+    endLabelView,
+    taskFrames,
+    loadStatus,
   };
 };
 

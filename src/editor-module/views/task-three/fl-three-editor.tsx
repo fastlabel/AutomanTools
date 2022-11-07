@@ -2,11 +2,18 @@ import { Box, Grid, Typography } from '@mui/material';
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { Canvas, ThreeEvent } from '@react-three/fiber';
-import React, { createRef, FC, useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Euler, Event, Group, Object3D, Vector3 } from 'three';
 import { PCDResult } from '../../types/labos';
 import { AnnotationClassVO, TaskAnnotationVO } from '../../types/vo';
+import {
+  ANNOTATION_OPACITY,
+  MAIN_C_RESIZE,
+  MAIN_FOOTER_BOX_H,
+  THREE_SX_PROPS,
+  THREE_STYLES,
+} from './fl-const';
 import FLCubes from './fl-cubes';
 import { FlMainCameraControls } from './fl-main-camera-controls';
 import FLMainControls from './fl-main-controls';
@@ -22,13 +29,13 @@ const useStyles = makeStyles(() =>
       backgroundColor: '#1a1a1a',
     },
     footer: {
-      maxHeight: 360,
+      maxHeight: MAIN_FOOTER_BOX_H,
     },
     footerLabel: {
       alignItems: 'center',
       justifyContent: 'center',
       display: 'flex',
-      backgroundColor: '#24303b',
+      backgroundColor: THREE_STYLES.baseBackgroundColor,
       color: '#bdc8d2',
     },
   })
@@ -56,12 +63,7 @@ type Props = {
   onObjectChange?: (event: Event) => void;
 };
 
-const C_RESIZE = { debounce: 100 };
-const C_DISTANCE = 5;
-
-const ANNOTATION_OPACITY = 50;
-
-const FLThreeEditor: FC<Props> = ({
+const FLThreeEditor: React.FC<Props> = ({
   frameNo,
   annotations,
   useOrthographicCamera,
@@ -81,12 +83,12 @@ const FLThreeEditor: FC<Props> = ({
 }) => {
   const styles = useStyles();
   const [t] = useTranslation();
-  const [near, far, zoom] = useMemo(() => [0.03, 20, 10], []);
-  const [target, setTarget] = useState<Object3D>();
-  const rootRef = createRef<HTMLDivElement>();
-  const _cubeGroupRef = cubeGroupRef || createRef<Group>();
+  const [near, far, zoom] = React.useMemo(() => [0.03, 20, 10], []);
+  const [target, setTarget] = React.useState<Object3D>();
+  const rootRef = React.createRef<HTMLDivElement>();
+  const _cubeGroupRef = cubeGroupRef || React.createRef<Group>();
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (
       selectedTaskAnnotations &&
       selectedTaskAnnotations.length === 1 &&
@@ -99,7 +101,7 @@ const FLThreeEditor: FC<Props> = ({
     }
   }, [_cubeGroupRef, selectedTaskAnnotations]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (rootRef.current) {
       const root = rootRef.current;
       const handleResize = () => {
@@ -129,8 +131,8 @@ const FLThreeEditor: FC<Props> = ({
             rotation: new Euler(0, 0, 0, 'ZXY'),
             zoom: orthographic ? 10 : undefined,
           }}
-          style={{ backgroundColor: 'black' }}
-          resize={C_RESIZE}>
+          style={THREE_SX_PROPS.canvasSx}
+          resize={MAIN_C_RESIZE}>
           <FLMainControls
             orthographic={orthographic}
             position0={position0}
@@ -170,8 +172,8 @@ const FLThreeEditor: FC<Props> = ({
                   far,
                   rotation: new Euler(0, 0, 0, 'ZXY'),
                 }}
-                style={{ backgroundColor: 'black' }}
-                resize={C_RESIZE}>
+                style={THREE_SX_PROPS.canvasSx}
+                resize={MAIN_C_RESIZE}>
                 {bgSub}
                 <FLObjectControls
                   annotationOpacity={ANNOTATION_OPACITY}
@@ -194,8 +196,8 @@ const FLThreeEditor: FC<Props> = ({
                   far,
                   rotation: new Euler(0, 0, 0, 'ZXY'),
                 }}
-                style={{ backgroundColor: 'black' }}
-                resize={C_RESIZE}>
+                style={THREE_SX_PROPS.canvasSx}
+                resize={MAIN_C_RESIZE}>
                 {bgSub}
                 <FLObjectControls
                   annotationOpacity={ANNOTATION_OPACITY}
@@ -218,8 +220,8 @@ const FLThreeEditor: FC<Props> = ({
                   far,
                   rotation: new Euler(0, 0, 0, 'ZXY'),
                 }}
-                style={{ backgroundColor: 'black' }}
-                resize={C_RESIZE}>
+                style={THREE_SX_PROPS.canvasSx}
+                resize={MAIN_C_RESIZE}>
                 {bgSub}
                 <FLObjectControls
                   annotationOpacity={ANNOTATION_OPACITY}

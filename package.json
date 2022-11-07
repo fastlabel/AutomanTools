@@ -1,7 +1,7 @@
 {
   "name": "fastlabel-3d-annotation",
   "description": "AutomanTools is an open-source software for self-driving AI.",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "FastLabel & Human Dataware Lab.",
   "license": "Apache License 2.0",
   "main": "dist/main.js",
@@ -39,6 +39,7 @@
     "firebase": "^9.6.2",
     "i18next": "^20.3.5",
     "i18next-browser-languagedetector": "^6.1.2",
+    "lodash.debounce": "^4.0.8",
     "lodash.throttle": "^4.1.1",
     "notistack": "^2.0.5",
     "re-resizable": "^6.9.0",
@@ -55,6 +56,7 @@
     "yaml": "^1.10.2"
   },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.7",
     "@types/lodash.throttle": "^4.1.6",
     "@types/mini-css-extract-plugin": "^2.0.1",
     "@types/node": "^16.4.0",

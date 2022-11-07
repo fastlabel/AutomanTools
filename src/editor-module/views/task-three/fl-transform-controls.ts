@@ -1,3 +1,4 @@
+import debounce from 'lodash.debounce';
 import {
   BufferGeometry,
   Camera,
@@ -98,6 +99,10 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
   private objectChangeEvent = { type: 'objectChange' };
 
   private orbit: FLObjectCameraControls;
+  private debounceDispatchEvent: (event: {
+    type: string;
+    [attachment: string]: any;
+  }) => void;
 
   constructor(
     camera: TCamera,
@@ -178,6 +183,8 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
       'pointerup',
       this.onPointerUp
     );
+
+    this.debounceDispatchEvent = debounce(this.dispatchEvent, 500);
   }
 
   private intersectObjectWithRay = (
@@ -220,11 +227,7 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
     if (this.object !== undefined) {
       this.object.updateMatrixWorld();
 
-      if (this.object.parent === null) {
-        console.error(
-          'FLTransformControls: The attached 3D object must be a part of the scene graph.'
-        );
-      } else {
+      if (this.object.parent) {
         this.object.parent.matrixWorld.decompose(
           this.parentPosition,
           this.parentQuaternion,
@@ -343,10 +346,10 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
       );
 
       this.offset.copy(this.pointEnd).sub(this.pointStart);
-      this.offset
-        .applyQuaternion(this.parentQuaternionInv)
-        .divide(this.parentScale);
-
+      this.offset.applyQuaternion(this.parentQuaternionInv);
+      if (this.object?.parent) {
+        this.offset.divide(this.parentScale);
+      }
       object.position.copy(this.offset).add(this.positionStart);
     } else if (this.axis === 'R_POINT') {
       this.rotationAxis.copy(this.eye);
@@ -475,7 +478,7 @@ class FLTransformControls<TCamera extends Camera = Camera> extends Object3D {
     }
 
     this.dispatchEvent(this.changeEvent);
-    this.dispatchEvent(this.objectChangeEvent);
+    this.debounceDispatchEvent(this.objectChangeEvent);
   };
 
   private pointerUp = (pointer: FLTransformControlsPointerObject): void => {
