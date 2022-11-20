@@ -45,7 +45,6 @@ const LabelViewIndex: React.FC = () => {
     []
   );
   const [pcd, setPcd] = React.useState<PCDResult>();
-  const [position0, setPosition0] = React.useState<Vector3>();
 
   React.useEffect(() => {
     const targetFrameNo = labelViewPageState?.selectedFrame || '';
@@ -57,18 +56,6 @@ const LabelViewIndex: React.FC = () => {
     ) {
       const pcd = targetFrame.pcdResource;
       setPcd(pcd);
-      if (!position0) {
-        const x = PcdUtil.getMaxMin(pcd.position, 'x');
-        const y = PcdUtil.getMaxMin(pcd.position, 'y');
-        const z = PcdUtil.getMaxMin(pcd.position, 'z');
-        setPosition0(
-          new Vector3(
-            (x.min + x.max) / 2,
-            (z.min + z.max) / 2,
-            -(y.min + y.max) / 2
-          )
-        );
-      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [taskFrames, labelViewPageState]);
@@ -138,7 +125,6 @@ const LabelViewIndex: React.FC = () => {
             <FlLabelMainView
               target={target}
               pcd={pcd}
-              position0={position0}
               cameraHelper={resolveCameraHelper(calibrationCamera)}
               mainControlsRef={mainControlsRef}
             />

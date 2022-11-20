@@ -4,6 +4,7 @@ import React from 'react';
 import { Euler, Group, Vector3 } from 'three';
 import { PCDResult } from '../../types/labos';
 import { LABEL_C_RESIZE, THREE_STYLES, THREE_SX_PROPS } from './fl-const';
+import { extractFlCubeObject3d } from './fl-cube-model';
 import { FlMainCameraControls } from './fl-main-camera-controls';
 import FLMainControls from './fl-main-controls';
 import { FlPcdPoints } from './fl-pcd-points';
@@ -12,9 +13,15 @@ type ResetEffectProps = {
   pcd?: PCDResult;
   target?: Group;
   baseSize?: number;
+  mainControlsRef?: React.RefObject<FlMainCameraControls>;
 };
 
-const ResetEffect: React.FC<ResetEffectProps> = ({ pcd, target, baseSize }) => {
+const ResetEffect: React.FC<ResetEffectProps> = ({
+  pcd,
+  target,
+  baseSize,
+  mainControlsRef,
+}) => {
   const gl = useThree((state) => state.gl);
   const scene = useThree((state) => state.scene);
   React.useEffect(() => {
@@ -28,6 +35,18 @@ const ResetEffect: React.FC<ResetEffectProps> = ({ pcd, target, baseSize }) => {
     }
     gl.clear();
     gl.resetState();
+    if (mainControlsRef?.current && target) {
+      const [px, py, pz, ax, ay, az, sx, sy, sz] =
+        extractFlCubeObject3d(target);
+      const offset = Math.max(sx, sy, sz, 20);
+      const positionX = px - offset;
+      const positionY = py;
+      const positionZ = pz + offset;
+      mainControlsRef.current.point(
+        new Vector3(px, py, pz),
+        new Vector3(positionX, positionY, positionZ)
+      );
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [target, gl, scene]);
   return <></>;
@@ -96,6 +115,7 @@ const FlLabelMainView: React.FC<Props> = ({
           target={target}
           pcd={pcd}
           baseSize={orthographic ? 0.3 : 0.015}
+          mainControlsRef={mainControlsRef}
         />
         {cameraHelper}
       </Canvas>

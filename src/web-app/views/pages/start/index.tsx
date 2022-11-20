@@ -26,6 +26,10 @@ import copyImage from '../../../images/copy.png';
 import pcdImage from '../../../images/pcd.png';
 import pcdWithImage from '../../../images/pcd_image.png';
 import pcdFramesImage from '../../../images/pcd_frames.png';
+import feature2d3dImage from '../../../images/feature__2d3d.png';
+import featureBirdeyeImage from '../../../images/feature__birdeye.png';
+import featureLabelViewImage from '../../../images/feature__label_view.png';
+import featureSequenceInterpolationImage from '../../../images/feature__sequence_interpolation.png';
 import githubImage from '../../../images/github.png';
 import GitHubIcon from './github-icon';
 
@@ -226,6 +230,22 @@ const useStyles = makeStyles(() =>
     },
     featuresLi: {
       listStyleType: 'none',
+    },
+    featuresImageContainer: {
+      position: 'relative',
+      marginTop: 16,
+      paddingBottom: 320,
+    },
+    featuresImage: {
+      width: '90%',
+      boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.12)',
+      borderRadius: 6,
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      margin: '0 auto',
+      zIndex: 20,
     },
     dataTypeSection: {
       padding: '0 32px',
@@ -473,10 +493,10 @@ const StartPage: FC = () => {
       setSamplePcdFrames(
         await getDownloadItem('automan_sample_pcd_frames.zip')
       );
-      setM1MacAppLink(await getDownloadItem('apps/Automan-0.0.2-arm64.dmg'));
-      setIntelMacAppLink(await getDownloadItem('apps/Automan-0.0.2.dmg'));
+      setM1MacAppLink(await getDownloadItem('apps/Automan-0.0.3-arm64.dmg'));
+      setIntelMacAppLink(await getDownloadItem('apps/Automan-0.0.3.dmg'));
       setWindowsAppLink(
-        await getDownloadItem('apps/Automan-0.0.2-win32-installer.exe')
+        await getDownloadItem('apps/Automan-0.0.3-win32-installer.exe')
       );
     };
     getSamples();
@@ -652,6 +672,12 @@ const StartPage: FC = () => {
                   {t('web_features_caption_1')}
                 </Typography>
               </li>
+              <Box component="div" className={classes.featuresImageContainer}>
+                <img
+                  src={featureSequenceInterpolationImage}
+                  className={classes.featuresImage}
+                />
+              </Box>
               <li>
                 <Typography
                   variant="subtitle1"
@@ -673,6 +699,12 @@ const StartPage: FC = () => {
                   {t('web_features_caption_2_2')}
                 </Typography>
               </li>
+              <Box component="div" className={classes.featuresImageContainer}>
+                <img
+                  src={featureBirdeyeImage}
+                  className={classes.featuresImage}
+                />
+              </Box>
               <li>
                 <Typography
                   variant="subtitle1"
@@ -680,6 +712,9 @@ const StartPage: FC = () => {
                   {t('web_features_caption_3')}
                 </Typography>
               </li>
+              <Box component="div" className={classes.featuresImageContainer}>
+                <img src={feature2d3dImage} className={classes.featuresImage} />
+              </Box>
               <li>
                 <Typography
                   variant="subtitle1"
@@ -687,6 +722,12 @@ const StartPage: FC = () => {
                   {t('web_features_caption_4')}
                 </Typography>
               </li>
+              <Box component="div" className={classes.featuresImageContainer}>
+                <img
+                  src={featureLabelViewImage}
+                  className={classes.featuresImage}
+                />
+              </Box>
             </ul>
           </Box>
         </Box>
