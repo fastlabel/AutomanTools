@@ -31,6 +31,7 @@ import featureBirdeyeImage from '../../../images/feature__birdeye.png';
 import featureLabelViewImage from '../../../images/feature__label_view.png';
 import featureSequenceInterpolationImage from '../../../images/feature__sequence_interpolation.png';
 import githubImage from '../../../images/github.png';
+import autowareLogo from '../../../images/autoware-main-logo-whitebg.png';
 import GitHubIcon from './github-icon';
 
 const firebaseConfig = {
@@ -44,6 +45,8 @@ const storage = getStorage(firebaseApp);
 async function getDownloadItem(url: string) {
   return await getDownloadURL(ref(storage, url));
 }
+
+const AUTOWARE_LOGO_HEIGHT = 90;
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -460,6 +463,11 @@ const useStyles = makeStyles(() =>
       height: 44,
       top: 0,
       right: 0,
+    },
+    footerAutowareLogo:{
+      position: 'absolute',
+      top:0,
+      height:AUTOWARE_LOGO_HEIGHT,
     },
     copylight: {
       fontSize: 12,
@@ -923,7 +931,7 @@ const StartPage: FC = () => {
       </Box>
       {/* Footer Section */}
       <Box component="div" className={classes.footer}>
-        <Box component="div" className={classes.container}>
+        <Box component="div" className={classes.container}>          
           <Typography variant="h3" className={classes.footerLogo}>
             Automan
           </Typography>
@@ -937,7 +945,20 @@ const StartPage: FC = () => {
               {t('web_footer_caption')}
             </Typography>
           </Box>
-          <Box component="div" mt={4}>
+          <Box component="div" mt={2} position="relative" height={AUTOWARE_LOGO_HEIGHT}>            
+            <Link target="_blank" href="https://www.autoware.org/">
+              <img 
+                src={autowareLogo}
+                className={classes.footerAutowareLogo}
+              />
+            </Link>
+          </Box>
+          <Box component="div">
+            <Typography variant="body1" className={classes.footerCaption}>
+              © The Autoware Foundation 2021. All rights reserved. “Autoware” is a trademark of the Autoware Foundation.
+            </Typography>
+          </Box>
+          <Box component="div" mt={3}>
             <Link target="_blank" href="https://fastlabel.ai/">
               <img
                 alt=""
