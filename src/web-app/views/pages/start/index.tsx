@@ -10,7 +10,6 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import SvgIcon from '@mui/material/SvgIcon';
 
 import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -70,7 +69,7 @@ const useStyles = makeStyles(() =>
         'linear-gradient(301.64deg, #40A9F5 19.83%, #5288FC 40.74%, #377AFC 60.52%, #515DFF 79.3%)',
       display: 'flex',
       justifyContent: 'center',
-      height: 620,
+      height: 680,
     },
     heroSideLeftImage: {
       position: 'absolute',
@@ -100,7 +99,20 @@ const useStyles = makeStyles(() =>
       fontSize: 16,
       fontWeight: 'normal',
       letterSpacing: '0.04em',
-      marginTop: 24,
+      marginTop: 8,
+    },
+    heroAutowareLogoBox: {
+      position: `relative`,
+      backgroundColor: '#FFF',
+      borderRadius: '16px',
+      width: '240px',
+      paddingLeft: '16px',
+      height: 70,
+    },
+    heroAutowareLogo: {
+      top: '-5px',
+      position: 'absolute',
+      height: 80,
     },
     webDownloadButton: {
       borderRadius: '100vh',
@@ -464,10 +476,10 @@ const useStyles = makeStyles(() =>
       top: 0,
       right: 0,
     },
-    footerAutowareLogo:{
+    footerAutowareLogo: {
       position: 'absolute',
-      top:0,
-      height:AUTOWARE_LOGO_HEIGHT,
+      top: 0,
+      height: AUTOWARE_LOGO_HEIGHT,
     },
     copylight: {
       fontSize: 12,
@@ -546,7 +558,16 @@ const StartPage: FC = () => {
               <Typography variant="h6" className={classes.heroCaption}>
                 Open source 3D Annotation Tools
               </Typography>
-              <Box component="div" display="flex" flexDirection="column" mt={8}>
+              <Box mt={4} />
+              <Link target="_blank" href="https://www.autoware.org/">
+                <Box display="flex" className={classes.heroAutowareLogoBox}>
+                  <img
+                    src={autowareLogo}
+                    className={classes.heroAutowareLogo}
+                  />
+                </Box>
+              </Link>
+              <Box component="div" display="flex" flexDirection="column" mt={4}>
                 {isSmDown ? (
                   <>
                     <Button
@@ -931,7 +952,7 @@ const StartPage: FC = () => {
       </Box>
       {/* Footer Section */}
       <Box component="div" className={classes.footer}>
-        <Box component="div" className={classes.container}>          
+        <Box component="div" className={classes.container}>
           <Typography variant="h3" className={classes.footerLogo}>
             Automan
           </Typography>
@@ -945,17 +966,19 @@ const StartPage: FC = () => {
               {t('web_footer_caption')}
             </Typography>
           </Box>
-          <Box component="div" mt={2} position="relative" height={AUTOWARE_LOGO_HEIGHT}>            
+          <Box
+            component="div"
+            mt={2}
+            position="relative"
+            height={AUTOWARE_LOGO_HEIGHT}>
             <Link target="_blank" href="https://www.autoware.org/">
-              <img 
-                src={autowareLogo}
-                className={classes.footerAutowareLogo}
-              />
+              <img src={autowareLogo} className={classes.footerAutowareLogo} />
             </Link>
           </Box>
           <Box component="div">
             <Typography variant="body1" className={classes.footerCaption}>
-              © The Autoware Foundation 2021. All rights reserved. “Autoware” is a trademark of the Autoware Foundation.
+              © The Autoware Foundation 2021. All rights reserved. “Autoware” is
+              a trademark of the Autoware Foundation.
             </Typography>
           </Box>
           <Box component="div" mt={3}>
